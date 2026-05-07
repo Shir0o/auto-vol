@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aura - Schedule</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&amp;family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Hide scrollbar for clean look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-container": "#506b4f",
+                    "outline-variant": "#bfc8c6",
+                    "on-secondary-fixed-variant": "#334d33",
+                    "surface-dim": "#dadada",
+                    "primary-fixed": "#b8ede6",
+                    "on-secondary": "#ffffff",
+                    "tertiary-container": "#7d7261",
+                    "on-tertiary-fixed": "#221a0e",
+                    "secondary-container": "#ccebc7",
+                    "on-primary-container": "#eafffb",
+                    "inverse-surface": "#2f3131",
+                    "surface-container": "#eeeeed",
+                    "surface": "#f9f9f9",
+                    "on-tertiary-container": "#fffaf7",
+                    "primary-fixed-dim": "#9dd0ca",
+                    "outline": "#707977",
+                    "primary": "#30635e",
+                    "on-primary-fixed": "#00201e",
+                    "inverse-on-surface": "#f1f1f0",
+                    "on-tertiary-fixed-variant": "#4f4537",
+                    "on-error-container": "#93000a",
+                    "surface-bright": "#f9f9f9",
+                    "on-primary-fixed-variant": "#194f4a",
+                    "surface-container-high": "#e8e8e8",
+                    "secondary": "#4a6549",
+                    "on-surface-variant": "#404847",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed-dim": "#d3c4b1",
+                    "on-background": "#1a1c1c",
+                    "error": "#ba1a1a",
+                    "secondary-fixed": "#ccebc7",
+                    "error-container": "#ffdad6",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "tertiary": "#64594a",
+                    "on-secondary-fixed": "#07200b",
+                    "primary-container": "#4a7c77",
+                    "surface-variant": "#e2e2e2",
+                    "background": "#f9f9f9",
+                    "inverse-primary": "#9dd0ca",
+                    "surface-container-low": "#f3f4f3",
+                    "surface-container-highest": "#e2e2e2",
+                    "on-surface": "#1a1c1c",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed-dim": "#b0cfad",
+                    "tertiary-fixed": "#f0e0cc",
+                    "surface-tint": "#346762"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "md": "2rem",
+                    "unit": "8px",
+                    "safe-margin": "5vw",
+                    "lg": "4rem",
+                    "xs": "0.5rem",
+                    "xl": "8rem",
+                    "sm": "1rem"
+            },
+            "fontFamily": {
+                    "body-lg": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "headline-md": [
+                            "Libre Caslon Text"
+                    ],
+                    "headline-sm": [
+                            "Libre Caslon Text"
+                    ],
+                    "body-md": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "display-lg": [
+                            "Libre Caslon Text"
+                    ],
+                    "label-caps": [
+                            "Plus Jakarta Sans"
+                    ]
+            },
+            "fontSize": {
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-md": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-sm": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.1",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-caps": [
+                            "12px",
+                            {
+                                    "lineHeight": "1.0",
+                                    "letterSpacing": "0.1em",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen font-body-md antialiased selection:bg-primary-fixed selection:text-on-primary-fixed flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-transparent w-full pt-sm transition-all duration-500 ease-out z-40 fixed top-0">
+<div class="flex justify-between items-center px-safe-margin w-full">
+<!-- Leading: Avatar -->
+<div class="flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-variant flex items-center justify-center">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A softly lit, close-up portrait of a serene individual looking peacefully forward. The lighting is diffused and natural, highlighting smooth skin tones against a muted, out-of-focus background. The overall mood is calm, approachable, and balanced, fitting a premium, mindful digital aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlAQLZ7gIPZLkhbCJ-YhxgkDYRQ5aFzQ9mn8Mjg1ZJczVltv0bfhA3OqdCcUIXN6VGK6NHUH7aNAFwS2tyulADe5UOQL-NtKKLzlqAuhW4FiCrU6yaLsv67RzUB6ofFrEuD-OzCJmRnKBZIKOI25QCmf-C1vKK6mF47cfg-ZA6VC23rkR1JY_F34wuBRimhRZjfAdd-DwZwv0TkVVkUpJ_e_e0MBiaBmnHOuQaAijEeDoNB-GvfQIp_uxL3tD82FFwzJDgmEfCI4UJ"/>
+</div>
+</div>
+<!-- Web Navigation Cluster (Hidden on Mobile) -->
+<nav class="hidden md:flex items-center gap-md">
+<a class="font-label-caps text-label-caps text-outline hover:opacity-80 transition-opacity flex flex-col items-center gap-xs group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">graphic_eq</span>
+                    Dashboard
+                </a>
+<a class="font-label-caps text-label-caps text-primary flex flex-col items-center gap-xs group" href="#">
+<div class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-6 py-2">
+<span class="material-symbols-outlined text-[20px] fill group-hover:scale-110 transition-transform">calendar_today</span>
+                        Schedule
+                    </div>
+</a>
+<a class="font-label-caps text-label-caps text-outline hover:opacity-80 transition-opacity flex flex-col items-center gap-xs group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">verified_user</span>
+                    VIPs
+                </a>
+<a class="font-label-caps text-label-caps text-outline hover:opacity-80 transition-opacity flex flex-col items-center gap-xs group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">settings</span>
+                    Settings
+                </a>
+</nav>
+<!-- Headline: Brand -->
+<div class="md:hidden absolute left-1/2 -translate-x-1/2">
+<h1 class="font-headline-md text-headline-md text-primary tracking-tight">Aura</h1>
+</div>
+<!-- Trailing: Icon -->
+<div class="flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined text-primary text-[28px]">settings_suggest</span>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-[100px] pb-xl px-safe-margin relative overflow-hidden flex flex-col max-w-5xl mx-auto w-full">
+<!-- Header Section -->
+<section class="mb-lg flex flex-col items-center md:items-start relative z-10">
+<h2 class="font-display-lg text-display-lg text-on-background mb-unit text-center md:text-left">Flow State</h2>
+<p class="font-body-lg text-body-lg text-outline text-center md:text-left">Thursday, October 24</p>
+</section>
+<!-- Timeline Container -->
+<section class="relative w-full flex-grow z-10">
+<!-- Subtle Organic SVG Background Curve -->
+<div class="absolute left-[3rem] top-0 bottom-0 w-32 -z-10 pointer-events-none opacity-40">
+<svg height="100%" preserveaspectratio="none" viewbox="0 0 100 1000" width="100%" xmlns="http://www.w3.org/2000/svg">
+<path class="text-outline-variant" d="M 50 0 C 60 200, 30 400, 50 600 C 70 800, 40 900, 50 1000" fill="none" stroke="currentColor" stroke-dasharray="8 12" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="flex flex-col gap-md relative">
+<!-- Event Block 1 (Past) -->
+<div class="flex items-start gap-sm md:gap-md group relative">
+<div class="w-16 md:w-20 pt-unit flex-shrink-0 text-right">
+<span class="font-label-caps text-label-caps text-outline-variant">08:00</span>
+</div>
+<!-- Pebble -->
+<div class="flex-grow relative">
+<div class="bg-surface-variant/40 backdrop-blur-md rounded-xl p-md transition-all duration-500 ease-out border border-surface-container-high/50">
+<div class="flex items-center gap-sm mb-unit">
+<span class="material-symbols-outlined text-outline text-[20px]">self_improvement</span>
+<span class="font-label-caps text-label-caps text-outline">Completed</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface-variant mb-xs">Morning Alignment</h3>
+<p class="font-body-md text-body-md text-outline">Meditation and journaling.</p>
+</div>
+</div>
+</div>
+<!-- Event Block 2 (Current/Active) -->
+<div class="flex items-start gap-sm md:gap-md group relative">
+<div class="w-16 md:w-20 pt-unit flex-shrink-0 text-right">
+<span class="font-label-caps text-label-caps text-primary">10:00</span>
+</div>
+<!-- Pebble -->
+<div class="flex-grow relative">
+<!-- Active Glow -->
+<div class="absolute -inset-2 bg-primary-fixed-dim/20 rounded-xl blur-xl -z-10"></div>
+<div class="bg-primary-container/10 backdrop-blur-xl rounded-xl p-md transition-all duration-500 ease-out border border-primary-fixed-dim/30 shadow-[0_8px_32px_rgba(48,99,94,0.05)]">
+<div class="flex justify-between items-start mb-unit">
+<div class="flex items-center gap-sm">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+<span class="font-label-caps text-label-caps text-primary">In Progress</span>
+</div>
+<span class="font-label-caps text-label-caps text-outline">2 Hrs</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-background mb-xs">Deep Work: Architecture</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-sm">Structuring the biophilic design system tokens.</p>
+<!-- Tags -->
+<div class="flex gap-unit">
+<span class="px-3 py-1 rounded-full bg-primary-fixed/30 text-on-primary-fixed-variant font-label-caps text-[10px]">Focus</span>
+<span class="px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label-caps text-[10px]">Design</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Spacer for visual breathing room -->
+<div class="h-xs"></div>
+<!-- Event Block 3 (Upcoming - Moss) -->
+<div class="flex items-start gap-sm md:gap-md group relative">
+<div class="w-16 md:w-20 pt-unit flex-shrink-0 text-right">
+<span class="font-label-caps text-label-caps text-outline">13:00</span>
+</div>
+<!-- Pebble -->
+<div class="flex-grow relative">
+<div class="bg-secondary-container/30 backdrop-blur-md rounded-xl p-md transition-all duration-500 ease-out hover:bg-secondary-container/50 border border-secondary-fixed/20 cursor-pointer">
+<div class="flex items-center gap-sm mb-unit">
+<span class="material-symbols-outlined text-secondary text-[20px]">group</span>
+<span class="font-label-caps text-label-caps text-secondary">Sync</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-background mb-xs">Team Harmony</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Weekly cadence and block removal.</p>
+</div>
+</div>
+</div>
+<!-- Event Block 4 (Upcoming - Muted) -->
+<div class="flex items-start gap-sm md:gap-md group relative">
+<div class="w-16 md:w-20 pt-unit flex-shrink-0 text-right">
+<span class="font-label-caps text-label-caps text-outline">15:30</span>
+</div>
+<!-- Pebble -->
+<div class="flex-grow relative">
+<div class="bg-surface-container/50 backdrop-blur-sm rounded-xl p-md transition-all duration-500 ease-out hover:bg-surface-container border border-surface-variant/50 cursor-pointer">
+<div class="flex items-center gap-sm mb-unit">
+<span class="material-symbols-outlined text-outline text-[20px]">directions_walk</span>
+<span class="font-label-caps text-label-caps text-outline">Disconnect</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-background mb-xs">Nature Walk</h3>
+<p class="font-body-md text-body-md text-outline">Mandatory screen-free time.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom padding for mobile nav -->
+<div class="h-xl md:hidden"></div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden bg-surface-container-low/60 backdrop-blur-xl fixed bottom-0 w-full rounded-t-xl z-50 flex justify-around items-center px-sm pb-md pt-xs pb-[calc(1rem+env(safe-area-inset-bottom))]">
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-secondary-container/30 transition-colors active:scale-95 duration-300 ease-in-out rounded-xl" href="#">
+<span class="material-symbols-outlined text-[24px]">graphic_eq</span>
+<span class="font-label-caps text-[10px] mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-6 py-2 hover:bg-secondary-container/80 transition-colors active:scale-95 duration-300 ease-in-out shadow-sm" href="#">
+<span class="material-symbols-outlined text-[24px] fill">calendar_today</span>
+<span class="font-label-caps text-[10px] mt-1">Schedule</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-secondary-container/30 transition-colors active:scale-95 duration-300 ease-in-out rounded-xl" href="#">
+<span class="material-symbols-outlined text-[24px]">verified_user</span>
+<span class="font-label-caps text-[10px] mt-1">VIPs</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-secondary-container/30 transition-colors active:scale-95 duration-300 ease-in-out rounded-xl" href="#">
+<span class="material-symbols-outlined text-[24px]">settings</span>
+<span class="font-label-caps text-[10px] mt-1">Settings</span>
+</a>
+</nav>
+</body></html>

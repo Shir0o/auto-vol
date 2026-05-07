@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aura - VIP Management</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&amp;family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-container": "#506b4f",
+                    "outline-variant": "#bfc8c6",
+                    "on-secondary-fixed-variant": "#334d33",
+                    "surface-dim": "#dadada",
+                    "primary-fixed": "#b8ede6",
+                    "on-secondary": "#ffffff",
+                    "tertiary-container": "#7d7261",
+                    "on-tertiary-fixed": "#221a0e",
+                    "secondary-container": "#ccebc7",
+                    "on-primary-container": "#eafffb",
+                    "inverse-surface": "#2f3131",
+                    "surface-container": "#eeeeed",
+                    "surface": "#f9f9f9",
+                    "on-tertiary-container": "#fffaf7",
+                    "primary-fixed-dim": "#9dd0ca",
+                    "outline": "#707977",
+                    "primary": "#30635e",
+                    "on-primary-fixed": "#00201e",
+                    "inverse-on-surface": "#f1f1f0",
+                    "on-tertiary-fixed-variant": "#4f4537",
+                    "on-error-container": "#93000a",
+                    "surface-bright": "#f9f9f9",
+                    "on-primary-fixed-variant": "#194f4a",
+                    "surface-container-high": "#e8e8e8",
+                    "secondary": "#4a6549",
+                    "on-surface-variant": "#404847",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed-dim": "#d3c4b1",
+                    "on-background": "#1a1c1c",
+                    "error": "#ba1a1a",
+                    "secondary-fixed": "#ccebc7",
+                    "error-container": "#ffdad6",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "tertiary": "#64594a",
+                    "on-secondary-fixed": "#07200b",
+                    "primary-container": "#4a7c77",
+                    "surface-variant": "#e2e2e2",
+                    "background": "#f9f9f9",
+                    "inverse-primary": "#9dd0ca",
+                    "surface-container-low": "#f3f4f3",
+                    "surface-container-highest": "#e2e2e2",
+                    "on-surface": "#1a1c1c",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed-dim": "#b0cfad",
+                    "tertiary-fixed": "#f0e0cc",
+                    "surface-tint": "#346762"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "md": "2rem",
+                    "unit": "8px",
+                    "safe-margin": "5vw",
+                    "lg": "4rem",
+                    "xs": "0.5rem",
+                    "xl": "8rem",
+                    "sm": "1rem"
+            },
+            "fontFamily": {
+                    "body-lg": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "headline-md": [
+                            "Libre Caslon Text"
+                    ],
+                    "headline-sm": [
+                            "Libre Caslon Text"
+                    ],
+                    "body-md": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "display-lg": [
+                            "Libre Caslon Text"
+                    ],
+                    "label-caps": [
+                            "Plus Jakarta Sans"
+                    ]
+            },
+            "fontSize": {
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-md": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-sm": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.1",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-caps": [
+                            "12px",
+                            {
+                                    "lineHeight": "1.0",
+                                    "letterSpacing": "0.1em",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+        },
+        },
+      }
+    </script>
+<style>
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen flex flex-col pb-xl">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-safe-margin w-full w-full pt-sm bg-transparent">
+<div class="flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
+<img alt="User Profile Avatar" class="w-12 h-12 rounded-full object-cover" data-alt="A close-up portrait of a serene individual with soft, natural lighting against a neutral background. The image has a calm, minimalist aesthetic, fitting seamlessly into a clean, biophilic interface. The colors are muted and earthy, emphasizing tranquility and gentle warmth." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhcf-u3LrEUMxHFQzYcDJIxpmrmUEgaSMCcNqfYbD8WxcnIFjtXJnDMUkMNhWpyMjDZaiL9O2weZ-lWXYQPe_MedrxNQRMGxudmWdjDZ12tLwQF15KIIwI8QotkSyY3ohdl_hSeVk1uc440nlqFD_w-stGxprFyjYiT8UfxppswRxq3Tcy36LP4zERnQjcm-7Esc9A48hzkE3_q1gS1kzjWHoT86-ObiolAO2JSKOKgosnw-30CmaLSZv_3U00TuT0YcQp4ge1012T"/>
+</div>
+<h1 class="font-headline-md text-headline-md text-primary dark:text-primary-fixed tracking-tight">Aura</h1>
+<div class="flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed" style="font-size: 28px;">settings_suggest</span>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-safe-margin mt-md flex flex-col gap-md">
+<!-- Header Section -->
+<section class="max-w-2xl">
+<h2 class="font-headline-md text-headline-md text-primary mb-xs">VIP Connections</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-[90%]">
+                Select the essential voices allowed to gently pierce the veil of your focus. These contacts will bypass all active serenity modes.
+            </p>
+</section>
+<!-- VIP List -->
+<section class="flex flex-col gap-sm mt-sm">
+<!-- VIP Card 1 (Active) -->
+<div class="bg-tertiary-fixed p-sm md:p-md rounded-xl flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-sm md:gap-md">
+<img alt="Eleanor Vance" class="w-16 h-16 rounded-full object-cover border-4 border-surface-container-lowest/30" data-alt="A soft, beautifully lit portrait of a woman looking thoughtfully off-camera. The background is a blurred, warm natural setting suggesting a morning forest. The aesthetic is incredibly soft, devoid of harsh shadows, perfectly matching a biophilic, light-mode wellness app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtnSQTRera1pY62IKTxsdk2LQvV6bYmJh1fsxFiQ04e6y0q7RhnmUfpUHnj6hSWBqQXXDi7-hKTiBzfSNnp5VeM27MHPSdes39TWe9aXY4y8lHOmT2Rz8rWPvjipZvGNyx-imkY1E6v9e4eZ70gqNVn5KVl-pB8KaFqhvbiR3OxVXHgEXsDUe49v9AzrPvqToGoVWd8o0ZM7XqsSUucWiKdVf6-tA8i_bz3XPlborTR3QdiX2zc2gI82_ud9Lrm1DBGaIWffmTd-R5"/>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-tertiary-fixed">Eleanor Vance</h3>
+<p class="font-body-md text-body-md text-on-tertiary-fixed-variant opacity-80">Partner</p>
+</div>
+</div>
+<!-- Large Organic Toggle (On) -->
+<div class="w-[72px] h-[40px] rounded-full bg-primary flex items-center px-[4px] cursor-pointer shadow-inner transition-colors duration-300">
+<div class="w-[32px] h-[32px] rounded-full bg-on-primary shadow-sm transform translate-x-[32px] transition-transform duration-300 ease-out"></div>
+</div>
+</div>
+<!-- VIP Card 2 (Inactive) -->
+<div class="bg-tertiary-fixed/50 p-sm md:p-md rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-sm md:gap-md opacity-70 transition-opacity hover:opacity-100">
+<img alt="Marcus Reed" class="w-16 h-16 rounded-full object-cover border-4 border-surface-container-lowest/30" data-alt="A gentle portrait of a man with a slight, warm smile. The lighting is diffused and airy, giving the image a translucent, peaceful quality. The color palette revolves around soft moss greens and warm sand tones, adhering strictly to a premium minimalist design language." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5fEclsbrBdA6D5QHjb3hFfsuRF64AR0Kp_xXObFnOslko3fTAxQyIRYpAQ-9vz2XII6ia4M3ra3jil5VJ_qSGmf21yrjBhNWq_EgLFvmcyEycLU40e8a6xAi8OVDoXxli-JgEjTQe6UBYVAf_5vy_Kfv5cxcAYevgODSX3he-43DYzD3Vr-2pkkN-3za45VNLxjg30VoCS9j81pul_Pq3o1-SoEX0xiFASbhRLP6_ANlyP63u-wAm8XoWq9pVahvy94BawOAXueO9"/>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-tertiary-fixed">Marcus Reed</h3>
+<p class="font-body-md text-body-md text-on-tertiary-fixed-variant opacity-80">Family</p>
+</div>
+</div>
+<!-- Large Organic Toggle (Off) -->
+<div class="w-[72px] h-[40px] rounded-full bg-surface-variant flex items-center px-[4px] cursor-pointer shadow-inner transition-colors duration-300">
+<div class="w-[32px] h-[32px] rounded-full bg-outline-variant shadow-sm transform translate-x-0 transition-transform duration-300 ease-out"></div>
+</div>
+</div>
+<!-- VIP Card 3 (Active) -->
+<div class="bg-tertiary-fixed p-sm md:p-md rounded-xl flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-sm md:gap-md">
+<div class="w-16 h-16 rounded-full bg-secondary-container flex items-center justify-center border-4 border-surface-container-lowest/30">
+<span class="font-headline-sm text-headline-sm text-on-secondary-container">S</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-tertiary-fixed">Dr. Sylvia</h3>
+<p class="font-body-md text-body-md text-on-tertiary-fixed-variant opacity-80">Healthcare</p>
+</div>
+</div>
+<!-- Large Organic Toggle (On) -->
+<div class="w-[72px] h-[40px] rounded-full bg-primary flex items-center px-[4px] cursor-pointer shadow-inner transition-colors duration-300">
+<div class="w-[32px] h-[32px] rounded-full bg-on-primary shadow-sm transform translate-x-[32px] transition-transform duration-300 ease-out"></div>
+</div>
+</div>
+<!-- VIP Card 4 (Inactive) -->
+<div class="bg-tertiary-fixed/50 p-sm md:p-md rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-sm md:gap-md opacity-70 transition-opacity hover:opacity-100">
+<img alt="Chloe Chen" class="w-16 h-16 rounded-full object-cover border-4 border-surface-container-lowest/30" data-alt="A bright, airy photograph of a young woman with a calm expression. The image is captured in a minimalist style, dominated by light tones, whites, and soft pastels. There are no harsh angles or aggressive contrasts, embodying a feeling of total biophilic serenity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcKj_peSNizEi6FZvITTXyuBzbTEJUO-vKcZTAnU5LwQqwfMEl7ze6iRg6-i2pbgdkHbMqqtn-cTx4vrOah8by3NUdBfnrvPzT53YuB5XYABO46m-v6-BmFkDEOAwjHoqtKIfaktL4_3SMCVlAIEC9mP8qpmrHBJFLUIXFxoDTaUBi27bwZDp-k3Tfh4I-T9vXXS4EyZUnTW9yTm-aI7xGOoQ5Y4yC3G85yq7GtkS9bgxcEJT9wbKrACWabLCAln1CAVmh5qU6npfw"/>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-tertiary-fixed">Chloe Chen</h3>
+<p class="font-body-md text-body-md text-on-tertiary-fixed-variant opacity-80">Assistant</p>
+</div>
+</div>
+<!-- Large Organic Toggle (Off) -->
+<div class="w-[72px] h-[40px] rounded-full bg-surface-variant flex items-center px-[4px] cursor-pointer shadow-inner transition-colors duration-300">
+<div class="w-[32px] h-[32px] rounded-full bg-outline-variant shadow-sm transform translate-x-0 transition-transform duration-300 ease-out"></div>
+</div>
+</div>
+</section>
+<!-- Add Contact Action (Floating feeling) -->
+<div class="mt-md flex justify-center pb-xl">
+<button class="flex items-center gap-xs bg-surface-container rounded-full px-lg py-sm hover:bg-surface-container-high transition-colors duration-500 ease-out">
+<span class="material-symbols-outlined text-primary">add</span>
+<span class="font-body-md text-body-md text-primary">Add VIP Contact</span>
+</button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-sm pb-md pt-xs bg-surface-container-low/60 dark:bg-surface-dim/40 backdrop-blur-3xl rounded-t-xl transition-all duration-500 ease-out md:hidden">
+<!-- Dashboard (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant p-2 hover:bg-secondary-container/30 transition-colors active:scale-95 duration-300 ease-in-out rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">graphic_eq</span>
+<span class="font-label-caps text-label-caps">Dashboard</span>
+</a>
+<!-- Schedule (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant p-2 hover:bg-secondary-container/30 transition-colors active:scale-95 duration-300 ease-in-out rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">calendar_today</span>
+<span class="font-label-caps text-label-caps">Schedule</span>
+</a>
+<!-- VIPs (Active) -->
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed rounded-full px-6 py-2 hover:bg-secondary-container/30 transition-colors active:scale-95 duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="font-label-caps text-label-caps">VIPs</span>
+</a>
+<!-- Settings (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant p-2 hover:bg-secondary-container/30 transition-colors active:scale-95 duration-300 ease-in-out rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">settings</span>
+<span class="font-label-caps text-label-caps">Settings</span>
+</a>
+</nav>
+<!-- Web Navigation (Hidden on Mobile, Visible on md+) -->
+<nav class="hidden md:flex fixed top-0 right-0 h-full w-[250px] bg-surface-container-lowest/80 backdrop-blur-3xl flex-col pt-[100px] px-md gap-md border-l border-surface-variant shadow-[-20px_0_40px_rgba(0,0,0,0.02)] z-40">
+<a class="flex items-center gap-sm text-on-surface-variant p-sm rounded-xl hover:bg-secondary-container/30 transition-colors" href="#">
+<span class="material-symbols-outlined">graphic_eq</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant p-sm rounded-xl hover:bg-secondary-container/30 transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-body-md text-body-md">Schedule</span>
+</a>
+<a class="flex items-center gap-sm bg-secondary-container text-on-secondary-container p-sm rounded-xl" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="font-body-md text-body-md font-bold">VIPs</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant p-sm rounded-xl hover:bg-secondary-container/30 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</nav>
+</body></html>

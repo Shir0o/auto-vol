@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aura - Add App Override</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&amp;family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline-variant": "#bfc8c6",
+                    "primary-fixed-dim": "#9dd0ca",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed": "#07200b",
+                    "secondary-fixed": "#ccebc7",
+                    "surface-container-low": "#f3f4f3",
+                    "on-surface": "#1a1c1c",
+                    "background": "#f9f9f9",
+                    "secondary-container": "#ccebc7",
+                    "on-tertiary-fixed": "#221a0e",
+                    "surface": "#f9f9f9",
+                    "tertiary-container": "#7d7261",
+                    "on-tertiary-fixed-variant": "#4f4537",
+                    "on-background": "#1a1c1c",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-container": "#4a7c77",
+                    "on-surface-variant": "#404847",
+                    "tertiary-fixed": "#f0e0cc",
+                    "on-primary": "#ffffff",
+                    "surface-container": "#eeeeed",
+                    "on-primary-fixed-variant": "#194f4a",
+                    "surface-container-highest": "#e2e2e2",
+                    "secondary-fixed-dim": "#b0cfad",
+                    "inverse-surface": "#2f3131",
+                    "tertiary-fixed-dim": "#d3c4b1",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-container": "#fffaf7",
+                    "surface-dim": "#dadada",
+                    "on-secondary-fixed-variant": "#334d33",
+                    "outline": "#707977",
+                    "on-primary-container": "#eafffb",
+                    "surface-container-high": "#e8e8e8",
+                    "surface-variant": "#e2e2e2",
+                    "error-container": "#ffdad6",
+                    "surface-bright": "#f9f9f9",
+                    "surface-tint": "#346762",
+                    "primary-fixed": "#b8ede6",
+                    "error": "#ba1a1a",
+                    "tertiary": "#64594a",
+                    "primary": "#30635e",
+                    "inverse-primary": "#9dd0ca",
+                    "on-primary-fixed": "#00201e",
+                    "inverse-on-surface": "#f1f1f0",
+                    "secondary": "#4a6549",
+                    "on-secondary-container": "#506b4f",
+                    "on-secondary": "#ffffff",
+                    "on-error": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xl": "8rem",
+                    "md": "2rem",
+                    "xs": "0.5rem",
+                    "sm": "1rem",
+                    "safe-margin": "5vw",
+                    "lg": "4rem",
+                    "unit": "8px"
+            },
+            "fontFamily": {
+                    "label-caps": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "headline-sm": [
+                            "Libre Caslon Text"
+                    ],
+                    "display-lg": [
+                            "Libre Caslon Text"
+                    ],
+                    "body-lg": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "headline-md": [
+                            "Libre Caslon Text"
+                    ],
+                    "body-md": [
+                            "Plus Jakarta Sans"
+                    ]
+            },
+            "fontSize": {
+                    "label-caps": [
+                            "12px",
+                            {
+                                    "lineHeight": "1.0",
+                                    "letterSpacing": "0.1em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-sm": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.1",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-md": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #f9f9f9;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen bg-background font-body-md text-body-md text-on-background selection:bg-primary-container selection:text-on-primary-container relative overflow-x-hidden">
+<!-- TopAppBar (From JSON - Task Flow specific) -->
+<header class="flex justify-between items-center px-safe-margin w-full pt-sm bg-transparent transition-all duration-500 ease-out z-50 relative">
+<button class="w-12 h-12 flex items-center justify-center rounded-full bg-surface-container-low hover:bg-surface-container-highest transition-colors text-primary">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="font-headline-md text-headline-md text-primary tracking-tight">Aura</div>
+<button class="w-12 h-12 flex items-center justify-center rounded-full text-outline hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings_suggest</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col px-safe-margin pt-lg pb-[150px] relative z-10">
+<!-- Header Section -->
+<div class="mb-md flex flex-col items-center text-center">
+<h1 class="font-headline-md text-headline-md text-on-surface mb-xs">Add App Override</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-sm">Select applications to bypass standard focus rules and notification blocks.</p>
+</div>
+<!-- Search Bar -->
+<div class="w-full max-w-2xl mx-auto mb-lg relative">
+<div class="absolute inset-0 bg-tertiary-fixed/30 rounded-full blur-md -z-10"></div>
+<div class="flex items-center bg-surface-container-lowest/80 backdrop-blur-2xl rounded-full px-md py-xs border border-surface-container-highest shadow-[0_8px_32px_rgba(48,99,94,0.05)]">
+<span class="material-symbols-outlined text-outline-variant mr-sm">search</span>
+<input class="w-full bg-transparent border-none outline-none focus:ring-0 font-body-lg text-body-lg text-on-surface placeholder:text-outline-variant/60 py-3" placeholder="Search Applications" type="text"/>
+</div>
+</div>
+<!-- Available Apps List -->
+<div class="w-full max-w-2xl mx-auto flex flex-col gap-sm">
+<!-- App Item 1: Discord -->
+<div class="group flex items-center justify-between bg-surface-container-low/50 backdrop-blur-xl rounded-xl p-xs pr-md hover:bg-surface-container-low/80 transition-colors duration-500">
+<div class="flex items-center gap-sm">
+<div class="w-20 h-20 rounded-xl bg-surface-container-highest/30 flex items-center justify-center overflow-hidden shrink-0">
+<img alt="Discord Icon" class="w-12 h-12 object-contain opacity-70 mix-blend-luminosity group-hover:mix-blend-normal transition-all duration-500" data-alt="A minimalist, highly rounded, soft-edged app icon representing communication, inspired by Discord. The icon is rendered in muted, desaturated tones over a warm sand background, following a bio-organic and calm UI aesthetic. Soft lighting, subtle gradients, and a frosted glass effect create a serene, premium feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDfTspeAXsxLUMceb4BXmA1P9-_UY3Jix8ozn2msWLFcrvqVGSsURDEFcm8EyC14zz7cBqg2j-rcynjdVTtxq3uHSqxogk5APMEzj-wwaw5QuvWKAJAlhqClo5D9es86KUb7_NlWj1Eu3LTP-v6aKoNjaEPvmBH0Zmx5CCPA7oA_fLCU-ShHp6PPUb8b5q9sBuRNkSVYm-vRv1u3_7vJ_30xtDBjPnNZLMnY6lhUb1wce7CXuaJfCY2pKosdrm5Pi4_EsCV77U9fIx"/>
+</div>
+<div class="flex flex-col justify-center">
+<span class="font-body-lg text-body-lg text-on-surface">Discord</span>
+<span class="font-label-caps text-label-caps text-outline mt-1">Communication</span>
+</div>
+</div>
+<button class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-primary hover:bg-primary-container hover:text-on-primary-container transition-colors duration-300">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+<!-- App Item 2: Zoom -->
+<div class="group flex items-center justify-between bg-surface-container-low/50 backdrop-blur-xl rounded-xl p-xs pr-md hover:bg-surface-container-low/80 transition-colors duration-500">
+<div class="flex items-center gap-sm">
+<div class="w-20 h-20 rounded-xl bg-surface-container-highest/30 flex items-center justify-center overflow-hidden shrink-0">
+<img alt="Zoom Icon" class="w-12 h-12 object-contain opacity-70 mix-blend-luminosity group-hover:mix-blend-normal transition-all duration-500" data-alt="A minimalistic video conferencing app icon, resembling Zoom, designed with soft, flowing organic shapes. The aesthetic uses muted misty teal and grayscale tones. The icon sits softly on a translucent pebble-like surface with no sharp corners, conveying a sense of mindfulness and biophilic serenity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVs2BX8K1a6ZwHNlJlXLnuSinpjaILEB7Mjv7c1WvCbOQv4ERNXZ0Ob4ucpKwEfVNl7FgELKLdowdiOyDnS5hOnzEqT3Na28JXhZFqYGGb9InCuKOQ-fA4_Z9HHTtILBY3zFn8K2t-I5D_FBbMy5tRUjJ1Nnj3Ci--63Juyoi6oBM0w7vvWXscdemGQrGslwRnApU94KPhacB2hBvnZbJvJxHW0UkbjDzpnhuBvz5KrusA6RHOb73GeK1zg5RggIriZREMParKOQdJ"/>
+</div>
+<div class="flex flex-col justify-center">
+<span class="font-body-lg text-body-lg text-on-surface">Zoom</span>
+<span class="font-label-caps text-label-caps text-outline mt-1">Video Conferencing</span>
+</div>
+</div>
+<button class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-primary hover:bg-primary-container hover:text-on-primary-container transition-colors duration-300">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+<!-- App Item 3: Outlook -->
+<div class="group flex items-center justify-between bg-surface-container-low/50 backdrop-blur-xl rounded-xl p-xs pr-md hover:bg-surface-container-low/80 transition-colors duration-500">
+<div class="flex items-center gap-sm">
+<div class="w-20 h-20 rounded-xl bg-surface-container-highest/30 flex items-center justify-center overflow-hidden shrink-0">
+<img alt="Outlook Icon" class="w-12 h-12 object-contain opacity-70 mix-blend-luminosity group-hover:mix-blend-normal transition-all duration-500" data-alt="A soft, organic email application icon, reminiscent of Outlook, crafted in a light mode glassmorphism style. The color palette features desaturated warm sand and misty teal with high translucency. The overall mood is airy and peaceful, functioning seamlessly within a calming, clutter-free digital environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQSh0i2hNf9ubQTODzMRH7hkkxyxkv3cSzaNFcXu0B6klFgChShN6OUKk9a-LbBnhmmrsw7HFmmOnIXnTu0AcegiSyXwR6E9No-0BudZz5e0jopfR27GggP0s-24Hy-bMBhKUDuSNRYawehNM6bGBasysG60dQMcXjJyYj3uwrlBK7KOClaIHWcbn-fG2OHWK_T_mVaNPv49DWZhpwd762tSwzfFW--y1BilWTGPZ4MqnLMQOst6fspcGJYEh5B99DHZvL76f-Lxzu"/>
+</div>
+<div class="flex flex-col justify-center">
+<span class="font-body-lg text-body-lg text-on-surface">Outlook</span>
+<span class="font-label-caps text-label-caps text-outline mt-1">Email &amp; Productivity</span>
+</div>
+</div>
+<button class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-primary hover:bg-primary-container hover:text-on-primary-container transition-colors duration-300">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+<!-- App Item 4: Telegram -->
+<div class="group flex items-center justify-between bg-surface-container-low/50 backdrop-blur-xl rounded-xl p-xs pr-md hover:bg-surface-container-low/80 transition-colors duration-500">
+<div class="flex items-center gap-sm">
+<div class="w-20 h-20 rounded-xl bg-surface-container-highest/30 flex items-center justify-center overflow-hidden shrink-0">
+<img alt="Telegram Icon" class="w-12 h-12 object-contain opacity-70 mix-blend-luminosity group-hover:mix-blend-normal transition-all duration-500" data-alt="A serene, abstract paper plane icon representing messaging, akin to Telegram. The design rejects rigid geometry, utilizing fluid lines and soft misty teal highlights against a muted warm sand base. Gentle ambient glows and backdrop blurs emphasize a premium, biophilic minimalist design language." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCD4rfqA3v6rfK5ljUG05BiYY4muXp0NbH1RuKpN4gAZ_gll0dlJYV8g8K6W6zUUuanccRZ1WgHk_lhUWqP35LSHvgPu9mIwTRpayvMXVLkGbyORanDFdF0Gkd2v3Y8NOVACIDVVFHrldMpI5OI0ARYKY9XKqJqJDwq5TW8PszaQcHDnBwb1KftTWswKT9ASueLP5JmGuwLkP1ie1sPHQ9nc18_9mbvulWjFywkVYXYxNdDcONVs99ZQCca-aZ-_mQxrESMvajN1Nz"/>
+</div>
+<div class="flex flex-col justify-center">
+<span class="font-body-lg text-body-lg text-on-surface">Telegram</span>
+<span class="font-label-caps text-label-caps text-outline mt-1">Instant Messaging</span>
+</div>
+</div>
+<button class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-primary hover:bg-primary-container hover:text-on-primary-container transition-colors duration-300">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Sticky Confirm Button -->
+<div class="fixed bottom-0 left-0 w-full px-safe-margin pb-md pt-xl bg-gradient-to-t from-background via-background/95 to-transparent flex justify-center z-50 pointer-events-none">
+<button class="pointer-events-auto w-full max-w-md rounded-full bg-secondary-container text-on-secondary-container py-5 px-xl font-label-caps text-label-caps hover:bg-secondary-container/80 active:scale-95 transition-all duration-300 ease-in-out shadow-[0_10px_40px_rgba(204,235,199,0.5)] flex items-center justify-center gap-sm backdrop-blur-md">
+            Confirm Selection
+            <span class="material-symbols-outlined">check_circle</span>
+</button>
+</div>
+</body></html>
