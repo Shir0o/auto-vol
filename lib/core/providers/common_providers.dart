@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vocus/core/services/permission_service.dart';
 import 'package:vocus/features/calendar/services/auth_service.dart';
 import 'package:vocus/features/calendar/repositories/calendar_repository.dart';
 import 'package:vocus/features/volume/repositories/volume_rules_repository.dart';
@@ -29,6 +30,10 @@ final volumeServiceProvider = Provider<VolumeService>((ref) {
 
 final automationServiceProvider = Provider<AutomationService>((ref) {
   return AutomationService();
+});
+
+final permissionServiceProvider = Provider<PermissionService>((ref) {
+  return PermissionService();
 });
 
 final calendarRepositoryProvider = FutureProvider<CalendarRepository>((ref) async {

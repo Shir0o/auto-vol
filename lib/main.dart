@@ -29,6 +29,11 @@ class VocusApp extends ConsumerWidget {
     // Initialize automation loop
     ref.listen(automationProvider, (_, __) {});
 
+    // Request permissions on startup
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(permissionServiceProvider).requestInitialPermissions();
+    });
+
     return MaterialApp(
       title: 'Vocus',
       theme: VocusTheme.darkTheme,
