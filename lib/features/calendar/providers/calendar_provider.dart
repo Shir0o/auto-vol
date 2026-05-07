@@ -1,5 +1,5 @@
-import 'package:auto_vol/core/providers/common_providers.dart';
-import 'package:auto_vol/features/calendar/models/calendar_event.dart';
+import 'package:volo/core/providers/common_providers.dart';
+import 'package:volo/features/calendar/models/calendar_event.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final calendarEventsProvider = FutureProvider<List<CalendarEvent>>((ref) async {

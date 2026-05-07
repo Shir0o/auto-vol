@@ -1,4 +1,4 @@
-import 'package:auto_vol/core/theme/aura_theme.dart';
+import 'package:volo/core/theme/volo_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,7 +13,7 @@ class DashboardScreen extends ConsumerWidget {
           // Background Gradient
           Container(
             decoration: const BoxDecoration(
-              gradient: AuraColors.deepSpaceGradient,
+              gradient: VoloColors.deepSpaceGradient,
             ),
           ),
           // Ambient Glows
@@ -24,12 +24,12 @@ class DashboardScreen extends ConsumerWidget {
               width: 300,
               height: 300,
               decoration: BoxDecoration(
-                color: AuraColors.secondary.withOpacity(0.2),
+                color: VoloColors.secondary.withOpacity(0.2),
                 shape: BoxShape.circle,
               ),
               child: BackdropFilter(
                 filter: ColorFilter.mode(
-                  AuraColors.secondary.withOpacity(0.1),
+                  VoloColors.secondary.withOpacity(0.1),
                   BlendMode.srcOver,
                 ),
                 child: Container(),
@@ -62,20 +62,20 @@ class DashboardScreen extends ConsumerWidget {
         children: [
           CircleAvatar(
             radius: 20,
-            backgroundColor: AuraColors.surfaceVariant,
-            child: const Icon(Icons.person, color: AuraColors.outline),
+            backgroundColor: VoloColors.surfaceVariant,
+            child: const Icon(Icons.person, color: VoloColors.outline),
           ),
           const Text(
-            'Aura',
+            'Volo',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: AuraColors.primary,
+              color: VoloColors.primary,
             ),
           ),
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.settings_suggest, color: AuraColors.outline),
+            icon: const Icon(Icons.settings_suggest, color: VoloColors.outline),
           ),
         ],
       ),
@@ -94,14 +94,14 @@ class DashboardScreen extends ConsumerWidget {
               width: 250,
               height: 250,
               decoration: BoxDecoration(
-                color: AuraColors.primary.withOpacity(0.1),
+                color: VoloColors.primary.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
             ),
             const Icon(
               Icons.sync,
               size: 80,
-              color: AuraColors.primary,
+              color: VoloColors.primary,
             ),
           ],
         ),
@@ -111,7 +111,7 @@ class DashboardScreen extends ConsumerWidget {
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w600,
-            color: AuraColors.primary,
+            color: VoloColors.primary,
           ),
         ),
         const SizedBox(height: 8),
@@ -119,7 +119,7 @@ class DashboardScreen extends ConsumerWidget {
           'Volume managed by your calendar',
           style: TextStyle(
             fontSize: 16,
-            color: AuraColors.outline,
+            color: VoloColors.outline,
           ),
         ),
       ],

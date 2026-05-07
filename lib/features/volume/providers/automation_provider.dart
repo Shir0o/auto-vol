@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'package:auto_vol/core/providers/common_providers.dart';
-import 'package:auto_vol/features/calendar/providers/calendar_provider.dart';
-import 'package:auto_vol/features/volume/providers/volume_rules_provider.dart';
+import 'package:volo/core/providers/common_providers.dart';
+import 'package:volo/features/calendar/providers/calendar_provider.dart';
+import 'package:volo/features/volume/providers/volume_rules_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AutomationEnabledNotifier extends Notifier<bool> {

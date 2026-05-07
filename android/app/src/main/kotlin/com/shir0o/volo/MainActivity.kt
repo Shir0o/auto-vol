@@ -1,4 +1,4 @@
-package com.example.auto_vol
+package com.shir0o.volo
 
 import io.flutter.embedding.android.FlutterActivity
 

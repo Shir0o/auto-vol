@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:auto_vol/core/providers/common_providers.dart';
-import 'package:auto_vol/features/volume/models/volume_rule.dart';
+import 'package:volo/core/providers/common_providers.dart';
+import 'package:volo/features/volume/models/volume_rule.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class VolumeRulesNotifier extends AsyncNotifier<List<VolumeRule>> {

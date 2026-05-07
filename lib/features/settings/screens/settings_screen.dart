@@ -1,6 +1,6 @@
-import 'package:auto_vol/core/theme/aura_theme.dart';
-import 'package:auto_vol/core/widgets/glass_card.dart';
-import 'package:auto_vol/features/volume/providers/automation_provider.dart';
+import 'package:volo/core/theme/volo_theme.dart';
+import 'package:volo/core/widgets/glass_card.dart';
+import 'package:volo/features/volume/providers/automation_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,7 +15,7 @@ class SettingsScreen extends ConsumerWidget {
     return Scaffold(
       body: Stack(
         children: [
-          Container(decoration: const BoxDecoration(gradient: AuraColors.deepSpaceGradient)),
+          Container(decoration: const BoxDecoration(gradient: VoloColors.deepSpaceGradient)),
           SafeArea(
             child: ListView(
               padding: const EdgeInsets.all(20),
@@ -25,7 +25,7 @@ class SettingsScreen extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: AuraColors.onBackground,
+                    color: VoloColors.onBackground,
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -53,7 +53,7 @@ class SettingsScreen extends ConsumerWidget {
         style: const TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.w600,
-          color: AuraColors.primary,
+          color: VoloColors.primary,
         ),
       ),
     );
@@ -76,7 +76,7 @@ class SettingsScreen extends ConsumerWidget {
                 SizedBox(height: 4),
                 Text(
                   'Automatically manage alerts based on your daily schedule',
-                  style: TextStyle(fontSize: 14, color: AuraColors.outline),
+                  style: TextStyle(fontSize: 14, color: VoloColors.outline),
                 ),
               ],
             ),
@@ -84,7 +84,7 @@ class SettingsScreen extends ConsumerWidget {
           Switch(
             value: enabled,
             onChanged: (value) => ref.read(automationEnabledProvider.notifier).set(value),
-            activeColor: AuraColors.primary,
+            activeColor: VoloColors.primary,
           ),
         ],
       ),
@@ -100,13 +100,13 @@ class SettingsScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text('Alert Volume', style: TextStyle(fontSize: 16)),
-              Icon(Icons.volume_up, color: AuraColors.outline),
+              Icon(Icons.volume_up, color: VoloColors.outline),
             ],
           ),
           Slider(
             value: volume,
             onChanged: (value) => ref.read(defaultVolumeProvider.notifier).set(value),
-            activeColor: AuraColors.primary,
+            activeColor: VoloColors.primary,
           ),
         ],
       ),
@@ -121,10 +121,10 @@ class SettingsScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AuraColors.primary.withOpacity(0.1),
+              color: VoloColors.primary.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: AuraColors.primary),
+            child: Icon(icon, color: VoloColors.primary),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -132,11 +132,11 @@ class SettingsScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Text(subtitle, style: const TextStyle(fontSize: 14, color: AuraColors.outline)),
+                Text(subtitle, style: const TextStyle(fontSize: 14, color: VoloColors.outline)),
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: AuraColors.outline),
+          const Icon(Icons.chevron_right, color: VoloColors.outline),
         ],
       ),
     );

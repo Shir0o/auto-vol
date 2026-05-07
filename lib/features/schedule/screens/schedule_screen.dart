@@ -1,7 +1,7 @@
-import 'package:auto_vol/core/theme/aura_theme.dart';
-import 'package:auto_vol/core/widgets/glass_card.dart';
-import 'package:auto_vol/features/calendar/models/calendar_event.dart';
-import 'package:auto_vol/features/calendar/providers/calendar_provider.dart';
+import 'package:volo/core/theme/volo_theme.dart';
+import 'package:volo/core/widgets/glass_card.dart';
+import 'package:volo/features/calendar/models/calendar_event.dart';
+import 'package:volo/features/calendar/providers/calendar_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -16,7 +16,7 @@ class ScheduleScreen extends ConsumerWidget {
     return Scaffold(
       body: Stack(
         children: [
-          Container(decoration: const BoxDecoration(gradient: AuraColors.deepSpaceGradient)),
+          Container(decoration: const BoxDecoration(gradient: VoloColors.deepSpaceGradient)),
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,14 +48,14 @@ class ScheduleScreen extends ConsumerWidget {
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
-              color: AuraColors.onBackground,
+              color: VoloColors.onBackground,
             ),
           ),
           Text(
             DateFormat('EEEE, MMMM d').format(DateTime.now()),
             style: const TextStyle(
               fontSize: 18,
-              color: AuraColors.outline,
+              color: VoloColors.outline,
             ),
           ),
         ],
@@ -91,7 +91,7 @@ class ScheduleScreen extends ConsumerWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: isActive ? AuraColors.primary : AuraColors.outline,
+                color: isActive ? VoloColors.primary : VoloColors.outline,
               ),
               textAlign: TextAlign.right,
             ),
@@ -111,7 +111,7 @@ class ScheduleScreen extends ConsumerWidget {
                           width: 8,
                           height: 8,
                           decoration: const BoxDecoration(
-                            color: AuraColors.primary,
+                            color: VoloColors.primary,
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -121,7 +121,7 @@ class ScheduleScreen extends ConsumerWidget {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
-                          color: isActive ? AuraColors.primary : AuraColors.outline,
+                          color: isActive ? VoloColors.primary : VoloColors.outline,
                         ),
                       ),
                     ],
@@ -132,7 +132,7 @@ class ScheduleScreen extends ConsumerWidget {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: AuraColors.onSurface,
+                      color: VoloColors.onSurface,
                     ),
                   ),
                   if (event.description != null)
@@ -142,7 +142,7 @@ class ScheduleScreen extends ConsumerWidget {
                         event.description!,
                         style: const TextStyle(
                           fontSize: 14,
-                          color: AuraColors.outline,
+                          color: VoloColors.outline,
                         ),
                       ),
                     ),

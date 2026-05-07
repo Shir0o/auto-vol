@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:auto_vol/features/volume/models/volume_rule.dart';
+import 'package:volo/features/volume/models/volume_rule.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class VolumeRulesRepository {
