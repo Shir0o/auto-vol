@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:volo/features/calendar/services/auth_service.dart';
-import 'package:volo/features/calendar/repositories/calendar_repository.dart';
-import 'package:volo/features/volume/repositories/volume_rules_repository.dart';
-import 'package:volo/features/volume/services/automation_service.dart';
-import 'package:volo/features/volume/services/volume_service.dart';
+import 'package:vocus/features/calendar/services/auth_service.dart';
+import 'package:vocus/features/calendar/repositories/calendar_repository.dart';
+import 'package:vocus/features/volume/repositories/volume_rules_repository.dart';
+import 'package:vocus/features/volume/services/automation_service.dart';
+import 'package:vocus/features/volume/services/volume_service.dart';
 
 final googleSignInProvider = Provider<GoogleSignIn>((ref) {
   return GoogleSignIn.instance;

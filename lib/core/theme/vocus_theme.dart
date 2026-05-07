@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class VoloColors {
+class VocusColors {
   static const background = Color(0xFF101415);
   static const surface = Color(0xFF1D2022);
   static const primary = Color(0xFF00F0FF); // Electric Cyan
@@ -21,26 +21,26 @@ class VoloColors {
   );
 }
 
-class VoloTheme {
+class VocusTheme {
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      scaffoldBackgroundColor: VoloColors.background,
+      scaffoldBackgroundColor: VocusColors.background,
       colorScheme: ColorScheme.dark(
-        background: VoloColors.background,
-        surface: VoloColors.surface,
-        primary: VoloColors.primary,
-        secondary: VoloColors.secondary,
-        onBackground: VoloColors.onBackground,
-        onSurface: VoloColors.onSurface,
-        onPrimary: VoloColors.onPrimary,
-        outline: VoloColors.outline,
-        surfaceVariant: VoloColors.surfaceVariant,
+        background: VocusColors.background,
+        surface: VocusColors.surface,
+        primary: VocusColors.primary,
+        secondary: VocusColors.secondary,
+        onBackground: VocusColors.onBackground,
+        onSurface: VocusColors.onSurface,
+        onPrimary: VocusColors.onPrimary,
+        outline: VocusColors.outline,
+        surfaceVariant: VocusColors.surfaceVariant,
       ),
       fontFamily: 'Inter',
       cardTheme: CardThemeData(
-        color: VoloColors.surface.withOpacity(0.1),
+        color: VocusColors.surface.withOpacity(0.1),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24), // rounded-xl (1.5rem)
           side: BorderSide(color: Colors.white.withOpacity(0.15), width: 0.5),
@@ -48,7 +48,7 @@ class VoloTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: VoloColors.secondary,
+          backgroundColor: VocusColors.secondary,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16), // rounded-lg (1rem)

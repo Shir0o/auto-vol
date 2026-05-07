@@ -1,4 +1,4 @@
-import 'package:volo/features/calendar/models/calendar_event.dart';
+import 'package:vocus/features/calendar/models/calendar_event.dart';
 import 'package:googleapis/calendar/v3.dart' as google;
 
 class CalendarRepository {

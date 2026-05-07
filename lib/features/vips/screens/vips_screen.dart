@@ -1,5 +1,5 @@
-import 'package:volo/core/theme/volo_theme.dart';
-import 'package:volo/core/widgets/glass_card.dart';
+import 'package:vocus/core/theme/vocus_theme.dart';
+import 'package:vocus/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 
 class VipsScreen extends StatelessWidget {
@@ -10,7 +10,7 @@ class VipsScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          Container(decoration: const BoxDecoration(gradient: VoloColors.deepSpaceGradient)),
+          Container(decoration: const BoxDecoration(gradient: VocusColors.deepSpaceGradient)),
           SafeArea(
             child: ListView(
               padding: const EdgeInsets.all(20),
@@ -20,7 +20,7 @@ class VipsScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: VoloColors.onBackground,
+                    color: VocusColors.onBackground,
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -28,7 +28,7 @@ class VipsScreen extends StatelessWidget {
                   child: const Center(
                     child: Text(
                       'No VIPs configured yet.',
-                      style: TextStyle(color: VoloColors.outline),
+                      style: TextStyle(color: VocusColors.outline),
                     ),
                   ),
                 ),

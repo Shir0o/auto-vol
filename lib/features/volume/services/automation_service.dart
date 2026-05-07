@@ -1,5 +1,5 @@
-import 'package:volo/features/calendar/models/calendar_event.dart';
-import 'package:volo/features/volume/models/volume_rule.dart';
+import 'package:vocus/features/calendar/models/calendar_event.dart';
+import 'package:vocus/features/volume/models/volume_rule.dart';
 
 class AutomationService {
   double calculateTargetVolume({

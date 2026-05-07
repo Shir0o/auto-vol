@@ -1,4 +1,4 @@
-import 'package:volo/features/volume/models/volume_rule.dart';
+import 'package:vocus/features/volume/models/volume_rule.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

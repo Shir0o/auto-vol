@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:volo/features/volume/models/volume_rule.dart';
-import 'package:volo/features/volume/repositories/volume_rules_repository.dart';
+import 'package:vocus/features/volume/models/volume_rule.dart';
+import 'package:vocus/features/volume/repositories/volume_rules_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';

@@ -1,5 +1,5 @@
-import 'package:volo/features/calendar/models/calendar_event.dart';
-import 'package:volo/features/calendar/repositories/calendar_repository.dart';
+import 'package:vocus/features/calendar/models/calendar_event.dart';
+import 'package:vocus/features/calendar/repositories/calendar_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:googleapis/calendar/v3.dart' as google;
 import 'package:mocktail/mocktail.dart';

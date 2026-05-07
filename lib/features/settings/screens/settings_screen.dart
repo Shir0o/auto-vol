@@ -1,6 +1,6 @@
-import 'package:volo/core/theme/volo_theme.dart';
-import 'package:volo/core/widgets/glass_card.dart';
-import 'package:volo/features/volume/providers/automation_provider.dart';
+import 'package:vocus/core/theme/vocus_theme.dart';
+import 'package:vocus/core/widgets/glass_card.dart';
+import 'package:vocus/features/volume/providers/automation_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,7 +15,7 @@ class SettingsScreen extends ConsumerWidget {
     return Scaffold(
       body: Stack(
         children: [
-          Container(decoration: const BoxDecoration(gradient: VoloColors.deepSpaceGradient)),
+          Container(decoration: const BoxDecoration(gradient: VocusColors.deepSpaceGradient)),
           SafeArea(
             child: ListView(
               padding: const EdgeInsets.all(20),
@@ -25,7 +25,7 @@ class SettingsScreen extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: VoloColors.onBackground,
+                    color: VocusColors.onBackground,
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -53,7 +53,7 @@ class SettingsScreen extends ConsumerWidget {
         style: const TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.w600,
-          color: VoloColors.primary,
+          color: VocusColors.primary,
         ),
       ),
     );
@@ -76,7 +76,7 @@ class SettingsScreen extends ConsumerWidget {
                 SizedBox(height: 4),
                 Text(
                   'Automatically manage alerts based on your daily schedule',
-                  style: TextStyle(fontSize: 14, color: VoloColors.outline),
+                  style: TextStyle(fontSize: 14, color: VocusColors.outline),
                 ),
               ],
             ),
@@ -84,7 +84,7 @@ class SettingsScreen extends ConsumerWidget {
           Switch(
             value: enabled,
             onChanged: (value) => ref.read(automationEnabledProvider.notifier).set(value),
-            activeColor: VoloColors.primary,
+            activeColor: VocusColors.primary,
           ),
         ],
       ),
@@ -100,13 +100,13 @@ class SettingsScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text('Alert Volume', style: TextStyle(fontSize: 16)),
-              Icon(Icons.volume_up, color: VoloColors.outline),
+              Icon(Icons.volume_up, color: VocusColors.outline),
             ],
           ),
           Slider(
             value: volume,
             onChanged: (value) => ref.read(defaultVolumeProvider.notifier).set(value),
-            activeColor: VoloColors.primary,
+            activeColor: VocusColors.primary,
           ),
         ],
       ),
@@ -121,10 +121,10 @@ class SettingsScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: VoloColors.primary.withOpacity(0.1),
+              color: VocusColors.primary.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: VoloColors.primary),
+            child: Icon(icon, color: VocusColors.primary),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -132,11 +132,11 @@ class SettingsScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Text(subtitle, style: const TextStyle(fontSize: 14, color: VoloColors.outline)),
+                Text(subtitle, style: const TextStyle(fontSize: 14, color: VocusColors.outline)),
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: VoloColors.outline),
+          const Icon(Icons.chevron_right, color: VocusColors.outline),
         ],
       ),
     );

@@ -1,7 +1,7 @@
-import 'package:volo/features/dashboard/screens/dashboard_screen.dart';
-import 'package:volo/features/schedule/screens/schedule_screen.dart';
-import 'package:volo/features/settings/screens/settings_screen.dart';
-import 'package:volo/features/vips/screens/vips_screen.dart';
+import 'package:vocus/features/dashboard/screens/dashboard_screen.dart';
+import 'package:vocus/features/schedule/screens/schedule_screen.dart';
+import 'package:vocus/features/settings/screens/settings_screen.dart';
+import 'package:vocus/features/vips/screens/vips_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

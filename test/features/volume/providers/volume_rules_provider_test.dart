@@ -1,7 +1,7 @@
-import 'package:volo/core/providers/common_providers.dart';
-import 'package:volo/features/volume/models/volume_rule.dart';
-import 'package:volo/features/volume/providers/volume_rules_provider.dart';
-import 'package:volo/features/volume/repositories/volume_rules_repository.dart';
+import 'package:vocus/core/providers/common_providers.dart';
+import 'package:vocus/features/volume/models/volume_rule.dart';
+import 'package:vocus/features/volume/providers/volume_rules_provider.dart';
+import 'package:vocus/features/volume/repositories/volume_rules_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
