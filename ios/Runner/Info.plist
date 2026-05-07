@@ -24,10 +24,6 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Vocus needs location access to optimize volume based on your current environment.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Vocus needs location access to optimize volume based on your current environment.</string>
 	<key>PermissionGroupNotification</key>
 	<string>Vocus needs notification access to keep you informed about volume changes.</string>
 	<key>LSRequiresIPhoneOS</key>
