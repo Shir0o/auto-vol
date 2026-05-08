@@ -19,14 +19,18 @@ class FakeEnabledCalendarIdsNotifier extends EnabledCalendarIdsNotifier {
 
 void main() {
   late MockCalendarRepository mockRepository;
+  late SharedPreferences prefs;
 
-  setUp(() {
+  setUp(() async {
     mockRepository = MockCalendarRepository();
+    SharedPreferences.setMockInitialValues({});
+    prefs = await SharedPreferences.getInstance();
   });
 
   test('availableCalendarsProvider fetches from repository', () async {
     final container = ProviderContainer(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
         calendarRepositoryProvider.overrideWith((ref) async => mockRepository),
       ],
     );
@@ -45,9 +49,6 @@ void main() {
   });
 
   test('enabledCalendarIdsProvider defaults to primary if nothing stored', () async {
-    SharedPreferences.setMockInitialValues({});
-    final prefs = await SharedPreferences.getInstance();
-    
     final container = ProviderContainer(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
@@ -69,9 +70,6 @@ void main() {
   });
 
   test('enabledCalendarIdsProvider toggles IDs and persists', () async {
-    SharedPreferences.setMockInitialValues({});
-    final prefs = await SharedPreferences.getInstance();
-    
     final container = ProviderContainer(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
@@ -99,6 +97,7 @@ void main() {
   test('calendarEventsProvider aggregates and sorts events from enabled calendars with metadata', () async {
     final container = ProviderContainer(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
         calendarRepositoryProvider.overrideWith((ref) async => mockRepository),
         enabledCalendarIdsProvider.overrideWith(() => FakeEnabledCalendarIdsNotifier({'cal-1', 'cal-2'})),
         availableCalendarsProvider.overrideWith((ref) async => [
@@ -144,5 +143,54 @@ void main() {
     expect(results.first.calendarTitle, 'Personal');
     expect(results.last.id, 'e1');
     expect(results.last.calendarTitle, 'Work');
+  });
+
+  test('calendarEventsProvider filters all-day events when includeAllDayEventsProvider is false', () async {
+    final container = ProviderContainer(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        calendarRepositoryProvider.overrideWith((ref) async => mockRepository),
+        enabledCalendarIdsProvider.overrideWith(() => FakeEnabledCalendarIdsNotifier({'primary'})),
+        availableCalendarsProvider.overrideWith((ref) async => [
+          CalendarEntry(id: 'primary', title: 'Primary', isPrimary: true),
+        ]),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final allDayEvent = CalendarEvent(
+      id: '1',
+      title: 'All Day Event',
+      startTime: DateTime(2026, 5, 8),
+      endTime: DateTime(2026, 5, 9),
+      calendarId: 'primary',
+      isAllDay: true,
+    );
+
+    final regularEvent = CalendarEvent(
+      id: '2',
+      title: 'Regular Event',
+      startTime: DateTime(2026, 5, 8, 10),
+      endTime: DateTime(2026, 5, 8, 11),
+      calendarId: 'primary',
+      isAllDay: false,
+    );
+
+    when(() => mockRepository.fetchEvents(any(), calendarTitle: any(named: 'calendarTitle'), calendarColor: any(named: 'calendarColor')))
+        .thenAnswer((_) async => [allDayEvent, regularEvent]);
+
+    // Initial state: include all-day is true (default)
+    var events = await container.read(calendarEventsProvider.future);
+    expect(events.length, 2);
+    expect(events.any((e) => e.isAllDay), isTrue);
+
+    // Toggle off include all-day
+    await container.read(includeAllDayEventsProvider.notifier).toggle();
+    
+    // Refresh events
+    events = await container.read(calendarEventsProvider.future);
+    expect(events.length, 1);
+    expect(events.first.title, 'Regular Event');
+    expect(events.any((e) => e.isAllDay), isFalse);
   });
 }

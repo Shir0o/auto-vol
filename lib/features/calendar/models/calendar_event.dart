@@ -10,6 +10,7 @@ class CalendarEvent {
   final String? calendarTitle;
   final String? calendarColor;
   final double? volumeOverride;
+  final bool isAllDay;
 
   CalendarEvent({
     required this.id,
@@ -21,10 +22,13 @@ class CalendarEvent {
     this.calendarTitle,
     this.calendarColor,
     this.volumeOverride,
+    this.isAllDay = false,
   });
 
   factory CalendarEvent.fromGoogleEvent(google.Event event, String calendarId,
       {String? calendarTitle, String? calendarColor}) {
+    final isAllDay = event.start?.dateTime == null && event.start?.date != null;
+
     return CalendarEvent(
       id: event.id ?? '',
       title: event.summary ?? 'No Title',
@@ -34,6 +38,7 @@ class CalendarEvent {
       calendarId: calendarId,
       calendarTitle: calendarTitle,
       calendarColor: calendarColor,
+      isAllDay: isAllDay,
     );
   }
 }

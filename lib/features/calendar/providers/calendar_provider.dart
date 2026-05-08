@@ -22,7 +22,9 @@ class EnabledCalendarIdsNotifier extends Notifier<Set<String>> {
     // Default: only primary calendar if nothing stored
     final availableAsync = ref.watch(availableCalendarsProvider);
     return availableAsync.when(
-      data: (calendars) => {calendars.firstWhere((c) => c.isPrimary, orElse: () => calendars.first).id},
+      data: (calendars) => calendars.isEmpty
+          ? {}
+          : {calendars.firstWhere((c) => c.isPrimary, orElse: () => calendars.first).id},
       loading: () => {},
       error: (_, __) => {},
     );
@@ -40,6 +42,25 @@ class EnabledCalendarIdsNotifier extends Notifier<Set<String>> {
   }
 }
 
+class IncludeAllDayEventsNotifier extends Notifier<bool> {
+  static const _storageKey = 'include_all_day_events';
+
+  @override
+  bool build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getBool(_storageKey) ?? true; // Default to true
+  }
+
+  Future<void> toggle() async {
+    state = !state;
+    await ref.read(sharedPreferencesProvider).setBool(_storageKey, state);
+  }
+}
+
+final includeAllDayEventsProvider = NotifierProvider<IncludeAllDayEventsNotifier, bool>(() {
+  return IncludeAllDayEventsNotifier();
+});
+
 final enabledCalendarIdsProvider = NotifierProvider<EnabledCalendarIdsNotifier, Set<String>>(() {
   return EnabledCalendarIdsNotifier();
 });
@@ -47,6 +68,7 @@ final enabledCalendarIdsProvider = NotifierProvider<EnabledCalendarIdsNotifier, 
 final calendarEventsProvider = FutureProvider<List<CalendarEvent>>((ref) async {
   final repository = await ref.watch(calendarRepositoryProvider.future);
   final enabledIds = ref.watch(enabledCalendarIdsProvider);
+  final includeAllDay = ref.watch(includeAllDayEventsProvider);
   final availableAsync = await ref.watch(availableCalendarsProvider.future);
 
   if (enabledIds.isEmpty) return [];
@@ -65,6 +87,10 @@ final calendarEventsProvider = FutureProvider<List<CalendarEvent>>((ref) async {
   );
 
   final flattened = allEvents.expand((e) => e).toList();
-  flattened.sort((a, b) => a.startTime.compareTo(b.startTime));
-  return flattened;
+
+  // Filter all-day events if not included
+  final filtered = includeAllDay ? flattened : flattened.where((e) => !e.isAllDay).toList();
+
+  filtered.sort((a, b) => a.startTime.compareTo(b.startTime));
+  return filtered;
 });

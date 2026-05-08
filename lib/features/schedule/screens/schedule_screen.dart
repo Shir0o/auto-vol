@@ -259,7 +259,7 @@ class ScheduleScreen extends ConsumerWidget {
                       Row(
                         children: [
                           Text(
-                            '$startTimeStr - $endTimeStr',
+                            event.isAllDay ? 'All day' : '$startTimeStr - $endTimeStr',
                             style: const TextStyle(
                               fontSize: 13,
                               color: VocusColors.outline,

@@ -60,6 +60,9 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 if (currentUser != null) ...[
                   const SizedBox(height: 24),
+                  _buildSectionHeader('Preferences'),
+                  _buildAllDayToggle(ref),
+                  const SizedBox(height: 24),
                   _buildSectionHeader('Managed Calendars'),
                   calendarsAsync.when(
                     data: (calendars) => Column(
@@ -129,6 +132,40 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildAllDayToggle(WidgetRef ref) {
+    final includeAllDay = ref.watch(includeAllDayEventsProvider);
+    return GlassCard(
+      padding: const EdgeInsets.all(20),
+      onTap: () => ref.read(includeAllDayEventsProvider.notifier).toggle(),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Include All-Day Events',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Show events that span the entire day in your schedule',
+                  style: TextStyle(fontSize: 14, color: VocusColors.outline),
+                ),
+              ],
+            ),
+          ),
+          Switch(
+            value: includeAllDay,
+            onChanged: (value) => ref.read(includeAllDayEventsProvider.notifier).toggle(),
+            activeColor: VocusColors.primary,
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildDefaultVolumeSlider(WidgetRef ref, double volume) {
     return GlassCard(
       padding: const EdgeInsets.all(20),
@@ -138,7 +175,7 @@ class SettingsScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text('Alert Volume', style: TextStyle(fontSize: 16)),
-              Icon(Icons.volume_up, color: VocusColors.outline),
+              const Icon(Icons.volume_up, color: VocusColors.outline),
             ],
           ),
           Slider(
