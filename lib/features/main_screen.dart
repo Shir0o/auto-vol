@@ -1,4 +1,3 @@
-import 'package:vocus/features/dashboard/screens/dashboard_screen.dart';
 import 'package:vocus/features/schedule/screens/schedule_screen.dart';
 import 'package:vocus/features/settings/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +21,6 @@ class MainScreen extends ConsumerWidget {
     final selectedIndex = ref.watch(selectedIndexProvider);
 
     final screens = [
-      const DashboardScreen(),
       const ScheduleScreen(),
       const SettingsScreen(),
     ];
@@ -36,10 +34,6 @@ class MainScreen extends ConsumerWidget {
         selectedItemColor: Theme.of(context).colorScheme.primary,
         unselectedItemColor: Theme.of(context).colorScheme.outline,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.sync),
-            label: 'Sync Status',
-          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),
             label: 'Schedule',
