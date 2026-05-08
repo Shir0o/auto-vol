@@ -379,9 +379,10 @@ class SettingsScreen extends ConsumerWidget {
           'Do Not Disturb Access',
           'Required to change volume during DND',
           dndAccess,
-          () => ref.read(permissionServiceProvider).requestNotificationPolicyAccess().then(
-                (_) => ref.invalidate(notificationPolicyAccessProvider),
-              ),
+          () => ref
+              .read(permissionServiceProvider)
+              .requestNotificationPolicyAccess()
+              .then((_) => ref.invalidate(notificationPolicyAccessProvider)),
         ),
         const SizedBox(height: 12),
         _buildPermissionRow(
@@ -390,9 +391,10 @@ class SettingsScreen extends ConsumerWidget {
           'Battery Optimization',
           'Exempt app to ensure reliable background monitoring',
           batteryOpt,
-          () => ref.read(permissionServiceProvider).requestIgnoreBatteryOptimizations().then(
-                (_) => ref.invalidate(ignoreBatteryOptimizationsProvider),
-              ),
+          () => ref
+              .read(permissionServiceProvider)
+              .requestIgnoreBatteryOptimizations()
+              .then((_) => ref.invalidate(ignoreBatteryOptimizationsProvider)),
         ),
       ],
     );

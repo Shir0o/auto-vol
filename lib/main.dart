@@ -43,9 +43,7 @@ void main() async {
     'vocus_sync_task',
     'syncCalendars',
     frequency: const Duration(minutes: 15),
-    constraints: Constraints(
-      networkType: NetworkType.connected,
-    ),
+    constraints: Constraints(networkType: NetworkType.connected),
   );
 
   // Initialize foreground task
@@ -121,7 +119,6 @@ class VocusApp extends ConsumerWidget {
       if (user != null) {
         ref.read(authStateProvider.notifier).updateState(user);
       }
-
     });
 
     return MaterialApp(

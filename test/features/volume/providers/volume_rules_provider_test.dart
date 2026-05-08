@@ -88,7 +88,9 @@ void main() {
       final container = createContainer();
       await container.read(volumeRulesProvider.notifier).future;
 
-      await container.read(volumeRulesProvider.notifier).updateRule(updatedRule);
+      await container
+          .read(volumeRulesProvider.notifier)
+          .updateRule(updatedRule);
 
       expect(container.read(volumeRulesProvider).value, [updatedRule]);
       verify(() => mockRepository.saveRules([updatedRule])).called(1);

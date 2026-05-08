@@ -74,14 +74,18 @@ Future<List<CalendarEvent>> calendarEvents(Ref ref) async {
   final repository = await ref.watch(calendarRepositoryProvider.future);
   final enabledIds = ref.watch(enabledCalendarIdsProvider);
   final includeAllDay = ref.watch(includeAllDayEventsProvider);
-  final availableCalendarsList = await ref.watch(availableCalendarsProvider.future);
+  final availableCalendarsList = await ref.watch(
+    availableCalendarsProvider.future,
+  );
   final overridesAsync = ref.watch(eventOverridesProvider);
 
   if (enabledIds.isEmpty) return <CalendarEvent>[];
 
   final calendarMap = {for (var c in availableCalendarsList) c.id: c};
 
-  final List<Future<List<CalendarEvent>>> fetchFutures = enabledIds.map((String id) {
+  final List<Future<List<CalendarEvent>>> fetchFutures = enabledIds.map((
+    String id,
+  ) {
     final cal = calendarMap[id];
     return repository.fetchEvents(
       id,
@@ -93,10 +97,14 @@ Future<List<CalendarEvent>> calendarEvents(Ref ref) async {
   final List<List<CalendarEvent>> allEventsResults =
       await Future.wait<List<CalendarEvent>>(fetchFutures);
 
-  final List<CalendarEvent> flattened = allEventsResults.expand((e) => e).toList();
+  final List<CalendarEvent> flattened = allEventsResults
+      .expand((e) => e)
+      .toList();
 
   final Map<String, double> overrides = overridesAsync.value ?? {};
-  final List<CalendarEvent> withOverrides = flattened.map<CalendarEvent>((event) {
+  final List<CalendarEvent> withOverrides = flattened.map<CalendarEvent>((
+    event,
+  ) {
     if (overrides.containsKey(event.id)) {
       return event.copyWith(volumeOverride: overrides[event.id]);
     }

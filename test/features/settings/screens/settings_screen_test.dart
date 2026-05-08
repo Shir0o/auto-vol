@@ -76,7 +76,7 @@ void main() {
       expect(find.textContaining('Holidays'), findsOneWidget);
 
       // Initial state: Work should be enabled (default primary)
-      // Switches order: 
+      // Switches order:
       // 0: Auto-Volume
       // 1: Automate Ringer
       // 2: Automate Notifications

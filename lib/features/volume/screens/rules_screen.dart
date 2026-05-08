@@ -76,7 +76,11 @@ class RulesScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildRulesList(BuildContext context, WidgetRef ref, List<VolumeRule> rules) {
+  Widget _buildRulesList(
+    BuildContext context,
+    WidgetRef ref,
+    List<VolumeRule> rules,
+  ) {
     return ListView.builder(
       padding: const EdgeInsets.all(20),
       itemCount: rules.length,
@@ -149,17 +153,25 @@ class RulesScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _showRuleDialog(BuildContext context, WidgetRef ref, {VolumeRule? rule}) async {
-    final titleController = TextEditingController(text: rule?.eventTitlePattern);
+  Future<void> _showRuleDialog(
+    BuildContext context,
+    WidgetRef ref, {
+    VolumeRule? rule,
+  }) async {
+    final titleController = TextEditingController(
+      text: rule?.eventTitlePattern,
+    );
     double volume = rule?.volumeLevel ?? 0.0;
     int priority = rule?.priority ?? 1;
     String? selectedCalendarId = rule?.calendarId;
 
     final calendarsAsync = ref.read(availableCalendarsProvider);
     final calendars = calendarsAsync.value ?? [];
-    
+
     if (selectedCalendarId == null && calendars.isNotEmpty) {
-      selectedCalendarId = calendars.firstWhere((c) => c.isPrimary, orElse: () => calendars.first).id;
+      selectedCalendarId = calendars
+          .firstWhere((c) => c.isPrimary, orElse: () => calendars.first)
+          .id;
     } else if (selectedCalendarId == null) {
       selectedCalendarId = 'primary';
     }
@@ -185,18 +197,26 @@ class RulesScreen extends ConsumerWidget {
                   style: const TextStyle(color: Colors.white),
                 ),
                 const SizedBox(height: 24),
-                const Text('Calendar', style: TextStyle(color: VocusColors.outline, fontSize: 12)),
+                const Text(
+                  'Calendar',
+                  style: TextStyle(color: VocusColors.outline, fontSize: 12),
+                ),
                 DropdownButton<String>(
                   value: selectedCalendarId,
                   isExpanded: true,
                   dropdownColor: VocusColors.surface,
                   items: [
                     if (calendars.isEmpty)
-                      const DropdownMenuItem(value: 'primary', child: Text('Primary')),
-                    ...calendars.map((c) => DropdownMenuItem(
-                          value: c.id,
-                          child: Text(c.title, overflow: TextOverflow.ellipsis),
-                        )),
+                      const DropdownMenuItem(
+                        value: 'primary',
+                        child: Text('Primary'),
+                      ),
+                    ...calendars.map(
+                      (c) => DropdownMenuItem(
+                        value: c.id,
+                        child: Text(c.title, overflow: TextOverflow.ellipsis),
+                      ),
+                    ),
                   ],
                   onChanged: (val) => setState(() => selectedCalendarId = val),
                 ),
@@ -209,7 +229,9 @@ class RulesScreen extends ConsumerWidget {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.remove),
-                          onPressed: priority > 1 ? () => setState(() => priority--) : null,
+                          onPressed: priority > 1
+                              ? () => setState(() => priority--)
+                              : null,
                         ),
                         Text('$priority'),
                         IconButton(
@@ -248,13 +270,15 @@ class RulesScreen extends ConsumerWidget {
               onPressed: () {
                 if (titleController.text.isNotEmpty) {
                   final newRule = VolumeRule(
-                    id: rule?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+                    id:
+                        rule?.id ??
+                        DateTime.now().millisecondsSinceEpoch.toString(),
                     calendarId: selectedCalendarId ?? 'primary',
                     eventTitlePattern: titleController.text,
                     volumeLevel: volume,
                     priority: priority,
                   );
-                  
+
                   if (rule == null) {
                     ref.read(volumeRulesProvider.notifier).addRule(newRule);
                   } else {

@@ -37,9 +37,11 @@ void main() {
     return ProviderScope(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
-        availableCalendarsProvider.overrideWith((ref) async => [
-          CalendarEntry(id: 'primary', title: 'Primary', isPrimary: true),
-        ]),
+        availableCalendarsProvider.overrideWith(
+          (ref) async => [
+            CalendarEntry(id: 'primary', title: 'Primary', isPrimary: true),
+          ],
+        ),
         volumeRulesRepositoryProvider.overrideWithValue(mockRepository),
       ],
       child: const MaterialApp(home: RulesScreen()),
@@ -96,19 +98,27 @@ void main() {
       expect(find.text('Edit Rule'), findsOneWidget);
 
       // Change priority
-      await tester.tap(find.descendant(
-        of: find.byType(AlertDialog),
-        matching: find.byIcon(Icons.add),
-      ));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.byIcon(Icons.add),
+        ),
+      );
       await tester.pumpAndSettle();
 
       // Tap Save
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
 
-      verify(() => mockRepository.saveRules(any(
-            that: contains(isA<VolumeRule>().having((r) => r.priority, 'priority', 2)),
-          ))).called(1);
+      verify(
+        () => mockRepository.saveRules(
+          any(
+            that: contains(
+              isA<VolumeRule>().having((r) => r.priority, 'priority', 2),
+            ),
+          ),
+        ),
+      ).called(1);
     });
 
     testWidgets('should call addRule when a new rule is added', (tester) async {
@@ -132,9 +142,19 @@ void main() {
       await tester.tap(find.text('Add'));
       await tester.pumpAndSettle();
 
-      verify(() => mockRepository.saveRules(any(
-            that: contains(isA<VolumeRule>().having((r) => r.eventTitlePattern, 'pattern', 'Workout')),
-          ))).called(1);
+      verify(
+        () => mockRepository.saveRules(
+          any(
+            that: contains(
+              isA<VolumeRule>().having(
+                (r) => r.eventTitlePattern,
+                'pattern',
+                'Workout',
+              ),
+            ),
+          ),
+        ),
+      ).called(1);
     });
   });
 }

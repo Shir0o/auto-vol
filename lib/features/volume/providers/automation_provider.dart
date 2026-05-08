@@ -172,10 +172,9 @@ class Automation extends _$Automation {
     prefs.setDouble('default_volume', defaultVol);
 
     final now = DateTime.now();
-    final activeEvents =
-        events
-            .where((e) => e.startTime.isBefore(now) && e.endTime.isAfter(now))
-            .toList();
+    final activeEvents = events
+        .where((e) => e.startTime.isBefore(now) && e.endTime.isAfter(now))
+        .toList();
 
     if (!enabled) {
       return AutomationStatus(
@@ -239,10 +238,9 @@ class Automation extends _$Automation {
 
     return AutomationStatus(
       isEnabled: true,
-      currentVolume:
-          activeEvents.isEmpty && snapshots.isNotEmpty
-              ? snapshots[VolumeStream.media] ?? result.volume
-              : result.volume,
+      currentVolume: activeEvents.isEmpty && snapshots.isNotEmpty
+          ? snapshots[VolumeStream.media] ?? result.volume
+          : result.volume,
       activeEvents: activeEvents,
       winningEvent: result.winningEvent,
       winningRule: result.winningRule,

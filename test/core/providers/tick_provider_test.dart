@@ -9,7 +9,7 @@ void main() {
 
     // Watch the tickProvider
     final stream = container.read(tickProvider);
-    
+
     expect(stream, isA<AsyncValue<DateTime>>());
   });
 }

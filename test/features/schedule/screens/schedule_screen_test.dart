@@ -61,9 +61,11 @@ void main() {
   setUp(() {
     mockOverrides = MockEventOverrides({}.cast<String, double>());
     mockRules = MockVolumeRules([]);
-    
+
     when(() => mockOverrides.removeOverride(any())).thenAnswer((_) async {});
-    when(() => mockOverrides.setOverride(any(), any())).thenAnswer((_) async {});
+    when(
+      () => mockOverrides.setOverride(any(), any()),
+    ).thenAnswer((_) async {});
   });
 
   testWidgets('ScheduleScreen displays empty state when no events', (
@@ -221,8 +223,9 @@ void main() {
     expect(find.text('RESET'), findsNothing);
   });
 
-  testWidgets('ScheduleScreen highlights winning event and shows conflicts',
-      (tester) async {
+  testWidgets('ScheduleScreen highlights winning event and shows conflicts', (
+    tester,
+  ) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
 
@@ -270,8 +273,9 @@ void main() {
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
           calendarEventsProvider.overrideWith((ref) => [event1, event2]),
-          volumeRulesProvider
-              .overrideWith(() => MockVolumeRules([rule1, rule2])),
+          volumeRulesProvider.overrideWith(
+            () => MockVolumeRules([rule1, rule2]),
+          ),
           eventOverridesProvider.overrideWith(() => mockOverrides),
           automationProvider.overrideWith(() => MockAutomation(status)),
           currentUserProvider.overrideWithValue(null),

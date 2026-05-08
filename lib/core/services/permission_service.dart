@@ -24,7 +24,7 @@ class PermissionService {
   Future<void> requestIgnoreBatteryOptimizations() async {
     await Permission.ignoreBatteryOptimizations.request();
   }
-  
+
   Future<void> openSystemSettings() async {
     await openAppSettings();
   }

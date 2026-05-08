@@ -14,7 +14,7 @@ class SyncService {
   Future<bool> syncCalendars() async {
     final authService = AuthService(_googleSignIn);
     final user = await authService.signInSilently();
-    
+
     if (user == null) {
       print('SyncService: Not authenticated');
       return false;
@@ -27,7 +27,7 @@ class SyncService {
     }
 
     final repository = CalendarRepository(api);
-    
+
     // Get enabled calendar IDs
     final enabledIds = _prefs.getStringList('enabled_calendar_ids') ?? [];
     if (enabledIds.isEmpty) {
@@ -41,7 +41,7 @@ class SyncService {
       );
 
       final flattened = allEvents.expand((e) => e).toList();
-      
+
       // Update cache
       await _prefs.setString(
         'cached_events',

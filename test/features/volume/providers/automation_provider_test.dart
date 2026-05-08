@@ -16,8 +16,11 @@ import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MockAutomationService extends Mock implements AutomationService {}
+
 class MockVolumeService extends Mock implements VolumeService {}
+
 class MockForegroundService extends Mock implements ForegroundServiceWrapper {}
+
 class MockSharedPreferences extends Mock implements SharedPreferences {}
 
 class FakeVolumeRules extends VolumeRules {
@@ -61,7 +64,10 @@ class _TestEventsNotifier extends Notifier<List<CalendarEvent>> {
   void set(List<CalendarEvent> events) => state = events;
 }
 
-final testEventsProvider = NotifierProvider<_TestEventsNotifier, List<CalendarEvent>>(_TestEventsNotifier.new);
+final testEventsProvider =
+    NotifierProvider<_TestEventsNotifier, List<CalendarEvent>>(
+      _TestEventsNotifier.new,
+    );
 
 void main() {
   late MockAutomationService mockAutomationService;
@@ -79,15 +85,25 @@ void main() {
     when(() => mockSharedPreferences.getBool(any())).thenReturn(null);
     when(() => mockSharedPreferences.getDouble(any())).thenReturn(null);
     when(() => mockSharedPreferences.getStringList(any())).thenReturn(null);
-    when(() => mockSharedPreferences.setBool(any(), any())).thenAnswer((_) async => true);
-    when(() => mockSharedPreferences.setDouble(any(), any())).thenAnswer((_) async => true);
-    when(() => mockSharedPreferences.setString(any(), any())).thenAnswer((_) async => true);
-    when(() => mockSharedPreferences.remove(any())).thenAnswer((_) async => true);
+    when(
+      () => mockSharedPreferences.setBool(any(), any()),
+    ).thenAnswer((_) async => true);
+    when(
+      () => mockSharedPreferences.setDouble(any(), any()),
+    ).thenAnswer((_) async => true);
+    when(
+      () => mockSharedPreferences.setString(any(), any()),
+    ).thenAnswer((_) async => true);
+    when(
+      () => mockSharedPreferences.remove(any()),
+    ).thenAnswer((_) async => true);
 
-    when(() => mockVolumeService.getVolume(stream: any(named: 'stream')))
-        .thenAnswer((_) async => 0.5);
-    when(() => mockVolumeService.setVolume(any(), stream: any(named: 'stream')))
-        .thenAnswer((_) async {});
+    when(
+      () => mockVolumeService.getVolume(stream: any(named: 'stream')),
+    ).thenAnswer((_) async => 0.5);
+    when(
+      () => mockVolumeService.setVolume(any(), stream: any(named: 'stream')),
+    ).thenAnswer((_) async {});
     when(() => mockVolumeService.isDndEnabled()).thenAnswer((_) async => false);
     when(() => mockVolumeService.setDndMode(any())).thenAnswer((_) async {});
   });
@@ -106,20 +122,36 @@ void main() {
         volumeServiceProvider.overrideWithValue(mockVolumeService),
         foregroundServiceProvider.overrideWithValue(mockForegroundService),
         sharedPreferencesProvider.overrideWithValue(mockSharedPreferences),
-        calendarEventsProvider.overrideWith((ref) => ref.watch(testEventsProvider)),
+        calendarEventsProvider.overrideWith(
+          (ref) => ref.watch(testEventsProvider),
+        ),
         volumeRulesProvider.overrideWith(() => FakeVolumeRules(rules)),
-        automationEnabledProvider.overrideWith(() => FakeAutomationEnabled(enabled)),
-        automateRingerProvider.overrideWith(() => FakeAutomateRinger(automateRinger)),
-        automateNotificationProvider.overrideWith(() => FakeAutomateNotification(automateNotification)),
+        automationEnabledProvider.overrideWith(
+          () => FakeAutomationEnabled(enabled),
+        ),
+        automateRingerProvider.overrideWith(
+          () => FakeAutomateRinger(automateRinger),
+        ),
+        automateNotificationProvider.overrideWith(
+          () => FakeAutomateNotification(automateNotification),
+        ),
         automateDndProvider.overrideWith(() => FakeAutomateDnd(automateDnd)),
         if (tickStream != null) tickProvider.overrideWith((ref) => tickStream),
       ],
     );
 
-    when(() => mockSharedPreferences.getBool('automation_enabled')).thenReturn(enabled);
-    when(() => mockSharedPreferences.getBool('automate_ringer')).thenReturn(automateRinger);
-    when(() => mockSharedPreferences.getBool('automate_notification')).thenReturn(automateNotification);
-    when(() => mockSharedPreferences.getBool('automate_dnd')).thenReturn(automateDnd);
+    when(
+      () => mockSharedPreferences.getBool('automation_enabled'),
+    ).thenReturn(enabled);
+    when(
+      () => mockSharedPreferences.getBool('automate_ringer'),
+    ).thenReturn(automateRinger);
+    when(
+      () => mockSharedPreferences.getBool('automate_notification'),
+    ).thenReturn(automateNotification);
+    when(
+      () => mockSharedPreferences.getBool('automate_dnd'),
+    ).thenReturn(automateDnd);
 
     addTearDown(container.dispose);
     return container;
@@ -189,7 +221,9 @@ void main() {
         ).called(greaterThanOrEqualTo(1));
 
         // Set mock to return snapshotted value when restoring
-        when(() => mockSharedPreferences.getDouble('volume_snapshot_media')).thenReturn(0.7);
+        when(
+          () => mockSharedPreferences.getDouble('volume_snapshot_media'),
+        ).thenReturn(0.7);
 
         // Event ends
         when(
@@ -266,15 +300,17 @@ void main() {
   group('AutomationEnabledNotifier', () {
     test('should start foreground service when enabled', () {
       when(() => mockForegroundService.start()).thenAnswer((_) async => true);
-      
+
       final container = ProviderContainer(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(mockSharedPreferences),
           foregroundServiceProvider.overrideWithValue(mockForegroundService),
         ],
       );
-      
-      when(() => mockSharedPreferences.getBool('automation_enabled')).thenReturn(false);
+
+      when(
+        () => mockSharedPreferences.getBool('automation_enabled'),
+      ).thenReturn(false);
 
       container.read(automationEnabledProvider.notifier).set(true);
 
@@ -283,7 +319,7 @@ void main() {
 
     test('should stop foreground service when disabled', () {
       when(() => mockForegroundService.stop()).thenAnswer((_) async => true);
-      
+
       final container = ProviderContainer(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(mockSharedPreferences),
@@ -291,7 +327,9 @@ void main() {
         ],
       );
 
-      when(() => mockSharedPreferences.getBool('automation_enabled')).thenReturn(true);
+      when(
+        () => mockSharedPreferences.getBool('automation_enabled'),
+      ).thenReturn(true);
 
       container.read(automationEnabledProvider.notifier).set(false);
 

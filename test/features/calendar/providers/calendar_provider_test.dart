@@ -139,9 +139,7 @@ void main() {
               CalendarEntry(id: 'cal-2', title: 'Personal', color: '#00FF00'),
             ],
           ),
-          eventOverridesProvider.overrideWith(
-            () => FakeEventOverrides({}),
-          ),
+          eventOverridesProvider.overrideWith(() => FakeEventOverrides({})),
         ],
       );
       addTearDown(container.dispose);
@@ -209,9 +207,7 @@ void main() {
               CalendarEntry(id: 'primary', title: 'Primary', isPrimary: true),
             ],
           ),
-          eventOverridesProvider.overrideWith(
-            () => FakeEventOverrides({}),
-          ),
+          eventOverridesProvider.overrideWith(() => FakeEventOverrides({})),
         ],
       );
       addTearDown(container.dispose);
@@ -262,9 +258,7 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
-        calendarRepositoryProvider.overrideWith(
-          (ref) async => mockRepository,
-        ),
+        calendarRepositoryProvider.overrideWith((ref) async => mockRepository),
         enabledCalendarIdsProvider.overrideWith(
           () => FakeEnabledCalendarIds({'primary'}),
         ),
@@ -302,64 +296,79 @@ void main() {
     expect(results.first.volumeOverride, 0.8);
   });
 
-  test('calendarEventsProvider re-fetches when calendarRefreshTickProvider emits', () async {
-    final tickController = StreamController<DateTime>(sync: true);
-    final container = ProviderContainer(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(prefs),
-        calendarRepositoryProvider.overrideWith(
-          (ref) async => mockRepository,
+  test(
+    'calendarEventsProvider re-fetches when calendarRefreshTickProvider emits',
+    () async {
+      final tickController = StreamController<DateTime>(sync: true);
+      final container = ProviderContainer(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          calendarRepositoryProvider.overrideWith(
+            (ref) async => mockRepository,
+          ),
+          enabledCalendarIdsProvider.overrideWith(
+            () => FakeEnabledCalendarIds({'primary'}),
+          ),
+          availableCalendarsProvider.overrideWith(
+            (ref) async => [
+              CalendarEntry(id: 'primary', title: 'Primary', isPrimary: true),
+            ],
+          ),
+          eventOverridesProvider.overrideWith(() => FakeEventOverrides({})),
+          calendarRefreshTickProvider.overrideWith(
+            (ref) => tickController.stream,
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final event = CalendarEvent(
+        id: 'e1',
+        title: 'Event',
+        startTime: DateTime.now(),
+        endTime: DateTime.now().add(const Duration(hours: 1)),
+        calendarId: 'primary',
+      );
+
+      when(
+        () => mockRepository.fetchEvents(
+          any(),
+          calendarTitle: any(named: 'calendarTitle'),
+          calendarColor: any(named: 'calendarColor'),
         ),
-        enabledCalendarIdsProvider.overrideWith(
-          () => FakeEnabledCalendarIds({'primary'}),
+      ).thenAnswer((_) async => [event]);
+
+      container.listen(calendarEventsProvider, (_, __) {});
+
+      // Initial fetch
+      await container.read(calendarEventsProvider.future);
+      verify(
+        () => mockRepository.fetchEvents(
+          'primary',
+          calendarTitle: any(named: 'calendarTitle'),
+          calendarColor: any(named: 'calendarColor'),
         ),
-        availableCalendarsProvider.overrideWith(
-          (ref) async => [
-            CalendarEntry(id: 'primary', title: 'Primary', isPrimary: true),
-          ],
+      ).called(1);
+
+      // Emit tick
+      tickController.add(DateTime.now());
+
+      // Wait for Riverpod to process the tick and trigger rebuild
+      await Future.delayed(const Duration(milliseconds: 10));
+
+      // Wait for refresh
+      await container.read(calendarEventsProvider.future);
+
+      // Should have fetched again
+      verify(
+        () => mockRepository.fetchEvents(
+          'primary',
+          calendarTitle: any(named: 'calendarTitle'),
+          calendarColor: any(named: 'calendarColor'),
         ),
-        eventOverridesProvider.overrideWith(
-          () => FakeEventOverrides({}),
-        ),
-        calendarRefreshTickProvider.overrideWith((ref) => tickController.stream),
-      ],
-    );
-    addTearDown(container.dispose);
+      ).called(1);
 
-    final event = CalendarEvent(
-      id: 'e1',
-      title: 'Event',
-      startTime: DateTime.now(),
-      endTime: DateTime.now().add(const Duration(hours: 1)),
-      calendarId: 'primary',
-    );
-
-    when(
-      () => mockRepository.fetchEvents(
-        any(),
-        calendarTitle: any(named: 'calendarTitle'),
-        calendarColor: any(named: 'calendarColor'),
-      ),
-    ).thenAnswer((_) async => [event]);
-
-    container.listen(calendarEventsProvider, (_, __) {});
-
-    // Initial fetch
-    await container.read(calendarEventsProvider.future);
-    verify(() => mockRepository.fetchEvents('primary', calendarTitle: any(named: 'calendarTitle'), calendarColor: any(named: 'calendarColor'))).called(1);
-
-    // Emit tick
-    tickController.add(DateTime.now());
-    
-    // Wait for Riverpod to process the tick and trigger rebuild
-    await Future.delayed(const Duration(milliseconds: 10));
-    
-    // Wait for refresh
-    await container.read(calendarEventsProvider.future);
-    
-    // Should have fetched again
-    verify(() => mockRepository.fetchEvents('primary', calendarTitle: any(named: 'calendarTitle'), calendarColor: any(named: 'calendarColor'))).called(1);
-    
-    tickController.close();
-  });
+      tickController.close();
+    },
+  );
 }

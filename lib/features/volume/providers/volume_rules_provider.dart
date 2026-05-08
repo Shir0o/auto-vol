@@ -24,8 +24,9 @@ class VolumeRules extends _$VolumeRules {
 
   Future<void> updateRule(VolumeRule rule) async {
     final currentRules = state.value ?? [];
-    final updatedRules =
-        currentRules.map((r) => r.id == rule.id ? rule : r).toList();
+    final updatedRules = currentRules
+        .map((r) => r.id == rule.id ? rule : r)
+        .toList();
     state = AsyncData(updatedRules);
 
     final repository = ref.read(volumeRulesRepositoryProvider);

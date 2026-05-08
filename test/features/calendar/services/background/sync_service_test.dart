@@ -9,13 +9,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:googleapis/calendar/v3.dart' as google;
 
 class MockGoogleSignIn extends Mock implements GoogleSignIn {}
+
 class MockGoogleSignInAccount extends Mock implements GoogleSignInAccount {}
+
 class MockSharedPreferences extends Mock implements SharedPreferences {}
+
 class MockCalendarApi extends Mock implements google.CalendarApi {}
+
 class MockEventsResource extends Mock implements google.EventsResource {}
+
 class MockEvents extends Mock implements google.Events {}
-class MockAuthorizationClient extends Mock implements GoogleSignInAuthorizationClient {}
-class MockGoogleSignInClientAuthorization extends Mock implements GoogleSignInClientAuthorization {}
+
+class MockAuthorizationClient extends Mock
+    implements GoogleSignInAuthorizationClient {}
+
+class MockGoogleSignInClientAuthorization extends Mock
+    implements GoogleSignInClientAuthorization {}
 
 void main() {
   late MockGoogleSignIn mockGoogleSignIn;
@@ -37,31 +46,34 @@ void main() {
 
     final mockAuth = MockGoogleSignInClientAuthorization();
     when(() => mockAuth.accessToken).thenReturn('fake-token');
-    
-    when(() => mockGoogleSignIn.attemptLightweightAuthentication())
-        .thenAnswer((_) async => mockAccount);
+
+    when(
+      () => mockGoogleSignIn.attemptLightweightAuthentication(),
+    ).thenAnswer((_) async => mockAccount);
     when(() => mockAccount.authorizationClient).thenReturn(mockAuthClient);
-    when(() => mockAuthClient.authorizeScopes(any()))
-        .thenAnswer((_) async => mockAuth);
+    when(
+      () => mockAuthClient.authorizeScopes(any()),
+    ).thenAnswer((_) async => mockAuth);
     when(() => mockApi.events).thenReturn(mockEventsResource);
   });
 
   test('SyncService should return false if authentication fails', () async {
-    when(() => mockGoogleSignIn.attemptLightweightAuthentication())
-        .thenAnswer((_) async => null);
-    
+    when(
+      () => mockGoogleSignIn.attemptLightweightAuthentication(),
+    ).thenAnswer((_) async => null);
+
     final service = SyncService(mockGoogleSignIn, mockPrefs);
     final result = await service.syncCalendars();
-    
+
     expect(result, false);
   });
 
   test('SyncService should return true if no calendars are enabled', () async {
     when(() => mockPrefs.getStringList('enabled_calendar_ids')).thenReturn([]);
-    
+
     final service = SyncService(mockGoogleSignIn, mockPrefs);
     final result = await service.syncCalendars();
-    
+
     expect(result, true);
   });
 }

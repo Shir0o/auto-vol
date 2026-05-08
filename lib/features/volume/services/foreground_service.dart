@@ -45,10 +45,9 @@ class ForegroundTaskHandler extends TaskHandler {
     final defaultVolume = prefs.getDouble('default_volume') ?? 0.5;
 
     final now = DateTime.now();
-    final activeEvents =
-        events
-            .where((e) => e.startTime.isBefore(now) && e.endTime.isAfter(now))
-            .toList();
+    final activeEvents = events
+        .where((e) => e.startTime.isBefore(now) && e.endTime.isAfter(now))
+        .toList();
 
     final result = _automationService.calculateTargetVolume(
       activeEvents: activeEvents,
@@ -58,7 +57,8 @@ class ForegroundTaskHandler extends TaskHandler {
 
     // Snapshot and restore logic for multiple streams
     final automateRinger = prefs.getBool('automate_ringer') ?? false;
-    final automateNotification = prefs.getBool('automate_notification') ?? false;
+    final automateNotification =
+        prefs.getBool('automate_notification') ?? false;
     final automateDnd = prefs.getBool('automate_dnd') ?? false;
 
     final streams = [

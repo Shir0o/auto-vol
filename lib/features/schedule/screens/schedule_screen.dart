@@ -54,7 +54,12 @@ class ScheduleScreen extends ConsumerWidget {
                         color: VocusColors.primary,
                         backgroundColor: VocusColors.surface,
                         child: _buildTimeline(
-                            context, ref, events, rules, automationStatus),
+                          context,
+                          ref,
+                          events,
+                          rules,
+                          automationStatus,
+                        ),
                       );
                     },
                     loading: () => _buildSkeletonLoader(),
@@ -141,7 +146,9 @@ class ScheduleScreen extends ConsumerWidget {
 
   Widget _buildActiveAutomationCard(AutomationStatus status) {
     final winningEvent = status.winningEvent;
-    final otherEvents = status.activeEvents.where((e) => e.id != winningEvent?.id).toList();
+    final otherEvents = status.activeEvents
+        .where((e) => e.id != winningEvent?.id)
+        .toList();
 
     return GlassCard(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -151,7 +158,11 @@ class ScheduleScreen extends ConsumerWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.auto_awesome, color: VocusColors.primary, size: 20),
+              const Icon(
+                Icons.auto_awesome,
+                color: VocusColors.primary,
+                size: 20,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -178,24 +189,40 @@ class ScheduleScreen extends ConsumerWidget {
               ),
               if (status.winningRule != null)
                 Tooltip(
-                  message: 'Rule: ${status.winningRule!.eventTitlePattern} (${status.winningRule!.priority})',
-                  child: const Icon(Icons.info_outline, size: 16, color: VocusColors.outline),
+                  message:
+                      'Rule: ${status.winningRule!.eventTitlePattern} (${status.winningRule!.priority})',
+                  child: const Icon(
+                    Icons.info_outline,
+                    size: 16,
+                    color: VocusColors.outline,
+                  ),
                 ),
             ],
           ),
           if (otherEvents.isNotEmpty) ...[
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 8.0),
-              child: Divider(height: 1, color: VocusColors.outline, thickness: 0.1),
+              child: Divider(
+                height: 1,
+                color: VocusColors.outline,
+                thickness: 0.1,
+              ),
             ),
             Row(
               children: [
-                const Icon(Icons.warning_amber_rounded, color: Colors.orangeAccent, size: 14),
+                const Icon(
+                  Icons.warning_amber_rounded,
+                  color: Colors.orangeAccent,
+                  size: 14,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     'Overlapping with ${otherEvents.length} other event${otherEvents.length > 1 ? 's' : ''}',
-                    style: const TextStyle(fontSize: 10, color: Colors.orangeAccent),
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: Colors.orangeAccent,
+                    ),
                   ),
                 ),
               ],
@@ -364,8 +391,16 @@ class ScheduleScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildDateHeader(date),
-            ...dayEvents.map((e) =>
-                _buildEventItem(context, ref, e, events, rules, automationStatus)),
+            ...dayEvents.map(
+              (e) => _buildEventItem(
+                context,
+                ref,
+                e,
+                events,
+                rules,
+                automationStatus,
+              ),
+            ),
             const SizedBox(height: 16),
           ],
         );
@@ -439,10 +474,12 @@ class ScheduleScreen extends ConsumerWidget {
     // Conflict detection
     bool hasConflict = false;
     if (targetVolume != null) {
-      final overlaps = allEvents.where((e) =>
-          e.id != event.id &&
-          e.startTime.isBefore(event.endTime) &&
-          event.startTime.isBefore(e.endTime));
+      final overlaps = allEvents.where(
+        (e) =>
+            e.id != event.id &&
+            e.startTime.isBefore(event.endTime) &&
+            event.startTime.isBefore(e.endTime),
+      );
 
       for (final other in overlaps) {
         final otherTarget = automationService.getTargetVolumeForEvent(
@@ -609,7 +646,8 @@ class ScheduleScreen extends ConsumerWidget {
                           ? VocusColors.primary
                           : VocusColors.outline,
                     ),
-                    onPressed: () => _showVolumeOverrideDialog(context, ref, event),
+                    onPressed: () =>
+                        _showVolumeOverrideDialog(context, ref, event),
                     tooltip: 'Tune Volume',
                   ),
                   if (event.volumeOverride != null)
@@ -650,7 +688,10 @@ class ScheduleScreen extends ConsumerWidget {
             ),
             title: Text(
               'Tune Volume for "${event.title}"',
-              style: const TextStyle(fontSize: 18, color: VocusColors.onSurface),
+              style: const TextStyle(
+                fontSize: 18,
+                color: VocusColors.onSurface,
+              ),
             ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
