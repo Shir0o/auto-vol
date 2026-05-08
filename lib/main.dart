@@ -9,15 +9,24 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 
+import 'dart:io';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Google Sign-In
-  await GoogleSignIn.instance.initialize(
-    clientId: '1088393636693-p5k62kk0u2tqvnv4uojhv5eh9v6cjmhb.apps.googleusercontent.com',
-    serverClientId: '1088393636693-p5k62kk0u2tqvnv4uojhv5eh9v6cjmhb.apps.googleusercontent.com',
-  );
 
+  // Initialize Google Sign-In
+  // Note: On Android, the "Web Client ID" from the Google Cloud Console 
+  // must be used as the clientId/serverClientId to satisfy the Credential Manager.
+  await GoogleSignIn.instance.initialize(
+    clientId: Platform.isIOS 
+        ? '1088393636693-5acqni1bji55g47tgs183lnli6cv1a0i.apps.googleusercontent.com' 
+        : '1088393636693-lm37rmn0q08204ppv2cbm56d3bcta9tj.apps.googleusercontent.com',
+    serverClientId: '1088393636693-lm37rmn0q08204ppv2cbm56d3bcta9tj.apps.googleusercontent.com',
+    scopes: [
+      'https://www.googleapis.com/auth/calendar.readonly',
+    ],
+  );
+...
   final prefs = await SharedPreferences.getInstance();
 
   runApp(
