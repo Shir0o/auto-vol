@@ -24,6 +24,17 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.1088393636693-5acqni1bji55g47tgs183lnli6cv1a0i</string>
+			</array>
+		</dict>
+	</array>
 	<key>PermissionGroupNotification</key>
 	<string>Vocus needs notification access to keep you informed about volume changes.</string>
 	<key>LSRequiresIPhoneOS</key>
