@@ -14,8 +14,11 @@ import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MockAutomationService extends Mock implements AutomationService {}
+
 class MockVolumeService extends Mock implements VolumeService {}
+
 class MockForegroundService extends Mock implements ForegroundServiceWrapper {}
+
 class MockSharedPreferences extends Mock implements SharedPreferences {}
 
 void main() {
@@ -30,9 +33,15 @@ void main() {
     mockForegroundService = MockForegroundService();
     mockSharedPreferences = MockSharedPreferences();
 
-    when(() => mockSharedPreferences.setString(any(), any())).thenAnswer((_) async => true);
-    when(() => mockSharedPreferences.setDouble(any(), any())).thenAnswer((_) async => true);
-    when(() => mockSharedPreferences.setBool(any(), any())).thenAnswer((_) async => true);
+    when(
+      () => mockSharedPreferences.setString(any(), any()),
+    ).thenAnswer((_) async => true);
+    when(
+      () => mockSharedPreferences.setDouble(any(), any()),
+    ).thenAnswer((_) async => true);
+    when(
+      () => mockSharedPreferences.setBool(any(), any()),
+    ).thenAnswer((_) async => true);
     when(() => mockSharedPreferences.getBool(any())).thenReturn(null);
     when(() => mockSharedPreferences.getDouble(any())).thenReturn(null);
   });
@@ -50,7 +59,9 @@ void main() {
         sharedPreferencesProvider.overrideWithValue(mockSharedPreferences),
         volumeRulesProvider.overrideWith(() => _MockVolumeRulesNotifier(rules)),
         calendarEventsProvider.overrideWith((ref) => events),
-        automationEnabledProvider.overrideWith(() => _MockEnabledNotifier(enabled)),
+        automationEnabledProvider.overrideWith(
+          () => _MockEnabledNotifier(enabled),
+        ),
       ],
     );
     addTearDown(container.dispose);
@@ -58,42 +69,47 @@ void main() {
   }
 
   group('AutomationNotifier', () {
-    test('should set volume and return status when automation is enabled and events change', () async {
-      final startTime = DateTime.now().subtract(const Duration(minutes: 10));
-      final endTime = DateTime.now().add(const Duration(minutes: 10));
-      final activeEvent = CalendarEvent(
-        id: '1',
-        title: 'Focus',
-        startTime: startTime,
-        endTime: endTime,
-        calendarId: 'primary',
-      );
+    test(
+      'should set volume and return status when automation is enabled and events change',
+      () async {
+        final startTime = DateTime.now().subtract(const Duration(minutes: 10));
+        final endTime = DateTime.now().add(const Duration(minutes: 10));
+        final activeEvent = CalendarEvent(
+          id: '1',
+          title: 'Focus',
+          startTime: startTime,
+          endTime: endTime,
+          calendarId: 'primary',
+        );
 
-      when(() => mockAutomationService.calculateTargetVolume(
+        when(
+          () => mockAutomationService.calculateTargetVolume(
             activeEvents: any(named: 'activeEvents'),
             rules: any(named: 'rules'),
             defaultVolume: any(named: 'defaultVolume'),
-          )).thenReturn(0.1);
-      
-      when(() => mockVolumeService.setVolume(any())).thenAnswer((_) async {});
+          ),
+        ).thenReturn(0.1);
 
-      final container = createContainer(events: [activeEvent], enabled: true);
-      
-      // Trigger the notifier
-      final status = container.read(automationProvider);
+        when(() => mockVolumeService.setVolume(any())).thenAnswer((_) async {});
 
-      // Wait for microtask
-      await Future.delayed(Duration.zero);
+        final container = createContainer(events: [activeEvent], enabled: true);
 
-      expect(status.isEnabled, true);
-      expect(status.currentVolume, 0.1);
-      expect(status.activeEvents, [activeEvent]);
-      verify(() => mockVolumeService.setVolume(0.1)).called(1);
-    });
+        // Trigger the notifier
+        final status = container.read(automationProvider);
+
+        // Wait for microtask
+        await Future.delayed(Duration.zero);
+
+        expect(status.isEnabled, true);
+        expect(status.currentVolume, 0.1);
+        expect(status.activeEvents, [activeEvent]);
+        verify(() => mockVolumeService.setVolume(0.1)).called(1);
+      },
+    );
 
     test('should return disabled status when automation is disabled', () async {
       final container = createContainer(enabled: false);
-      
+
       final status = container.read(automationProvider);
 
       expect(status.isEnabled, false);
@@ -105,18 +121,18 @@ void main() {
     test('should start foreground service when enabled', () {
       when(() => mockForegroundService.start()).thenAnswer((_) async => true);
       final container = createContainer(enabled: false);
-      
+
       container.read(automationEnabledProvider.notifier).set(true);
-      
+
       verify(() => mockForegroundService.start()).called(1);
     });
 
     test('should stop foreground service when disabled', () {
       when(() => mockForegroundService.stop()).thenAnswer((_) async => true);
       final container = createContainer(enabled: true);
-      
+
       container.read(automationEnabledProvider.notifier).set(false);
-      
+
       verify(() => mockForegroundService.stop()).called(1);
     });
   });

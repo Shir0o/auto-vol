@@ -14,7 +14,7 @@ class VolumeRulesNotifier extends AsyncNotifier<List<VolumeRule>> {
     final currentRules = state.value ?? [];
     final updatedRules = [...currentRules, rule];
     state = AsyncData(updatedRules);
-    
+
     final repository = ref.read(volumeRulesRepositoryProvider);
     await repository.saveRules(updatedRules);
   }
@@ -29,6 +29,7 @@ class VolumeRulesNotifier extends AsyncNotifier<List<VolumeRule>> {
   }
 }
 
-final volumeRulesProvider = AsyncNotifierProvider<VolumeRulesNotifier, List<VolumeRule>>(() {
-  return VolumeRulesNotifier();
-});
+final volumeRulesProvider =
+    AsyncNotifierProvider<VolumeRulesNotifier, List<VolumeRule>>(() {
+      return VolumeRulesNotifier();
+    });

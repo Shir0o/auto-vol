@@ -34,11 +34,11 @@ void main() {
         volumeLevel: 0.5,
         priority: 1,
       );
-      
+
       when(() => mockRepository.loadRules()).thenAnswer((_) async => [rule]);
 
       final container = createContainer();
-      
+
       // Wait for the async initialization
       await container.read(volumeRulesProvider.notifier).future;
 

@@ -23,21 +23,29 @@ class ScheduleScreen extends ConsumerWidget {
     return Scaffold(
       body: Stack(
         children: [
-          Container(decoration: const BoxDecoration(gradient: VocusColors.deepSpaceGradient)),
+          Container(
+            decoration: const BoxDecoration(
+              gradient: VocusColors.deepSpaceGradient,
+            ),
+          ),
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildHeader(ref, automationStatus),
-                if (currentUser == null) 
+                if (currentUser == null)
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0,
+                      vertical: 10,
+                    ),
                     child: _buildOnboardingCard(ref),
                   ),
                 Expanded(
                   child: eventsAsync.when(
                     data: (events) => RefreshIndicator(
-                      onRefresh: () async => ref.invalidate(calendarEventsProvider),
+                      onRefresh: () async =>
+                          ref.invalidate(calendarEventsProvider),
                       color: VocusColors.primary,
                       backgroundColor: VocusColors.surface,
                       child: _buildTimeline(events),
@@ -76,10 +84,7 @@ class ScheduleScreen extends ConsumerWidget {
           ),
           Text(
             DateFormat('EEEE, MMMM d').format(DateTime.now()),
-            style: const TextStyle(
-              fontSize: 18,
-              color: VocusColors.outline,
-            ),
+            style: const TextStyle(fontSize: 18, color: VocusColors.outline),
           ),
           if (status.isEnabled && status.activeEvents.isNotEmpty)
             Padding(
@@ -94,7 +99,8 @@ class ScheduleScreen extends ConsumerWidget {
   Widget _buildStatusBadge(WidgetRef ref, AutomationStatus status) {
     final color = status.isEnabled ? VocusColors.primary : VocusColors.outline;
     return GestureDetector(
-      onTap: () => ref.read(automationEnabledProvider.notifier).set(!status.isEnabled),
+      onTap: () =>
+          ref.read(automationEnabledProvider.notifier).set(!status.isEnabled),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
@@ -108,10 +114,7 @@ class ScheduleScreen extends ConsumerWidget {
             Container(
               width: 8,
               height: 8,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             ),
             const SizedBox(width: 8),
             Text(
@@ -144,11 +147,17 @@ class ScheduleScreen extends ConsumerWidget {
               children: [
                 Text(
                   'Adjusted volume for "${activeEvent.title}"',
-                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 Text(
                   'Target: ${(status.currentVolume * 100).toInt()}%',
-                  style: const TextStyle(fontSize: 11, color: VocusColors.outline),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: VocusColors.outline,
+                  ),
                 ),
               ],
             ),
@@ -165,7 +174,11 @@ class ScheduleScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.calendar_today_outlined, color: VocusColors.primary, size: 32),
+          const Icon(
+            Icons.calendar_today_outlined,
+            color: VocusColors.primary,
+            size: 32,
+          ),
           const SizedBox(height: 16),
           const Text(
             'Connect your schedule',
@@ -174,7 +187,11 @@ class ScheduleScreen extends ConsumerWidget {
           const SizedBox(height: 8),
           const Text(
             'Sync with Google Calendar to automatically manage your device volume during meetings and focus time.',
-            style: TextStyle(fontSize: 14, color: VocusColors.outline, height: 1.4),
+            style: TextStyle(
+              fontSize: 14,
+              color: VocusColors.outline,
+              height: 1.4,
+            ),
           ),
           const SizedBox(height: 20),
           ElevatedButton(
@@ -182,7 +199,9 @@ class ScheduleScreen extends ConsumerWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: VocusColors.primary,
               foregroundColor: Colors.black,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
             child: const Text('Sign in with Google'),
@@ -262,7 +281,11 @@ class ScheduleScreen extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.calendar_today, size: 48, color: VocusColors.outline.withOpacity(0.3)),
+            Icon(
+              Icons.calendar_today,
+              size: 48,
+              color: VocusColors.outline.withOpacity(0.3),
+            ),
             const SizedBox(height: 16),
             const Text(
               'No upcoming events',
@@ -275,7 +298,11 @@ class ScheduleScreen extends ConsumerWidget {
 
     final groupedEvents = <DateTime, List<CalendarEvent>>{};
     for (var event in events) {
-      final date = DateTime(event.startTime.year, event.startTime.month, event.startTime.day);
+      final date = DateTime(
+        event.startTime.year,
+        event.startTime.month,
+        event.startTime.day,
+      );
       groupedEvents.putIfAbsent(date, () => []).add(event);
     }
 
@@ -346,7 +373,8 @@ class ScheduleScreen extends ConsumerWidget {
     final startTimeStr = timeFormat.format(event.startTime);
     final endTimeStr = timeFormat.format(event.endTime);
     final now = DateTime.now();
-    final isActive = event.startTime.isBefore(now) && event.endTime.isAfter(now);
+    final isActive =
+        event.startTime.isBefore(now) && event.endTime.isAfter(now);
 
     final calColor = event.calendarColor != null
         ? Color(int.parse(event.calendarColor!.replaceAll('#', '0xFF')))
@@ -389,7 +417,9 @@ class ScheduleScreen extends ConsumerWidget {
                       Row(
                         children: [
                           Text(
-                            event.isAllDay ? 'All day' : '$startTimeStr - $endTimeStr',
+                            event.isAllDay
+                                ? 'All day'
+                                : '$startTimeStr - $endTimeStr',
                             style: const TextStyle(
                               fontSize: 13,
                               color: VocusColors.outline,
@@ -421,7 +451,8 @@ class ScheduleScreen extends ConsumerWidget {
                           ],
                         ],
                       ),
-                      if (event.description != null && event.description!.isNotEmpty)
+                      if (event.description != null &&
+                          event.description!.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Text(

@@ -23,7 +23,11 @@ class SettingsScreen extends ConsumerWidget {
     return Scaffold(
       body: Stack(
         children: [
-          Container(decoration: const BoxDecoration(gradient: VocusColors.deepSpaceGradient)),
+          Container(
+            decoration: const BoxDecoration(
+              gradient: VocusColors.deepSpaceGradient,
+            ),
+          ),
           SafeArea(
             child: ListView(
               padding: const EdgeInsets.all(20),
@@ -77,7 +81,8 @@ class SettingsScreen extends ConsumerWidget {
                         );
                       }).toList(),
                     ),
-                    loading: () => const Center(child: CircularProgressIndicator()),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
                     error: (err, _) => Text('Failed to load calendars: $err'),
                   ),
                   const SizedBox(height: 40),
@@ -86,7 +91,10 @@ class SettingsScreen extends ConsumerWidget {
                     child: TextButton.icon(
                       onPressed: () => ref.read(authServiceProvider).signOut(),
                       icon: const Icon(Icons.logout, color: Colors.redAccent),
-                      label: const Text('Sign Out', style: TextStyle(color: Colors.redAccent)),
+                      label: const Text(
+                        'Sign Out',
+                        style: TextStyle(color: Colors.redAccent),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -137,7 +145,8 @@ class SettingsScreen extends ConsumerWidget {
           ),
           Switch(
             value: enabled,
-            onChanged: (value) => ref.read(automationEnabledProvider.notifier).set(value),
+            onChanged: (value) =>
+                ref.read(automationEnabledProvider.notifier).set(value),
             activeColor: VocusColors.primary,
           ),
         ],
@@ -197,7 +206,8 @@ class SettingsScreen extends ConsumerWidget {
           ),
           Switch(
             value: includeAllDay,
-            onChanged: (value) => ref.read(includeAllDayEventsProvider.notifier).toggle(),
+            onChanged: (value) =>
+                ref.read(includeAllDayEventsProvider.notifier).toggle(),
             activeColor: VocusColors.primary,
           ),
         ],
@@ -219,7 +229,8 @@ class SettingsScreen extends ConsumerWidget {
           ),
           Slider(
             value: volume,
-            onChanged: (value) => ref.read(defaultVolumeProvider.notifier).set(value),
+            onChanged: (value) =>
+                ref.read(defaultVolumeProvider.notifier).set(value),
             activeColor: VocusColors.primary,
           ),
         ],
@@ -227,7 +238,11 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildCalendarToggle(WidgetRef ref, CalendarEntry cal, bool isEnabled) {
+  Widget _buildCalendarToggle(
+    WidgetRef ref,
+    CalendarEntry cal,
+    bool isEnabled,
+  ) {
     return GlassCard(
       padding: const EdgeInsets.all(16),
       onTap: () => ref.read(enabledCalendarIdsProvider.notifier).toggle(cal.id),
@@ -237,7 +252,9 @@ class SettingsScreen extends ConsumerWidget {
             width: 12,
             height: 12,
             decoration: BoxDecoration(
-              color: cal.color != null ? Color(int.parse(cal.color!.replaceAll('#', '0xFF'))) : VocusColors.primary,
+              color: cal.color != null
+                  ? Color(int.parse(cal.color!.replaceAll('#', '0xFF')))
+                  : VocusColors.primary,
               shape: BoxShape.circle,
             ),
           ),
@@ -248,12 +265,18 @@ class SettingsScreen extends ConsumerWidget {
               children: [
                 Text(
                   cal.title,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 if (cal.description != null)
                   Text(
                     cal.description!,
-                    style: const TextStyle(fontSize: 12, color: VocusColors.outline),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: VocusColors.outline,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -262,7 +285,8 @@ class SettingsScreen extends ConsumerWidget {
           ),
           Switch(
             value: isEnabled,
-            onChanged: (value) => ref.read(enabledCalendarIdsProvider.notifier).toggle(cal.id),
+            onChanged: (value) =>
+                ref.read(enabledCalendarIdsProvider.notifier).toggle(cal.id),
             activeColor: VocusColors.primary,
           ),
         ],
@@ -301,7 +325,13 @@ class SettingsScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 Text(
                   subtitle,
                   style: TextStyle(

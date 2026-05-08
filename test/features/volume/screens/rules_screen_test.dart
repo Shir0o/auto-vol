@@ -7,30 +7,30 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockVolumeRulesNotifier extends AsyncNotifier<List<VolumeRule>> with Mock implements VolumeRulesNotifier {}
+class MockVolumeRulesNotifier extends AsyncNotifier<List<VolumeRule>>
+    with Mock
+    implements VolumeRulesNotifier {}
 
 void main() {
   late MockVolumeRulesNotifier mockNotifier;
 
   setUp(() {
     mockNotifier = MockVolumeRulesNotifier();
-    registerFallbackValue(VolumeRule(
-      id: '1',
-      calendarId: 'primary',
-      eventTitlePattern: 'Test',
-      volumeLevel: 0.5,
-      priority: 0,
-    ));
+    registerFallbackValue(
+      VolumeRule(
+        id: '1',
+        calendarId: 'primary',
+        eventTitlePattern: 'Test',
+        volumeLevel: 0.5,
+        priority: 0,
+      ),
+    );
   });
 
   Widget createRulesScreen(AsyncValue<List<VolumeRule>> state) {
     return ProviderScope(
-      overrides: [
-        volumeRulesProvider.overrideWith(() => mockNotifier),
-      ],
-      child: MaterialApp(
-        home: const RulesScreen(),
-      ),
+      overrides: [volumeRulesProvider.overrideWith(() => mockNotifier)],
+      child: MaterialApp(home: const RulesScreen()),
     );
   }
 

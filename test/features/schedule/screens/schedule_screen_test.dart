@@ -25,20 +25,26 @@ void main() {
     activeEvents: [],
   );
 
-  testWidgets('ScheduleScreen shows skeleton loader when loading', (tester) async {
+  testWidgets('ScheduleScreen shows skeleton loader when loading', (
+    tester,
+  ) async {
     final completer = Completer<List<CalendarEvent>>();
-    final loadingProvider = FutureProvider<List<CalendarEvent>>((ref) => completer.future);
+    final loadingProvider = FutureProvider<List<CalendarEvent>>(
+      (ref) => completer.future,
+    );
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          calendarEventsProvider.overrideWith((ref) => ref.watch(loadingProvider.future)),
-          automationProvider.overrideWith(() => MockAutomationNotifier(dummyStatus)),
+          calendarEventsProvider.overrideWith(
+            (ref) => ref.watch(loadingProvider.future),
+          ),
+          automationProvider.overrideWith(
+            () => MockAutomationNotifier(dummyStatus),
+          ),
           currentUserProvider.overrideWithValue(null),
         ],
-        child: const MaterialApp(
-          home: const ScheduleScreen(),
-        ),
+        child: const MaterialApp(home: const ScheduleScreen()),
       ),
     );
 
@@ -53,9 +59,11 @@ void main() {
     await tester.pumpAndSettle();
   });
 
-  testWidgets('ScheduleScreen has RefreshIndicator and triggers refresh', (tester) async {
+  testWidgets('ScheduleScreen has RefreshIndicator and triggers refresh', (
+    tester,
+  ) async {
     int callCount = 0;
-    
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -73,12 +81,12 @@ void main() {
               ),
             ];
           }),
-          automationProvider.overrideWith(() => MockAutomationNotifier(dummyStatus)),
+          automationProvider.overrideWith(
+            () => MockAutomationNotifier(dummyStatus),
+          ),
           currentUserProvider.overrideWithValue(null),
         ],
-        child: const MaterialApp(
-          home: const ScheduleScreen(),
-        ),
+        child: const MaterialApp(home: const ScheduleScreen()),
       ),
     );
 

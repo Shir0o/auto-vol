@@ -10,14 +10,11 @@ class VocusColors {
   static const onPrimary = Color(0xFF00363A);
   static const outline = Color(0xFF849495);
   static const surfaceVariant = Color(0xFF323537);
-  
+
   static const deepSpaceGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [
-      Color(0xFF120B3A),
-      Color(0xFF0B0624),
-    ],
+    colors: [Color(0xFF120B3A), Color(0xFF0B0624)],
   );
 }
 

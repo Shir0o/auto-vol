@@ -9,18 +9,21 @@ import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MockAuthService extends Mock implements AuthService {}
+
 class MockPermissionService extends Mock implements PermissionService {}
 
 void main() {
   testWidgets('VocusApp renders MainScreen', (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
-    
+
     final mockAuthService = MockAuthService();
     final mockPermissionService = MockPermissionService();
 
     when(() => mockAuthService.signInSilently()).thenAnswer((_) async => null);
-    when(() => mockPermissionService.requestInitialPermissions()).thenAnswer((_) async => {});
+    when(
+      () => mockPermissionService.requestInitialPermissions(),
+    ).thenAnswer((_) async => {});
 
     await tester.pumpWidget(
       ProviderScope(

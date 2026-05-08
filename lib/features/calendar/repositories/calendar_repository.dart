@@ -21,7 +21,11 @@ class CalendarRepository {
         [];
   }
 
-  Future<List<CalendarEvent>> fetchEvents(String calendarId, {String? calendarTitle, String? calendarColor}) async {
+  Future<List<CalendarEvent>> fetchEvents(
+    String calendarId, {
+    String? calendarTitle,
+    String? calendarColor,
+  }) async {
     final now = DateTime.now();
     final events = await _api.events.list(
       calendarId,
@@ -31,12 +35,14 @@ class CalendarRepository {
     );
 
     return events.items
-            ?.map((e) => CalendarEvent.fromGoogleEvent(
-                  e,
-                  calendarId,
-                  calendarTitle: calendarTitle,
-                  calendarColor: calendarColor,
-                ))
+            ?.map(
+              (e) => CalendarEvent.fromGoogleEvent(
+                e,
+                calendarId,
+                calendarTitle: calendarTitle,
+                calendarColor: calendarColor,
+              ),
+            )
             .toList() ??
         [];
   }

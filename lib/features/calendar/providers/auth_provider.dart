@@ -7,7 +7,7 @@ class AuthStateNotifier extends Notifier<GoogleSignInAccount?> {
   GoogleSignInAccount? build() {
     // Initial state is null, will be updated by main.dart or events
     final googleSignIn = ref.watch(googleSignInProvider);
-    
+
     // Listen for events to keep state in sync (e.g. if user signs out elsewhere)
     googleSignIn.authenticationEvents.listen((event) {
       if (event is GoogleSignInAuthenticationEventSignIn) {
@@ -16,7 +16,7 @@ class AuthStateNotifier extends Notifier<GoogleSignInAccount?> {
         state = null;
       }
     });
-    
+
     return null;
   }
 
@@ -25,7 +25,10 @@ class AuthStateNotifier extends Notifier<GoogleSignInAccount?> {
   }
 }
 
-final authStateNotifierProvider = NotifierProvider<AuthStateNotifier, GoogleSignInAccount?>(AuthStateNotifier.new);
+final authStateNotifierProvider =
+    NotifierProvider<AuthStateNotifier, GoogleSignInAccount?>(
+      AuthStateNotifier.new,
+    );
 
 final currentUserProvider = Provider<GoogleSignInAccount?>((ref) {
   return ref.watch(authStateNotifierProvider);

@@ -4,6 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockGoogleSignIn extends Mock implements GoogleSignIn {}
+
 class MockGoogleSignInAccount extends Mock implements GoogleSignInAccount {}
 
 void main() {
@@ -18,16 +19,16 @@ void main() {
   group('AuthService', () {
     test('signIn should call GoogleSignIn.authenticate', () async {
       final mockAccount = MockGoogleSignInAccount();
-      when(() => mockGoogleSignIn.authenticate(
-            scopeHint: any(named: 'scopeHint'),
-          )).thenAnswer((_) async => mockAccount);
+      when(
+        () => mockGoogleSignIn.authenticate(scopeHint: any(named: 'scopeHint')),
+      ).thenAnswer((_) async => mockAccount);
 
       final result = await authService.signIn();
 
       expect(result, mockAccount);
-      verify(() => mockGoogleSignIn.authenticate(
-            scopeHint: any(named: 'scopeHint'),
-          )).called(1);
+      verify(
+        () => mockGoogleSignIn.authenticate(scopeHint: any(named: 'scopeHint')),
+      ).called(1);
     });
 
     test('signOut should call GoogleSignIn.signOut', () async {

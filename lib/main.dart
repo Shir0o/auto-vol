@@ -18,29 +18,39 @@ void main() async {
   // Initialize foreground task
   await VocusForegroundService.init();
 
-  // Initialize Google Sign-In
-  // Note: On Android, the "Web Client ID" from the Google Cloud Console 
-  // must be used as the clientId/serverClientId to satisfy the Credential Manager.
+  // Initialize Google Sign-In. Client IDs can be overridden at build time via
+  // --dart-define so contributors can use their own OAuth credentials without
+  // editing this file. On Android, the "Web Client ID" from the Google Cloud
+  // Console must be used as the clientId/serverClientId to satisfy the
+  // Credential Manager.
+  const iosClientId = String.fromEnvironment(
+    'GOOGLE_IOS_CLIENT_ID',
+    defaultValue:
+        '1088393636693-5acqni1bji55g47tgs183lnli6cv1a0i.apps.googleusercontent.com',
+  );
+  const webClientId = String.fromEnvironment(
+    'GOOGLE_WEB_CLIENT_ID',
+    defaultValue:
+        '1088393636693-lm37rmn0q08204ppv2cbm56d3bcta9tj.apps.googleusercontent.com',
+  );
   await GoogleSignIn.instance.initialize(
-    clientId: Platform.isIOS 
-        ? '1088393636693-5acqni1bji55g47tgs183lnli6cv1a0i.apps.googleusercontent.com' 
-        : '1088393636693-lm37rmn0q08204ppv2cbm56d3bcta9tj.apps.googleusercontent.com',
-    serverClientId: '1088393636693-lm37rmn0q08204ppv2cbm56d3bcta9tj.apps.googleusercontent.com',
+    clientId: Platform.isIOS ? iosClientId : webClientId,
+    serverClientId: webClientId,
   );
 
   final prefs = await SharedPreferences.getInstance();
 
   runApp(
     ProviderScope(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(prefs),
-      ],
+      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
       child: const VocusApp(),
     ),
   );
 }
 
-final scaffoldMessengerKeyProvider = Provider((ref) => GlobalKey<ScaffoldMessengerState>());
+final scaffoldMessengerKeyProvider = Provider(
+  (ref) => GlobalKey<ScaffoldMessengerState>(),
+);
 
 class VocusApp extends ConsumerWidget {
   const VocusApp({super.key});
@@ -52,7 +62,7 @@ class VocusApp extends ConsumerWidget {
       if (next.isEnabled && next.activeEvents.isNotEmpty) {
         final prevActive = previous?.activeEvents.firstOrNull;
         final nextActive = next.activeEvents.first;
-        
+
         if (prevActive?.id != nextActive.id) {
           final messenger = ref.read(scaffoldMessengerKeyProvider).currentState;
           messenger?.clearSnackBars();
@@ -61,7 +71,9 @@ class VocusApp extends ConsumerWidget {
               content: Text('Auto-Volume: Adjusted for "${nextActive.title}"'),
               behavior: SnackBarBehavior.floating,
               backgroundColor: VocusColors.surfaceVariant,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               duration: const Duration(seconds: 3),
             ),
           );

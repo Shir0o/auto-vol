@@ -19,7 +19,7 @@ class ForegroundTaskHandler extends TaskHandler {
   late AutomationService _automationService;
   late VolumeService _volumeService;
   late VolumeRulesRepository _rulesRepository;
-  
+
   @override
   Future<void> onStart(DateTime timestamp, TaskStarter taskStarter) async {
     _automationService = AutomationService();
@@ -31,23 +31,23 @@ class ForegroundTaskHandler extends TaskHandler {
   @override
   Future<void> onRepeatEvent(DateTime timestamp) async {
     final prefs = await SharedPreferences.getInstance();
-    
+
     // Load rules
     final rules = await _rulesRepository.loadRules();
-    
+
     // Load cached events (synced by main isolate)
     final eventsJson = prefs.getString('cached_events');
     if (eventsJson == null) return;
-    
+
     final List<dynamic> decoded = jsonDecode(eventsJson);
     final events = decoded.map((e) => CalendarEvent.fromJson(e)).toList();
-    
+
     final defaultVolume = prefs.getDouble('default_volume') ?? 0.5;
-    
+
     final now = DateTime.now();
-    final activeEvents = events.where((e) => 
-      e.startTime.isBefore(now) && e.endTime.isAfter(now)
-    ).toList();
+    final activeEvents = events
+        .where((e) => e.startTime.isBefore(now) && e.endTime.isAfter(now))
+        .toList();
 
     final targetVolume = _automationService.calculateTargetVolume(
       activeEvents: activeEvents,
@@ -56,13 +56,14 @@ class ForegroundTaskHandler extends TaskHandler {
     );
 
     await _volumeService.setVolume(targetVolume);
-    
+
     // Update notification
     String statusText = 'Monitoring schedule...';
     if (activeEvents.isNotEmpty) {
-      statusText = 'Active: ${activeEvents.first.title} (${(targetVolume * 100).toInt()}%)';
+      statusText =
+          'Active: ${activeEvents.first.title} (${(targetVolume * 100).toInt()}%)';
     }
-    
+
     FlutterForegroundTask.updateService(
       notificationTitle: 'Vocus Automation Active',
       notificationText: statusText,
@@ -90,7 +91,9 @@ class VocusForegroundService {
         playSound: false,
       ),
       foregroundTaskOptions: ForegroundTaskOptions(
-        eventAction: ForegroundTaskEventAction.repeat(60000), // Check every minute
+        eventAction: ForegroundTaskEventAction.repeat(
+          60000,
+        ), // Check every minute
         autoRunOnBoot: true,
         allowWakeLock: true,
         allowWifiLock: true,
@@ -108,7 +111,7 @@ class VocusForegroundService {
       notificationText: 'Starting background monitoring...',
       callback: startCallback,
     );
-    
+
     return result is ServiceRequestSuccess;
   }
 
