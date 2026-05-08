@@ -1,6 +1,7 @@
 import 'package:vocus/core/providers/common_providers.dart';
 import 'package:vocus/features/calendar/models/calendar_entry.dart';
 import 'package:vocus/features/calendar/models/calendar_event.dart';
+import 'package:vocus/features/volume/providers/event_overrides_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final availableCalendarsProvider = FutureProvider<List<CalendarEntry>>((
@@ -80,6 +81,7 @@ final calendarEventsProvider = FutureProvider<List<CalendarEvent>>((ref) async {
   final enabledIds = ref.watch(enabledCalendarIdsProvider);
   final includeAllDay = ref.watch(includeAllDayEventsProvider);
   final availableAsync = await ref.watch(availableCalendarsProvider.future);
+  final overridesAsync = ref.watch(eventOverridesProvider);
 
   if (enabledIds.isEmpty) return [];
 
@@ -98,10 +100,19 @@ final calendarEventsProvider = FutureProvider<List<CalendarEvent>>((ref) async {
 
   final flattened = allEvents.expand((e) => e).toList();
 
+  // Apply overrides
+  final overrides = overridesAsync.value ?? {};
+  final withOverrides = flattened.map((event) {
+    if (overrides.containsKey(event.id)) {
+      return event.copyWith(volumeOverride: overrides[event.id]);
+    }
+    return event;
+  }).toList();
+
   // Filter all-day events if not included
   final filtered = includeAllDay
-      ? flattened
-      : flattened.where((e) => !e.isAllDay).toList();
+      ? withOverrides
+      : withOverrides.where((e) => !e.isAllDay).toList();
 
   filtered.sort((a, b) => a.startTime.compareTo(b.startTime));
   return filtered;

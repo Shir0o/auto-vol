@@ -44,6 +44,14 @@ final permissionServiceProvider = Provider<PermissionService>((ref) {
   return PermissionService();
 });
 
+final notificationPolicyAccessProvider = FutureProvider<bool>((ref) {
+  return ref.watch(permissionServiceProvider).hasNotificationPolicyAccess();
+});
+
+final ignoreBatteryOptimizationsProvider = FutureProvider<bool>((ref) {
+  return ref.watch(permissionServiceProvider).isIgnoringBatteryOptimizations();
+});
+
 final calendarRepositoryProvider = FutureProvider<CalendarRepository>((
   ref,
 ) async {

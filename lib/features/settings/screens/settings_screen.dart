@@ -49,6 +49,9 @@ class SettingsScreen extends ConsumerWidget {
                 _buildSectionHeader('Focus'),
                 _buildDefaultVolumeSlider(ref, defaultVolume),
                 const SizedBox(height: 24),
+                _buildSectionHeader('System Permissions'),
+                _buildPermissionItems(context, ref),
+                const SizedBox(height: 24),
                 _buildSectionHeader('Connections'),
                 _buildConnectionItem(
                   ref,
@@ -235,6 +238,100 @@ class SettingsScreen extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildPermissionRow(
+    BuildContext context,
+    WidgetRef ref,
+    String title,
+    String subtitle,
+    AsyncValue<bool> status,
+    VoidCallback onRequest,
+  ) {
+    final isAndroid = Theme.of(context).platform == TargetPlatform.android;
+    return GlassCard(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: VocusColors.outline,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          status.when(
+            data: (granted) => !isAndroid || granted
+                ? const Icon(Icons.check_circle, color: Colors.green)
+                : ElevatedButton(
+                    onPressed: onRequest,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: VocusColors.primary.withOpacity(0.2),
+                      foregroundColor: VocusColors.primary,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      minimumSize: Size.zero,
+                    ),
+                    child: const Text('GRANT', style: TextStyle(fontSize: 12)),
+                  ),
+            loading: () => const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+            error: (_, __) => const Icon(Icons.error, color: Colors.redAccent),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPermissionItems(BuildContext context, WidgetRef ref) {
+    final dndAccess = ref.watch(notificationPolicyAccessProvider);
+    final batteryOpt = ref.watch(ignoreBatteryOptimizationsProvider);
+
+    return Column(
+      children: [
+        _buildPermissionRow(
+          context,
+          ref,
+          'Do Not Disturb Access',
+          'Required to change volume during DND',
+          dndAccess,
+          () => ref.read(permissionServiceProvider).requestNotificationPolicyAccess().then(
+                (_) => ref.invalidate(notificationPolicyAccessProvider),
+              ),
+        ),
+        const SizedBox(height: 12),
+        _buildPermissionRow(
+          context,
+          ref,
+          'Battery Optimization',
+          'Exempt app to ensure reliable background monitoring',
+          batteryOpt,
+          () => ref.read(permissionServiceProvider).requestIgnoreBatteryOptimizations().then(
+                (_) => ref.invalidate(ignoreBatteryOptimizationsProvider),
+              ),
+        ),
+      ],
     );
   }
 

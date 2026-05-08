@@ -55,16 +55,21 @@ class AutomationNotifier extends Notifier<AutomationStatus> {
   @override
   AutomationStatus build() {
     final enabled = ref.watch(automationEnabledProvider);
-    final events = ref.watch(calendarEventsProvider).value ?? [];
+    final eventsAsync = ref.watch(calendarEventsProvider);
+    final events = eventsAsync.value ?? [];
     final rules = ref.watch(volumeRulesProvider).value ?? [];
     final defaultVolume = ref.watch(defaultVolumeProvider);
 
     // Sync to SharedPreferences for background service
     final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setString(
-      'cached_events',
-      jsonEncode(events.map((e) => e.toJson()).toList()),
-    );
+    
+    // Only sync if data is actually available to avoid clearing cache during loading
+    if (eventsAsync.hasValue) {
+      prefs.setString(
+        'cached_events',
+        jsonEncode(events.map((e) => e.toJson()).toList()),
+      );
+    }
     prefs.setDouble('default_volume', defaultVolume);
 
     final now = DateTime.now();
@@ -84,7 +89,7 @@ class AutomationNotifier extends Notifier<AutomationStatus> {
     final automationService = ref.read(automationServiceProvider);
     final volumeService = ref.read(volumeServiceProvider);
 
-    final targetVolume = automationService.calculateTargetVolume(
+    final result = automationService.calculateTargetVolume(
       activeEvents: activeEvents,
       rules: rules,
       defaultVolume: defaultVolume,
@@ -92,12 +97,14 @@ class AutomationNotifier extends Notifier<AutomationStatus> {
 
     // Side effect: update system volume
     // Using scheduleMicrotask to avoid updating during build
-    Future.microtask(() => volumeService.setVolume(targetVolume));
+    Future.microtask(() => volumeService.setVolume(result.volume));
 
     return AutomationStatus(
       isEnabled: true,
-      currentVolume: targetVolume,
+      currentVolume: result.volume,
       activeEvents: activeEvents,
+      winningEvent: result.winningEvent,
+      winningRule: result.winningRule,
       lastUpdated: DateFormat('HH:mm:ss').format(now),
     );
   }

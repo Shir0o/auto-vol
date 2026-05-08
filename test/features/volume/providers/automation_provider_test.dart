@@ -88,7 +88,7 @@ void main() {
             rules: any(named: 'rules'),
             defaultVolume: any(named: 'defaultVolume'),
           ),
-        ).thenReturn(0.1);
+        ).thenReturn(AutomationResult(volume: 0.1));
 
         when(() => mockVolumeService.setVolume(any())).thenAnswer((_) async {});
 

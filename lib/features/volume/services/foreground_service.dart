@@ -49,19 +49,19 @@ class ForegroundTaskHandler extends TaskHandler {
         .where((e) => e.startTime.isBefore(now) && e.endTime.isAfter(now))
         .toList();
 
-    final targetVolume = _automationService.calculateTargetVolume(
+    final result = _automationService.calculateTargetVolume(
       activeEvents: activeEvents,
       rules: rules,
       defaultVolume: defaultVolume,
     );
 
-    await _volumeService.setVolume(targetVolume);
+    await _volumeService.setVolume(result.volume);
 
     // Update notification
     String statusText = 'Monitoring schedule...';
     if (activeEvents.isNotEmpty) {
       statusText =
-          'Active: ${activeEvents.first.title} (${(targetVolume * 100).toInt()}%)';
+          'Active: ${result.winningEvent?.title ?? activeEvents.first.title} (${(result.volume * 100).toInt()}%)';
     }
 
     FlutterForegroundTask.updateService(

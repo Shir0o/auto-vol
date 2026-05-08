@@ -40,6 +40,32 @@ class CalendarEvent {
     };
   }
 
+  CalendarEvent copyWith({
+    String? id,
+    String? title,
+    String? description,
+    DateTime? startTime,
+    DateTime? endTime,
+    String? calendarId,
+    String? calendarTitle,
+    String? calendarColor,
+    double? volumeOverride,
+    bool? isAllDay,
+  }) {
+    return CalendarEvent(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
+      calendarId: calendarId ?? this.calendarId,
+      calendarTitle: calendarTitle ?? this.calendarTitle,
+      calendarColor: calendarColor ?? this.calendarColor,
+      volumeOverride: volumeOverride ?? this.volumeOverride,
+      isAllDay: isAllDay ?? this.isAllDay,
+    );
+  }
+
   factory CalendarEvent.fromJson(Map<String, dynamic> json) {
     return CalendarEvent(
       id: json['id'] as String,

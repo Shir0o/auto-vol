@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -59,6 +60,8 @@ void main() {
               (ref) async => mockRepository,
             ),
             foregroundServiceProvider.overrideWithValue(mockForegroundService),
+            notificationPolicyAccessProvider.overrideWith((ref) => true),
+            ignoreBatteryOptimizationsProvider.overrideWith((ref) => true),
           ],
           child: const MaterialApp(home: SettingsScreen()),
         ),
@@ -121,6 +124,8 @@ void main() {
             (ref) async => mockRepository,
           ),
           foregroundServiceProvider.overrideWithValue(mockForegroundService),
+          notificationPolicyAccessProvider.overrideWith((ref) => true),
+          ignoreBatteryOptimizationsProvider.overrideWith((ref) => true),
         ],
         child: const MaterialApp(home: SettingsScreen()),
       ),
@@ -142,5 +147,52 @@ void main() {
     // Verify state changed
     expect(tester.widget<Switch>(switches.at(1)).value, isFalse);
     expect(prefs.getBool('include_all_day_events'), isFalse);
+  });
+
+  testWidgets('SettingsScreen displays permission statuses on Android', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+
+    final mockUser = MockGoogleSignInAccount();
+    when(() => mockUser.email).thenReturn('test@example.com');
+
+    final mockRepository = MockCalendarRepository();
+    when(() => mockRepository.fetchCalendars()).thenAnswer((_) async => []);
+
+    // Force Android platform for this test
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          currentUserProvider.overrideWith((ref) => mockUser),
+          calendarRepositoryProvider.overrideWith(
+            (ref) async => mockRepository,
+          ),
+          foregroundServiceProvider.overrideWithValue(mockForegroundService),
+          notificationPolicyAccessProvider.overrideWith((ref) => false),
+          ignoreBatteryOptimizationsProvider.overrideWith((ref) => true),
+        ],
+        child: const MaterialApp(home: SettingsScreen()),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('System Permissions'), findsOneWidget);
+    expect(find.text('Do Not Disturb Access'), findsOneWidget);
+    expect(find.text('Battery Optimization'), findsOneWidget);
+
+    // DND Access is false -> should show GRANT button
+    expect(find.text('GRANT'), findsOneWidget);
+
+    // Battery Optimization is true -> should show check icon
+    expect(find.byIcon(Icons.check_circle), findsWidgets);
+
+    // Reset override
+    debugDefaultTargetPlatformOverride = null;
   });
 }

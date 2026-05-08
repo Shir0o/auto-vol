@@ -13,13 +13,14 @@ void main() {
 
   group('AutomationService.calculateTargetVolume', () {
     test('should return default volume if no events are active', () {
-      final volume = automationService.calculateTargetVolume(
+      final result = automationService.calculateTargetVolume(
         activeEvents: [],
         rules: [],
         defaultVolume: 0.5,
       );
 
-      expect(volume, 0.5);
+      expect(result.volume, 0.5);
+      expect(result.isDefault, isTrue);
     });
 
     test('should return volume from matching rule', () {
@@ -39,13 +40,15 @@ void main() {
         priority: 1,
       );
 
-      final volume = automationService.calculateTargetVolume(
+      final result = automationService.calculateTargetVolume(
         activeEvents: [activeEvent],
         rules: [rule],
         defaultVolume: 0.5,
       );
 
-      expect(volume, 0.1);
+      expect(result.volume, 0.1);
+      expect(result.winningEvent?.id, '1');
+      expect(result.winningRule?.id, 'r1');
     });
 
     test('should pick rule with highest priority if multiple match', () {
@@ -73,13 +76,14 @@ void main() {
         priority: 10,
       );
 
-      final volume = automationService.calculateTargetVolume(
+      final result = automationService.calculateTargetVolume(
         activeEvents: [activeEvent],
         rules: [rule1, rule2],
         defaultVolume: 0.5,
       );
 
-      expect(volume, 0.0);
+      expect(result.volume, 0.0);
+      expect(result.winningRule?.id, 'r2');
     });
 
     test('should respect volumeOverride on event (takes highest priority)', () {
@@ -100,13 +104,15 @@ void main() {
         priority: 1,
       );
 
-      final volume = automationService.calculateTargetVolume(
+      final result = automationService.calculateTargetVolume(
         activeEvents: [activeEvent],
         rules: [rule],
         defaultVolume: 0.5,
       );
 
-      expect(volume, 0.2);
+      expect(result.volume, 0.2);
+      expect(result.winningEvent?.id, '1');
+      expect(result.winningRule, isNull);
     });
   });
 }

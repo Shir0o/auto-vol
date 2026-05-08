@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,8 +8,16 @@ import 'package:vocus/features/calendar/models/calendar_entry.dart';
 import 'package:vocus/features/calendar/models/calendar_event.dart';
 import 'package:vocus/features/calendar/providers/calendar_provider.dart';
 import 'package:vocus/features/calendar/repositories/calendar_repository.dart';
+import 'package:vocus/features/volume/providers/event_overrides_provider.dart';
 
 class MockCalendarRepository extends Mock implements CalendarRepository {}
+
+class FakeEventOverridesNotifier extends EventOverridesNotifier {
+  final Map<String, double> _initialState;
+  FakeEventOverridesNotifier(this._initialState);
+  @override
+  FutureOr<Map<String, double>> build() => _initialState;
+}
 
 class FakeEnabledCalendarIdsNotifier extends EnabledCalendarIdsNotifier {
   final Set<String> _initialState;
@@ -130,6 +139,9 @@ void main() {
               CalendarEntry(id: 'cal-2', title: 'Personal', color: '#00FF00'),
             ],
           ),
+          eventOverridesProvider.overrideWith(
+            () => FakeEventOverridesNotifier({}),
+          ),
         ],
       );
       addTearDown(container.dispose);
@@ -197,6 +209,9 @@ void main() {
               CalendarEntry(id: 'primary', title: 'Primary', isPrimary: true),
             ],
           ),
+          eventOverridesProvider.overrideWith(
+            () => FakeEventOverridesNotifier({}),
+          ),
         ],
       );
       addTearDown(container.dispose);
@@ -242,4 +257,48 @@ void main() {
       expect(events.any((e) => e.isAllDay), isFalse);
     },
   );
+
+  test('calendarEventsProvider applies volume overrides', () async {
+    final container = ProviderContainer(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        calendarRepositoryProvider.overrideWith(
+          (ref) async => mockRepository,
+        ),
+        enabledCalendarIdsProvider.overrideWith(
+          () => FakeEnabledCalendarIdsNotifier({'primary'}),
+        ),
+        availableCalendarsProvider.overrideWith(
+          (ref) async => [
+            CalendarEntry(id: 'primary', title: 'Primary', isPrimary: true),
+          ],
+        ),
+        eventOverridesProvider.overrideWith(
+          () => FakeEventOverridesNotifier({'e1': 0.8}),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final event = CalendarEvent(
+      id: 'e1',
+      title: 'Tune Me',
+      startTime: DateTime.now(),
+      endTime: DateTime.now().add(const Duration(hours: 1)),
+      calendarId: 'primary',
+    );
+
+    when(
+      () => mockRepository.fetchEvents(
+        any(),
+        calendarTitle: any(named: 'calendarTitle'),
+        calendarColor: any(named: 'calendarColor'),
+      ),
+    ).thenAnswer((_) async => [event]);
+
+    final results = await container.read(calendarEventsProvider.future);
+
+    expect(results.first.id, 'e1');
+    expect(results.first.volumeOverride, 0.8);
+  });
 }

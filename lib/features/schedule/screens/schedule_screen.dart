@@ -6,6 +6,7 @@ import 'package:vocus/features/calendar/providers/calendar_provider.dart';
 import 'package:vocus/features/calendar/providers/auth_provider.dart';
 import 'package:vocus/features/volume/models/automation_status.dart';
 import 'package:vocus/features/volume/providers/automation_provider.dart';
+import 'package:vocus/features/volume/providers/event_overrides_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -48,7 +49,7 @@ class ScheduleScreen extends ConsumerWidget {
                           ref.invalidate(calendarEventsProvider),
                       color: VocusColors.primary,
                       backgroundColor: VocusColors.surface,
-                      child: _buildTimeline(events),
+                      child: _buildTimeline(context, ref, events),
                     ),
                     loading: () => _buildSkeletonLoader(),
                     error: (err, stack) => Center(child: Text('Error: $err')),
@@ -133,35 +134,67 @@ class ScheduleScreen extends ConsumerWidget {
   }
 
   Widget _buildActiveAutomationCard(AutomationStatus status) {
-    final activeEvent = status.activeEvents.first;
+    final winningEvent = status.winningEvent;
+    final otherEvents = status.activeEvents.where((e) => e.id != winningEvent?.id).toList();
+
     return GlassCard(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       opacity: 0.2,
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.auto_awesome, color: VocusColors.primary, size: 20),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Adjusted volume for "${activeEvent.title}"',
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                  ),
+          Row(
+            children: [
+              const Icon(Icons.auto_awesome, color: VocusColors.primary, size: 20),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      winningEvent != null
+                          ? 'Active: "${winningEvent.title}"'
+                          : 'Monitoring schedule...',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Text(
+                      'Target Volume: ${(status.currentVolume * 100).toInt()}%',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: VocusColors.outline,
+                      ),
+                    ),
+                  ],
                 ),
-                Text(
-                  'Target: ${(status.currentVolume * 100).toInt()}%',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: VocusColors.outline,
+              ),
+              if (status.winningRule != null)
+                Tooltip(
+                  message: 'Rule: ${status.winningRule!.eventTitlePattern} (${status.winningRule!.priority})',
+                  child: const Icon(Icons.info_outline, size: 16, color: VocusColors.outline),
+                ),
+            ],
+          ),
+          if (otherEvents.isNotEmpty) ...[
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: Divider(height: 1, color: VocusColors.outline, thickness: 0.1),
+            ),
+            Row(
+              children: [
+                const Icon(Icons.warning_amber_rounded, color: Colors.orangeAccent, size: 14),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Overlapping with ${otherEvents.length} other event${otherEvents.length > 1 ? 's' : ''}',
+                    style: const TextStyle(fontSize: 10, color: Colors.orangeAccent),
                   ),
                 ),
               ],
             ),
-          ),
+          ],
         ],
       ),
     );
@@ -275,7 +308,7 @@ class ScheduleScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTimeline(List<CalendarEvent> events) {
+  Widget _buildTimeline(BuildContext context, WidgetRef ref, List<CalendarEvent> events) {
     if (events.isEmpty) {
       return Center(
         child: Column(
@@ -319,7 +352,7 @@ class ScheduleScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildDateHeader(date),
-            ...dayEvents.map((e) => _buildEventItem(e)),
+            ...dayEvents.map((e) => _buildEventItem(context, ref, e)),
             const SizedBox(height: 16),
           ],
         );
@@ -368,7 +401,7 @@ class ScheduleScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildEventItem(CalendarEvent event) {
+  Widget _buildEventItem(BuildContext context, WidgetRef ref, CalendarEvent event) {
     final timeFormat = DateFormat('h:mm a');
     final startTimeStr = timeFormat.format(event.startTime);
     final endTimeStr = timeFormat.format(event.endTime);
@@ -469,9 +502,133 @@ class ScheduleScreen extends ConsumerWidget {
                   ),
                 ),
               ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      event.volumeOverride != null
+                          ? Icons.volume_up
+                          : Icons.volume_up_outlined,
+                      color: event.volumeOverride != null
+                          ? VocusColors.primary
+                          : VocusColors.outline,
+                    ),
+                    onPressed: () => _showVolumeOverrideDialog(context, ref, event),
+                    tooltip: 'Tune Volume',
+                  ),
+                  if (event.volumeOverride != null)
+                    Text(
+                      '${(event.volumeOverride! * 100).toInt()}%',
+                      style: const TextStyle(
+                        fontSize: 10,
+                        color: VocusColors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(width: 8),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _showVolumeOverrideDialog(
+    BuildContext context,
+    WidgetRef ref,
+    CalendarEvent event,
+  ) {
+    double currentVal = event.volumeOverride ?? 0.5;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            backgroundColor: VocusColors.surface,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+              side: BorderSide(color: VocusColors.primary.withOpacity(0.2)),
+            ),
+            title: Text(
+              'Tune Volume for "${event.title}"',
+              style: const TextStyle(fontSize: 18, color: VocusColors.onSurface),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'This will override any general rules for this specific event.',
+                  style: TextStyle(fontSize: 12, color: VocusColors.outline),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    const Icon(Icons.volume_mute, color: VocusColors.outline),
+                    Expanded(
+                      child: Slider(
+                        value: currentVal,
+                        activeColor: VocusColors.primary,
+                        inactiveColor: VocusColors.outline.withOpacity(0.3),
+                        onChanged: (val) => setState(() => currentVal = val),
+                      ),
+                    ),
+                    const Icon(Icons.volume_up, color: VocusColors.primary),
+                  ],
+                ),
+                Text(
+                  '${(currentVal * 100).toInt()}%',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: VocusColors.primary,
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  'CANCEL',
+                  style: TextStyle(color: VocusColors.outline),
+                ),
+              ),
+              if (event.volumeOverride != null)
+                TextButton(
+                  onPressed: () {
+                    ref
+                        .read(eventOverridesProvider.notifier)
+                        .removeOverride(event.id);
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    'RESET',
+                    style: TextStyle(color: Colors.redAccent),
+                  ),
+                ),
+              ElevatedButton(
+                onPressed: () {
+                  ref
+                      .read(eventOverridesProvider.notifier)
+                      .setOverride(event.id, currentVal);
+                  Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: VocusColors.primary,
+                  foregroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text('APPLY'),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
