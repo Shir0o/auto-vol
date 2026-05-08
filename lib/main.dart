@@ -29,9 +29,10 @@ class VocusApp extends ConsumerWidget {
     // Initialize automation loop
     ref.listen(automationProvider, (_, __) {});
 
-    // Request permissions on startup
+    // Request permissions and silent sign-in on startup
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(permissionServiceProvider).requestInitialPermissions();
+      ref.read(authServiceProvider).signInSilently();
     });
 
     return MaterialApp(

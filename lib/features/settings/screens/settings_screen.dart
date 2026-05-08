@@ -1,5 +1,7 @@
+import 'package:vocus/core/providers/common_providers.dart';
 import 'package:vocus/core/theme/vocus_theme.dart';
 import 'package:vocus/core/widgets/glass_card.dart';
+import 'package:vocus/features/calendar/providers/auth_provider.dart';
 import 'package:vocus/features/volume/providers/automation_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +13,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final automationEnabled = ref.watch(automationEnabledProvider);
     final defaultVolume = ref.watch(defaultVolumeProvider);
+    final currentUser = ref.watch(currentUserProvider);
 
     return Scaffold(
       body: Stack(
@@ -36,7 +39,21 @@ class SettingsScreen extends ConsumerWidget {
                 _buildDefaultVolumeSlider(ref, defaultVolume),
                 const SizedBox(height: 24),
                 _buildSectionHeader('Connections'),
-                _buildConnectionItem('Google Calendar', 'Sync schedules seamlessly', Icons.calendar_month),
+                _buildConnectionItem(
+                  ref,
+                  'Google Calendar',
+                  currentUser?.email ?? 'Sync schedules seamlessly',
+                  Icons.calendar_month,
+                  isConnected: currentUser != null,
+                  onTap: () async {
+                    final authService = ref.read(authServiceProvider);
+                    if (currentUser != null) {
+                      await authService.signOut();
+                    } else {
+                      await authService.signIn();
+                    }
+                  },
+                ),
               ],
             ),
           ),
@@ -113,18 +130,31 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildConnectionItem(String title, String subtitle, IconData icon) {
+  Widget _buildConnectionItem(
+    WidgetRef ref,
+    String title,
+    String subtitle,
+    IconData icon, {
+    required bool isConnected,
+    required VoidCallback onTap,
+  }) {
     return GlassCard(
       padding: const EdgeInsets.all(20),
+      onTap: onTap,
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: VocusColors.primary.withOpacity(0.1),
+              color: isConnected
+                  ? Colors.green.withOpacity(0.1)
+                  : VocusColors.primary.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: VocusColors.primary),
+            child: Icon(
+              icon,
+              color: isConnected ? Colors.green : VocusColors.primary,
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -132,11 +162,20 @@ class SettingsScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Text(subtitle, style: const TextStyle(fontSize: 14, color: VocusColors.outline)),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isConnected ? Colors.green : VocusColors.outline,
+                  ),
+                ),
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: VocusColors.outline),
+          Icon(
+            isConnected ? Icons.logout : Icons.chevron_right,
+            color: VocusColors.outline,
+          ),
         ],
       ),
     );

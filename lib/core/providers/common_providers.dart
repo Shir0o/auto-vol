@@ -8,8 +8,15 @@ import 'package:vocus/features/volume/repositories/volume_rules_repository.dart'
 import 'package:vocus/features/volume/services/automation_service.dart';
 import 'package:vocus/features/volume/services/volume_service.dart';
 
+import 'package:googleapis/calendar/v3.dart' as google;
+
 final googleSignInProvider = Provider<GoogleSignIn>((ref) {
-  return GoogleSignIn.instance;
+  return GoogleSignIn(
+    scopes: [
+      google.CalendarApi.calendarReadonlyScope,
+      'email',
+    ],
+  );
 });
 
 final authServiceProvider = Provider<AuthService>((ref) {
