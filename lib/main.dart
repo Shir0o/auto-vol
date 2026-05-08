@@ -9,11 +9,44 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:workmanager/workmanager.dart';
+import 'package:vocus/features/calendar/services/background/sync_service.dart';
 
 import 'dart:io';
 
+@pragma('vm:entry-point')
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) async {
+    print('Workmanager: Executing task $task');
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final syncService = SyncService(GoogleSignIn.instance, prefs);
+      return await syncService.syncCalendars();
+    } catch (e) {
+      print('Workmanager: Failed to execute task: $e');
+      return false;
+    }
+  });
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Workmanager
+  await Workmanager().initialize(
+    callbackDispatcher,
+    isInDebugMode: true, // TODO: set to false in production
+  );
+
+  // Register periodic task
+  await Workmanager().registerPeriodicTask(
+    'vocus_sync_task',
+    'syncCalendars',
+    frequency: const Duration(minutes: 15),
+    constraints: Constraints(
+      networkType: NetworkType.connected,
+    ),
+  );
 
   // Initialize foreground task
   await VocusForegroundService.init();
