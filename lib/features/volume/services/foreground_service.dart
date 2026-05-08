@@ -45,9 +45,10 @@ class ForegroundTaskHandler extends TaskHandler {
     final defaultVolume = prefs.getDouble('default_volume') ?? 0.5;
 
     final now = DateTime.now();
-    final activeEvents = events
-        .where((e) => e.startTime.isBefore(now) && e.endTime.isAfter(now))
-        .toList();
+    final activeEvents =
+        events
+            .where((e) => e.startTime.isBefore(now) && e.endTime.isAfter(now))
+            .toList();
 
     final result = _automationService.calculateTargetVolume(
       activeEvents: activeEvents,
@@ -55,7 +56,25 @@ class ForegroundTaskHandler extends TaskHandler {
       defaultVolume: defaultVolume,
     );
 
-    await _volumeService.setVolume(result.volume);
+    // Snapshot and restore logic
+    final snapshot = prefs.getDouble('volume_snapshot');
+
+    if (activeEvents.isNotEmpty) {
+      if (snapshot == null) {
+        final current = await _volumeService.getVolume();
+        if (current != null) {
+          await prefs.setDouble('volume_snapshot', current);
+        }
+      }
+      await _volumeService.setVolume(result.volume);
+    } else {
+      if (snapshot != null) {
+        await _volumeService.setVolume(snapshot);
+        await prefs.remove('volume_snapshot');
+      } else {
+        await _volumeService.setVolume(defaultVolume);
+      }
+    }
 
     // Update notification
     String statusText = 'Monitoring schedule...';

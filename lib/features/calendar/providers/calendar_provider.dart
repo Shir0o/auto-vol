@@ -77,6 +77,7 @@ final enabledCalendarIdsProvider =
     });
 
 final calendarEventsProvider = FutureProvider<List<CalendarEvent>>((ref) async {
+  ref.watch(calendarRefreshTickProvider); // Watch periodic refresh tick
   final repository = await ref.watch(calendarRepositoryProvider.future);
   final enabledIds = ref.watch(enabledCalendarIdsProvider);
   final includeAllDay = ref.watch(includeAllDayEventsProvider);

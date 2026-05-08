@@ -44,6 +44,14 @@ final permissionServiceProvider = Provider<PermissionService>((ref) {
   return PermissionService();
 });
 
+final tickProvider = StreamProvider<DateTime>((ref) {
+  return Stream.periodic(const Duration(minutes: 1), (_) => DateTime.now());
+});
+
+final calendarRefreshTickProvider = StreamProvider<DateTime>((ref) {
+  return Stream.periodic(const Duration(minutes: 15), (_) => DateTime.now());
+});
+
 final notificationPolicyAccessProvider = FutureProvider<bool>((ref) {
   return ref.watch(permissionServiceProvider).hasNotificationPolicyAccess();
 });

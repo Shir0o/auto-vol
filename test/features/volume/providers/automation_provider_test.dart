@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:vocus/core/providers/common_providers.dart';
 import 'package:vocus/features/calendar/models/calendar_event.dart';
 import 'package:vocus/features/calendar/providers/calendar_provider.dart';
@@ -21,17 +22,25 @@ class MockForegroundService extends Mock implements ForegroundServiceWrapper {}
 
 class MockSharedPreferences extends Mock implements SharedPreferences {}
 
+class _ManualListNotifier<T> extends Notifier<List<T>> {
+  @override
+  List<T> build() => [];
+  set state(List<T> value) => super.state = value;
+}
+
 void main() {
   late MockAutomationService mockAutomationService;
   late MockVolumeService mockVolumeService;
   late MockForegroundService mockForegroundService;
   late MockSharedPreferences mockSharedPreferences;
+  late NotifierProvider<_ManualListNotifier<CalendarEvent>, List<CalendarEvent>> eventsStateProvider;
 
   setUp(() {
     mockAutomationService = MockAutomationService();
     mockVolumeService = MockVolumeService();
     mockForegroundService = MockForegroundService();
     mockSharedPreferences = MockSharedPreferences();
+    eventsStateProvider = NotifierProvider<_ManualListNotifier<CalendarEvent>, List<CalendarEvent>>(() => _ManualListNotifier<CalendarEvent>());
 
     when(
       () => mockSharedPreferences.setString(any(), any()),
@@ -42,14 +51,17 @@ void main() {
     when(
       () => mockSharedPreferences.setBool(any(), any()),
     ).thenAnswer((_) async => true);
+    when(() => mockSharedPreferences.remove(any())).thenAnswer((_) async => true);
     when(() => mockSharedPreferences.getBool(any())).thenReturn(null);
     when(() => mockSharedPreferences.getDouble(any())).thenReturn(null);
+    when(() => mockVolumeService.getVolume()).thenAnswer((_) async => 0.5);
   });
 
   ProviderContainer createContainer({
     List<VolumeRule> rules = const [],
     List<CalendarEvent> events = const [],
     bool enabled = true,
+    Stream<DateTime>? tickStream,
   }) {
     final container = ProviderContainer(
       overrides: [
@@ -57,18 +69,97 @@ void main() {
         volumeServiceProvider.overrideWithValue(mockVolumeService),
         foregroundServiceProvider.overrideWithValue(mockForegroundService),
         sharedPreferencesProvider.overrideWithValue(mockSharedPreferences),
+        calendarEventsProvider.overrideWith((ref) => ref.watch(eventsStateProvider)),
         volumeRulesProvider.overrideWith(() => _MockVolumeRulesNotifier(rules)),
-        calendarEventsProvider.overrideWith((ref) => events),
         automationEnabledProvider.overrideWith(
           () => _MockEnabledNotifier(enabled),
         ),
+        if (tickStream != null) tickProvider.overrideWith((ref) => tickStream),
       ],
     );
+    // Initialize state
+    container.read(eventsStateProvider.notifier).state = events;
     addTearDown(container.dispose);
     return container;
   }
 
   group('AutomationNotifier', () {
+    test(
+      'should snapshot current volume before event starts and restore it after event ends',
+      () async {
+        final tickController = StreamController<DateTime>(sync: true);
+        
+        // Initial state: no events
+        when(
+          () => mockAutomationService.calculateTargetVolume(
+            activeEvents: [],
+            rules: any(named: 'rules'),
+            defaultVolume: any(named: 'defaultVolume'),
+          ),
+        ).thenReturn(AutomationResult(volume: 0.5, isDefault: true));
+
+        when(() => mockVolumeService.getVolume()).thenAnswer((_) async => 0.7);
+        when(() => mockVolumeService.setVolume(any())).thenAnswer((_) async {});
+
+        final container = createContainer(
+          events: [], 
+          enabled: true, 
+          tickStream: tickController.stream,
+        );
+
+        container.listen(automationProvider, (_, __) {});
+
+        // Initial build - no events, should use default (0.5)
+        await Future.delayed(const Duration(milliseconds: 10));
+        verify(() => mockVolumeService.setVolume(0.5)).called(greaterThanOrEqualTo(1));
+
+        // Event starts
+        final activeEvent = CalendarEvent(
+          id: '1',
+          title: 'Meeting',
+          startTime: DateTime.now().subtract(const Duration(minutes: 10)),
+          endTime: DateTime.now().add(const Duration(minutes: 10)),
+          calendarId: 'primary',
+        );
+
+        when(
+          () => mockAutomationService.calculateTargetVolume(
+            activeEvents: [activeEvent],
+            rules: any(named: 'rules'),
+            defaultVolume: any(named: 'defaultVolume'),
+          ),
+        ).thenReturn(AutomationResult(volume: 0.2, winningEvent: activeEvent));
+
+        // Update events
+        container.read(eventsStateProvider.notifier).state = [activeEvent];
+        tickController.add(DateTime.now());
+        
+        await Future.delayed(const Duration(milliseconds: 10));
+        
+        // Should have snapshotted 0.7 (mocked getVolume) and set to 0.2
+        verify(() => mockVolumeService.getVolume()).called(greaterThanOrEqualTo(1));
+        verify(() => mockVolumeService.setVolume(0.2)).called(greaterThanOrEqualTo(1));
+
+        // Event ends
+        when(
+          () => mockAutomationService.calculateTargetVolume(
+            activeEvents: [],
+            rules: any(named: 'rules'),
+            defaultVolume: any(named: 'defaultVolume'),
+          ),
+        ).thenReturn(AutomationResult(volume: 0.5, isDefault: true));
+
+        container.read(eventsStateProvider.notifier).state = [];
+        tickController.add(DateTime.now());
+
+        await Future.delayed(const Duration(milliseconds: 10));
+
+        // Should have restored 0.7 instead of setting to 0.5
+        verify(() => mockVolumeService.setVolume(0.7)).called(1);
+        
+        tickController.close();
+      },
+    );
     test(
       'should set volume and return status when automation is enabled and events change',
       () async {
