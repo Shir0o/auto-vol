@@ -1,7 +1,11 @@
+import 'package:vocus/core/providers/common_providers.dart';
 import 'package:vocus/core/theme/vocus_theme.dart';
 import 'package:vocus/core/widgets/glass_card.dart';
 import 'package:vocus/features/calendar/models/calendar_event.dart';
 import 'package:vocus/features/calendar/providers/calendar_provider.dart';
+import 'package:vocus/features/calendar/providers/auth_provider.dart';
+import 'package:vocus/features/volume/models/automation_status.dart';
+import 'package:vocus/features/volume/providers/automation_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -13,6 +17,8 @@ class ScheduleScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final eventsAsync = ref.watch(calendarEventsProvider);
+    final automationStatus = ref.watch(automationProvider);
+    final currentUser = ref.watch(currentUserProvider);
 
     return Scaffold(
       body: Stack(
@@ -22,7 +28,12 @@ class ScheduleScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildHeader(),
+                _buildHeader(ref, automationStatus),
+                if (currentUser == null) 
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+                    child: _buildOnboardingCard(ref),
+                  ),
                 Expanded(
                   child: eventsAsync.when(
                     data: (events) => RefreshIndicator(
@@ -43,19 +54,25 @@ class ScheduleScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(WidgetRef ref, AutomationStatus status) {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Flow State',
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: VocusColors.onBackground,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Flow State',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: VocusColors.onBackground,
+                ),
+              ),
+              _buildStatusBadge(ref, status),
+            ],
           ),
           Text(
             DateFormat('EEEE, MMMM d').format(DateTime.now()),
@@ -63,6 +80,112 @@ class ScheduleScreen extends ConsumerWidget {
               fontSize: 18,
               color: VocusColors.outline,
             ),
+          ),
+          if (status.isEnabled && status.activeEvents.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 16.0),
+              child: _buildActiveAutomationCard(status),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusBadge(WidgetRef ref, AutomationStatus status) {
+    final color = status.isEnabled ? VocusColors.primary : VocusColors.outline;
+    return GestureDetector(
+      onTap: () => ref.read(automationEnabledProvider.notifier).set(!status.isEnabled),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withOpacity(0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              status.isEnabled ? 'MONITORING' : 'PAUSED',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.1,
+                color: color,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActiveAutomationCard(AutomationStatus status) {
+    final activeEvent = status.activeEvents.first;
+    return GlassCard(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      opacity: 0.2,
+      child: Row(
+        children: [
+          const Icon(Icons.auto_awesome, color: VocusColors.primary, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Adjusted volume for "${activeEvent.title}"',
+                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                ),
+                Text(
+                  'Target: ${(status.currentVolume * 100).toInt()}%',
+                  style: const TextStyle(fontSize: 11, color: VocusColors.outline),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOnboardingCard(WidgetRef ref) {
+    return GlassCard(
+      padding: const EdgeInsets.all(24),
+      opacity: 0.15,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.calendar_today_outlined, color: VocusColors.primary, size: 32),
+          const SizedBox(height: 16),
+          const Text(
+            'Connect your schedule',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Sync with Google Calendar to automatically manage your device volume during meetings and focus time.',
+            style: TextStyle(fontSize: 14, color: VocusColors.outline, height: 1.4),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () => ref.read(authServiceProvider).signIn(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: VocusColors.primary,
+              foregroundColor: Colors.black,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
+            child: const Text('Sign in with Google'),
           ),
         ],
       ),
@@ -135,10 +258,17 @@ class ScheduleScreen extends ConsumerWidget {
 
   Widget _buildTimeline(List<CalendarEvent> events) {
     if (events.isEmpty) {
-      return const Center(
-        child: Text(
-          'No upcoming events',
-          style: TextStyle(color: VocusColors.outline),
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.calendar_today, size: 48, color: VocusColors.outline.withOpacity(0.3)),
+            const SizedBox(height: 16),
+            const Text(
+              'No upcoming events',
+              style: TextStyle(color: VocusColors.outline, fontSize: 16),
+            ),
+          ],
         ),
       );
     }

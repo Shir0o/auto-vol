@@ -77,6 +77,16 @@ class SettingsScreen extends ConsumerWidget {
                     loading: () => const Center(child: CircularProgressIndicator()),
                     error: (err, _) => Text('Failed to load calendars: $err'),
                   ),
+                  const SizedBox(height: 40),
+                  SizedBox(
+                    width: double.infinity,
+                    child: TextButton.icon(
+                      onPressed: () => ref.read(authServiceProvider).signOut(),
+                      icon: const Icon(Icons.logout, color: Colors.redAccent),
+                      label: const Text('Sign Out', style: TextStyle(color: Colors.redAccent)),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                 ],
               ],
             ),

@@ -2,6 +2,7 @@ import 'package:vocus/core/providers/common_providers.dart';
 import 'package:vocus/features/calendar/models/calendar_event.dart';
 import 'package:vocus/features/calendar/providers/calendar_provider.dart';
 import 'package:vocus/features/volume/models/volume_rule.dart';
+import 'package:vocus/features/volume/models/automation_status.dart';
 import 'package:vocus/features/volume/providers/automation_provider.dart';
 import 'package:vocus/features/volume/providers/volume_rules_provider.dart';
 import 'package:vocus/features/volume/services/automation_service.dart';
@@ -41,7 +42,7 @@ void main() {
   }
 
   group('AutomationNotifier', () {
-    test('should set volume when automation is enabled and events change', () async {
+    test('should set volume and return status when automation is enabled and events change', () async {
       final startTime = DateTime.now().subtract(const Duration(minutes: 10));
       final endTime = DateTime.now().add(const Duration(minutes: 10));
       final activeEvent = CalendarEvent(
@@ -63,16 +64,23 @@ void main() {
       final container = createContainer(events: [activeEvent], enabled: true);
       
       // Trigger the notifier
-      container.read(automationProvider);
+      final status = container.read(automationProvider);
 
+      // Wait for microtask
+      await Future.delayed(Duration.zero);
+
+      expect(status.isEnabled, true);
+      expect(status.currentVolume, 0.1);
+      expect(status.activeEvents, [activeEvent]);
       verify(() => mockVolumeService.setVolume(0.1)).called(1);
     });
 
-    test('should NOT set volume when automation is disabled', () async {
+    test('should return disabled status when automation is disabled', () async {
       final container = createContainer(enabled: false);
       
-      container.read(automationProvider);
+      final status = container.read(automationProvider);
 
+      expect(status.isEnabled, false);
       verifyNever(() => mockVolumeService.setVolume(any()));
     });
   });

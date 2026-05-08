@@ -36,13 +36,34 @@ void main() async {
   );
 }
 
+final scaffoldMessengerKeyProvider = Provider((ref) => GlobalKey<ScaffoldMessengerState>());
+
 class VocusApp extends ConsumerWidget {
   const VocusApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Initialize automation loop
-    ref.listen(automationProvider, (_, __) {});
+    // Initialize automation loop and show feedback
+    ref.listen(automationProvider, (previous, next) {
+      if (next.isEnabled && next.activeEvents.isNotEmpty) {
+        final prevActive = previous?.activeEvents.firstOrNull;
+        final nextActive = next.activeEvents.first;
+        
+        if (prevActive?.id != nextActive.id) {
+          final messenger = ref.read(scaffoldMessengerKeyProvider).currentState;
+          messenger?.clearSnackBars();
+          messenger?.showSnackBar(
+            SnackBar(
+              content: Text('Auto-Volume: Adjusted for "${nextActive.title}"'),
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: VocusColors.surfaceVariant,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }
+    });
 
     // Request permissions and silent sign-in on startup
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -58,6 +79,7 @@ class VocusApp extends ConsumerWidget {
       theme: VocusTheme.darkTheme,
       home: const MainScreen(),
       debugShowCheckedModeBanner: false,
+      scaffoldMessengerKey: ref.watch(scaffoldMessengerKeyProvider),
     );
   }
 }
