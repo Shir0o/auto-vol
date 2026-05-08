@@ -121,10 +121,7 @@ class CalendarEvent {
       final valueStr = match.group(1)!;
       final isPercentage = match.group(0)!.contains('%');
       double value = double.parse(valueStr);
-      if (isPercentage) {
-        return value / 100.0;
-      }
-      return value;
+      return (isPercentage ? value / 100.0 : value).clamp(0.0, 1.0);
     }
 
     final lowerText = text.toLowerCase();

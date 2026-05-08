@@ -147,6 +147,8 @@ class DndSnapshot extends _$DndSnapshot {
 
 @riverpod
 class Automation extends _$Automation {
+  final Map<VolumeStream, double> _lastAppliedVolume = {};
+
   @override
   AutomationStatus build() {
     ref.watch(tickProvider);
@@ -215,7 +217,10 @@ class Automation extends _$Automation {
               ref.read(volumeSnapshotProvider.notifier).set(stream, current);
             }
           }
-          await volumeService.setVolume(result.volume, stream: stream);
+          if (_lastAppliedVolume[stream] != result.volume) {
+            await volumeService.setVolume(result.volume, stream: stream);
+            _lastAppliedVolume[stream] = result.volume;
+          }
         }
       } else {
         if (dndSnap != null) {
@@ -226,11 +231,15 @@ class Automation extends _$Automation {
         if (snapshots.isNotEmpty) {
           for (final entry in snapshots.entries) {
             await volumeService.setVolume(entry.value, stream: entry.key);
+            _lastAppliedVolume[entry.key] = entry.value;
           }
           ref.read(volumeSnapshotProvider.notifier).clearAll();
         } else {
           for (final stream in streams) {
-            await volumeService.setVolume(defaultVol, stream: stream);
+            if (_lastAppliedVolume[stream] != defaultVol) {
+              await volumeService.setVolume(defaultVol, stream: stream);
+              _lastAppliedVolume[stream] = defaultVol;
+            }
           }
         }
       }
