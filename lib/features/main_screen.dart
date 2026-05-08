@@ -20,10 +20,7 @@ class MainScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedIndex = ref.watch(selectedIndexProvider);
 
-    final screens = [
-      const ScheduleScreen(),
-      const SettingsScreen(),
-    ];
+    final screens = [const ScheduleScreen(), const SettingsScreen()];
 
     return Scaffold(
       body: screens[selectedIndex],

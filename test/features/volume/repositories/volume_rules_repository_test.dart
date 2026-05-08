@@ -25,7 +25,7 @@ void main() {
         volumeLevel: 0.5,
         priority: 1,
       );
-      
+
       final ruleJson = jsonEncode({
         'id': '1',
         'calendarId': 'c1',
@@ -52,7 +52,9 @@ void main() {
         priority: 1,
       );
 
-      when(() => mockPrefs.setStringList(any(), any())).thenAnswer((_) async => true);
+      when(
+        () => mockPrefs.setStringList(any(), any()),
+      ).thenAnswer((_) async => true);
 
       await repository.saveRules([rule]);
 

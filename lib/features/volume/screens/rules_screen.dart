@@ -21,7 +21,11 @@ class RulesScreen extends ConsumerWidget {
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          Container(decoration: const BoxDecoration(gradient: VocusColors.deepSpaceGradient)),
+          Container(
+            decoration: const BoxDecoration(
+              gradient: VocusColors.deepSpaceGradient,
+            ),
+          ),
           SafeArea(
             child: rulesAsync.when(
               data: (rules) => rules.isEmpty
@@ -46,7 +50,11 @@ class RulesScreen extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.rule_folder_outlined, size: 64, color: VocusColors.outline.withOpacity(0.3)),
+          Icon(
+            Icons.rule_folder_outlined,
+            size: 64,
+            color: VocusColors.outline.withOpacity(0.3),
+          ),
           const SizedBox(height: 16),
           const Text(
             'No rules defined',
@@ -97,18 +105,31 @@ class RulesScreen extends ConsumerWidget {
                     children: [
                       Text(
                         rule.eventTitlePattern,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       Text(
-                        rule.volumeLevel == 0 ? 'Muted' : 'Volume: ${(rule.volumeLevel * 100).toInt()}%',
-                        style: const TextStyle(fontSize: 13, color: VocusColors.outline),
+                        rule.volumeLevel == 0
+                            ? 'Muted'
+                            : 'Volume: ${(rule.volumeLevel * 100).toInt()}%',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: VocusColors.outline,
+                        ),
                       ),
                     ],
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                  onPressed: () => ref.read(volumeRulesProvider.notifier).deleteRule(rule.id),
+                  icon: const Icon(
+                    Icons.delete_outline,
+                    color: Colors.redAccent,
+                  ),
+                  onPressed: () => ref
+                      .read(volumeRulesProvider.notifier)
+                      .deleteRule(rule.id),
                 ),
               ],
             ),
@@ -158,18 +179,25 @@ class RulesScreen extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel', style: TextStyle(color: VocusColors.outline)),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: VocusColors.outline),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
                 if (titleController.text.isNotEmpty) {
-                  ref.read(volumeRulesProvider.notifier).addRule(VolumeRule(
-                    id: DateTime.now().millisecondsSinceEpoch.toString(),
-                    calendarId: 'primary',
-                    eventTitlePattern: titleController.text,
-                    volumeLevel: volume,
-                    priority: 1,
-                  ));
+                  ref
+                      .read(volumeRulesProvider.notifier)
+                      .addRule(
+                        VolumeRule(
+                          id: DateTime.now().millisecondsSinceEpoch.toString(),
+                          calendarId: 'primary',
+                          eventTitlePattern: titleController.text,
+                          volumeLevel: volume,
+                          priority: 1,
+                        ),
+                      );
                   Navigator.pop(context);
                 }
               },

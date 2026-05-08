@@ -4,6 +4,7 @@ import 'package:googleapis/calendar/v3.dart' as google;
 import 'package:mocktail/mocktail.dart';
 
 class MockGoogleEvent extends Mock implements google.Event {}
+
 class MockEventDateTime extends Mock implements google.EventDateTime {}
 
 void main() {
@@ -11,7 +12,7 @@ void main() {
     test('should correctly instantiate from JSON-like data', () {
       final startTime = DateTime(2026, 5, 7, 10, 0);
       final endTime = DateTime(2026, 5, 7, 11, 0);
-      
+
       final event = CalendarEvent(
         id: '1',
         title: 'Meeting',
@@ -46,7 +47,7 @@ void main() {
       final googleEvent = MockGoogleEvent();
       final start = MockEventDateTime();
       final end = MockEventDateTime();
-      
+
       final startTime = DateTime(2026, 5, 7, 10, 0);
       final endTime = DateTime(2026, 5, 7, 11, 0);
 

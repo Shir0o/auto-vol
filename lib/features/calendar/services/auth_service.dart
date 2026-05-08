@@ -23,12 +23,14 @@ class AuthService {
     await _googleSignIn.signOut();
   }
 
-  Future<google.CalendarApi?> getCalendarApi(GoogleSignInAccount account) async {
+  Future<google.CalendarApi?> getCalendarApi(
+    GoogleSignInAccount account,
+  ) async {
     final scopes = [google.CalendarApi.calendarReadonlyScope];
-    
+
     // This should be silent if the user already granted the scopes during sign-in
     final auth = await account.authorizationClient.authorizeScopes(scopes);
-    
+
     final headers = {'Authorization': 'Bearer ${auth.accessToken}'};
     final client = _GoogleAuthClient(headers);
     return google.CalendarApi(client);

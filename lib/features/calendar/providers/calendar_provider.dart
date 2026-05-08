@@ -3,7 +3,9 @@ import 'package:vocus/features/calendar/models/calendar_entry.dart';
 import 'package:vocus/features/calendar/models/calendar_event.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final availableCalendarsProvider = FutureProvider<List<CalendarEntry>>((ref) async {
+final availableCalendarsProvider = FutureProvider<List<CalendarEntry>>((
+  ref,
+) async {
   final repository = await ref.watch(calendarRepositoryProvider.future);
   return repository.fetchCalendars();
 });
@@ -24,7 +26,11 @@ class EnabledCalendarIdsNotifier extends Notifier<Set<String>> {
     return availableAsync.when(
       data: (calendars) => calendars.isEmpty
           ? {}
-          : {calendars.firstWhere((c) => c.isPrimary, orElse: () => calendars.first).id},
+          : {
+              calendars
+                  .firstWhere((c) => c.isPrimary, orElse: () => calendars.first)
+                  .id,
+            },
       loading: () => {},
       error: (_, __) => {},
     );
@@ -38,7 +44,9 @@ class EnabledCalendarIdsNotifier extends Notifier<Set<String>> {
       newState.add(id);
     }
     state = newState;
-    await ref.read(sharedPreferencesProvider).setStringList(_storageKey, state.toList());
+    await ref
+        .read(sharedPreferencesProvider)
+        .setStringList(_storageKey, state.toList());
   }
 }
 
@@ -57,13 +65,15 @@ class IncludeAllDayEventsNotifier extends Notifier<bool> {
   }
 }
 
-final includeAllDayEventsProvider = NotifierProvider<IncludeAllDayEventsNotifier, bool>(() {
-  return IncludeAllDayEventsNotifier();
-});
+final includeAllDayEventsProvider =
+    NotifierProvider<IncludeAllDayEventsNotifier, bool>(() {
+      return IncludeAllDayEventsNotifier();
+    });
 
-final enabledCalendarIdsProvider = NotifierProvider<EnabledCalendarIdsNotifier, Set<String>>(() {
-  return EnabledCalendarIdsNotifier();
-});
+final enabledCalendarIdsProvider =
+    NotifierProvider<EnabledCalendarIdsNotifier, Set<String>>(() {
+      return EnabledCalendarIdsNotifier();
+    });
 
 final calendarEventsProvider = FutureProvider<List<CalendarEvent>>((ref) async {
   final repository = await ref.watch(calendarRepositoryProvider.future);
@@ -89,7 +99,9 @@ final calendarEventsProvider = FutureProvider<List<CalendarEvent>>((ref) async {
   final flattened = allEvents.expand((e) => e).toList();
 
   // Filter all-day events if not included
-  final filtered = includeAllDay ? flattened : flattened.where((e) => !e.isAllDay).toList();
+  final filtered = includeAllDay
+      ? flattened
+      : flattened.where((e) => !e.isAllDay).toList();
 
   filtered.sort((a, b) => a.startTime.compareTo(b.startTime));
   return filtered;

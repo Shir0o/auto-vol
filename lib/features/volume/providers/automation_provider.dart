@@ -11,9 +11,10 @@ import 'package:intl/intl.dart';
 class AutomationEnabledNotifier extends Notifier<bool> {
   @override
   bool build() {
-    return ref.watch(sharedPreferencesProvider).getBool('automation_enabled') ?? false;
+    return ref.watch(sharedPreferencesProvider).getBool('automation_enabled') ??
+        false;
   }
-  
+
   void set(bool value) {
     state = value;
     ref.read(sharedPreferencesProvider).setBool('automation_enabled', value);
@@ -26,14 +27,16 @@ class AutomationEnabledNotifier extends Notifier<bool> {
   }
 }
 
-final automationEnabledProvider = NotifierProvider<AutomationEnabledNotifier, bool>(() {
-  return AutomationEnabledNotifier();
-});
+final automationEnabledProvider =
+    NotifierProvider<AutomationEnabledNotifier, bool>(() {
+      return AutomationEnabledNotifier();
+    });
 
 class DefaultVolumeNotifier extends Notifier<double> {
   @override
   double build() {
-    return ref.watch(sharedPreferencesProvider).getDouble('default_volume') ?? 0.5;
+    return ref.watch(sharedPreferencesProvider).getDouble('default_volume') ??
+        0.5;
   }
 
   void set(double value) {
@@ -42,9 +45,11 @@ class DefaultVolumeNotifier extends Notifier<double> {
   }
 }
 
-final defaultVolumeProvider = NotifierProvider<DefaultVolumeNotifier, double>(() {
-  return DefaultVolumeNotifier();
-});
+final defaultVolumeProvider = NotifierProvider<DefaultVolumeNotifier, double>(
+  () {
+    return DefaultVolumeNotifier();
+  },
+);
 
 class AutomationNotifier extends Notifier<AutomationStatus> {
   @override
@@ -56,13 +61,16 @@ class AutomationNotifier extends Notifier<AutomationStatus> {
 
     // Sync to SharedPreferences for background service
     final prefs = ref.read(sharedPreferencesProvider);
-    prefs.setString('cached_events', jsonEncode(events.map((e) => e.toJson()).toList()));
+    prefs.setString(
+      'cached_events',
+      jsonEncode(events.map((e) => e.toJson()).toList()),
+    );
     prefs.setDouble('default_volume', defaultVolume);
 
     final now = DateTime.now();
-    final activeEvents = events.where((e) => 
-      e.startTime.isBefore(now) && e.endTime.isAfter(now)
-    ).toList();
+    final activeEvents = events
+        .where((e) => e.startTime.isBefore(now) && e.endTime.isAfter(now))
+        .toList();
 
     if (!enabled) {
       return AutomationStatus(
@@ -95,6 +103,7 @@ class AutomationNotifier extends Notifier<AutomationStatus> {
   }
 }
 
-final automationProvider = NotifierProvider<AutomationNotifier, AutomationStatus>(() {
-  return AutomationNotifier();
-});
+final automationProvider =
+    NotifierProvider<AutomationNotifier, AutomationStatus>(() {
+      return AutomationNotifier();
+    });

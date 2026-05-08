@@ -55,16 +55,22 @@ class CalendarEvent {
     );
   }
 
-  factory CalendarEvent.fromGoogleEvent(google.Event event, String calendarId,
-      {String? calendarTitle, String? calendarColor}) {
+  factory CalendarEvent.fromGoogleEvent(
+    google.Event event,
+    String calendarId, {
+    String? calendarTitle,
+    String? calendarColor,
+  }) {
     final isAllDay = event.start?.dateTime == null && event.start?.date != null;
 
     return CalendarEvent(
       id: event.id ?? '',
       title: event.summary ?? 'No Title',
       description: event.description,
-      startTime: (event.start?.dateTime ?? event.start?.date ?? DateTime.now()).toLocal(),
-      endTime: (event.end?.dateTime ?? event.end?.date ?? DateTime.now()).toLocal(),
+      startTime: (event.start?.dateTime ?? event.start?.date ?? DateTime.now())
+          .toLocal(),
+      endTime: (event.end?.dateTime ?? event.end?.date ?? DateTime.now())
+          .toLocal(),
       calendarId: calendarId,
       calendarTitle: calendarTitle,
       calendarColor: calendarColor,
