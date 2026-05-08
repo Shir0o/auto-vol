@@ -39,8 +39,11 @@ final permissionServiceProvider = Provider<PermissionService>((ref) {
 });
 
 final calendarRepositoryProvider = FutureProvider<CalendarRepository>((ref) async {
-  final authService = ref.watch(authServiceProvider);
-  final api = await authService.getCalendarApi();
-  if (api == null) throw Exception('Not authenticated');
+  final user = ref.watch(currentUserProvider);
+  if (user == null) throw Exception('Not authenticated');
+  
+  final authService = ref.read(authServiceProvider);
+  final api = await authService.getCalendarApi(user);
+  if (api == null) throw Exception('Failed to get API');
   return CalendarRepository(api);
 });

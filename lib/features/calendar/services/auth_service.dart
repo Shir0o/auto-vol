@@ -8,10 +8,17 @@ class AuthService {
   AuthService(this._googleSignIn);
 
   Future<GoogleSignInAccount?> signIn() async {
-    return await _googleSignIn.authenticate();
+    // Pass scopeHint to request permissions upfront and avoid multiple dialogues later
+    return await _googleSignIn.authenticate(
+      scopeHint: [google.CalendarApi.calendarReadonlyScope],
+    );
   }
 
   Future<GoogleSignInAccount?> signInSilently() async {
+    // If we already have a user, just return it
+    if (_googleSignIn.currentUser != null) {
+      return _googleSignIn.currentUser;
+    }
     return await _googleSignIn.attemptLightweightAuthentication();
   }
 
@@ -19,11 +26,10 @@ class AuthService {
     await _googleSignIn.signOut();
   }
 
-  Future<google.CalendarApi?> getCalendarApi() async {
-    final account = await _googleSignIn.attemptLightweightAuthentication();
-    if (account == null) return null;
-
+  Future<google.CalendarApi?> getCalendarApi(GoogleSignInAccount account) async {
     final scopes = [google.CalendarApi.calendarReadonlyScope];
+    
+    // This should be silent if the user already granted the scopes during sign-in
     final auth = await account.authorizationClient.authorizeScopes(scopes);
     
     final headers = {'Authorization': 'Bearer ${auth.accessToken}'};
