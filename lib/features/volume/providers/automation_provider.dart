@@ -234,13 +234,6 @@ class Automation extends _$Automation {
             _lastAppliedVolume[entry.key] = entry.value;
           }
           ref.read(volumeSnapshotProvider.notifier).clearAll();
-        } else {
-          for (final stream in streams) {
-            if (_lastAppliedVolume[stream] != defaultVol) {
-              await volumeService.setVolume(defaultVol, stream: stream);
-              _lastAppliedVolume[stream] = defaultVol;
-            }
-          }
         }
       }
     });

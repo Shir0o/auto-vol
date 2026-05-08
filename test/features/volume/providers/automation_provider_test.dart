@@ -183,11 +183,11 @@ void main() {
 
         container.listen(automationProvider, (_, __) {});
 
-        // Initial build - no events, should use default (0.5)
+        // Initial build - no events, should NOT set volume
         await Future.delayed(const Duration(milliseconds: 10));
-        verify(
-          () => mockVolumeService.setVolume(0.5, stream: VolumeStream.media),
-        ).called(greaterThanOrEqualTo(1));
+        verifyNever(
+          () => mockVolumeService.setVolume(any(), stream: any(named: 'stream')),
+        );
 
         // Event starts
         final activeEvent = CalendarEvent(

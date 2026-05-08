@@ -83,9 +83,48 @@ class RulesScreen extends ConsumerWidget {
   ) {
     return ListView.builder(
       padding: const EdgeInsets.all(20),
-      itemCount: rules.length,
+      itemCount: rules.length + 1,
       itemBuilder: (context, index) {
-        final rule = rules[index];
+        if (index == 0) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 24.0),
+            child: GlassCard(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Row(
+                    children: [
+                      Icon(Icons.info_outline,
+                          color: VocusColors.primary, size: 20),
+                      SizedBox(width: 8),
+                      Text(
+                        'How Rules Work',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: VocusColors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  _buildGuideItem(
+                    'Matching: Rules apply when an event title contains your keyword.',
+                  ),
+                  _buildGuideItem(
+                    'Priority: If events overlap, the rule with the highest number wins.',
+                  ),
+                  _buildGuideItem(
+                    'Defaults: If no rules match, your default volume is used.',
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        final rule = rules[index - 1];
         return Padding(
           padding: const EdgeInsets.only(bottom: 12.0),
           child: GlassCard(
@@ -153,6 +192,29 @@ class RulesScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildGuideItem(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('• ',
+              style: TextStyle(color: VocusColors.primary, fontSize: 14)),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 13,
+                color: VocusColors.outline,
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _showRuleDialog(
     BuildContext context,
     WidgetRef ref, {
@@ -192,6 +254,8 @@ class RulesScreen extends ConsumerWidget {
                   decoration: const InputDecoration(
                     labelText: 'Keyword',
                     hintText: 'e.g. Meeting, Focus, Workout',
+                    helperText: 'Matches if title contains this text',
+                    helperStyle: TextStyle(fontSize: 11),
                     labelStyle: TextStyle(color: VocusColors.outline),
                   ),
                   style: const TextStyle(color: Colors.white),
@@ -224,7 +288,21 @@ class RulesScreen extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Priority'),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Priority'),
+                          Text(
+                            'Higher numbers win overlaps',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: VocusColors.outline,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     Row(
                       children: [
                         IconButton(
