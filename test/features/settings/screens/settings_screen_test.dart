@@ -7,6 +7,7 @@ import 'package:vocus/features/calendar/models/calendar_entry.dart';
 import 'package:vocus/features/calendar/providers/calendar_provider.dart';
 import 'package:vocus/features/calendar/repositories/calendar_repository.dart';
 import 'package:vocus/features/settings/screens/settings_screen.dart';
+import 'package:vocus/features/volume/services/foreground_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
@@ -16,7 +17,17 @@ class MockGoogleSignInAccount extends Mock implements GoogleSignInAccount {}
 
 class MockCalendarRepository extends Mock implements CalendarRepository {}
 
+class MockForegroundService extends Mock implements ForegroundServiceWrapper {}
+
 void main() {
+  late MockForegroundService mockForegroundService;
+
+  setUp(() {
+    mockForegroundService = MockForegroundService();
+    when(() => mockForegroundService.start()).thenAnswer((_) async => true);
+    when(() => mockForegroundService.stop()).thenAnswer((_) async => true);
+  });
+
   testWidgets('SettingsScreen displays available calendars and allows toggling', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
@@ -41,6 +52,7 @@ void main() {
           sharedPreferencesProvider.overrideWithValue(prefs),
           currentUserProvider.overrideWith((ref) => mockUser),
           calendarRepositoryProvider.overrideWith((ref) async => mockRepository),
+          foregroundServiceProvider.overrideWithValue(mockForegroundService),
         ],
         child: const MaterialApp(
           home: SettingsScreen(),
@@ -96,6 +108,7 @@ void main() {
           sharedPreferencesProvider.overrideWithValue(prefs),
           currentUserProvider.overrideWith((ref) => mockUser),
           calendarRepositoryProvider.overrideWith((ref) async => mockRepository),
+          foregroundServiceProvider.overrideWithValue(mockForegroundService),
         ],
         child: const MaterialApp(
           home: SettingsScreen(),

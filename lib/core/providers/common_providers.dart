@@ -8,6 +8,7 @@ import 'package:vocus/features/calendar/repositories/calendar_repository.dart';
 import 'package:vocus/features/volume/repositories/volume_rules_repository.dart';
 import 'package:vocus/features/volume/services/automation_service.dart';
 import 'package:vocus/features/volume/services/volume_service.dart';
+import 'package:vocus/features/volume/services/foreground_service.dart';
 
 import 'package:googleapis/calendar/v3.dart' as google;
 
@@ -33,6 +34,10 @@ final volumeServiceProvider = Provider<VolumeService>((ref) {
 
 final automationServiceProvider = Provider<AutomationService>((ref) {
   return AutomationService();
+});
+
+final foregroundServiceProvider = Provider<ForegroundServiceWrapper>((ref) {
+  return ForegroundServiceWrapper();
 });
 
 final permissionServiceProvider = Provider<PermissionService>((ref) {

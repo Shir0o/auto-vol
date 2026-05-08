@@ -3,6 +3,7 @@ import 'package:vocus/core/theme/vocus_theme.dart';
 import 'package:vocus/features/main_screen.dart';
 import 'package:vocus/features/calendar/providers/auth_provider.dart';
 import 'package:vocus/features/volume/providers/automation_provider.dart';
+import 'package:vocus/features/volume/services/foreground_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,6 +14,9 @@ import 'dart:io';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize foreground task
+  await VocusForegroundService.init();
 
   // Initialize Google Sign-In
   // Note: On Android, the "Web Client ID" from the Google Cloud Console 

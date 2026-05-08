@@ -4,10 +4,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:vocus/features/calendar/models/calendar_event.dart';
 import 'package:vocus/features/calendar/providers/calendar_provider.dart';
+import 'package:vocus/features/calendar/providers/auth_provider.dart';
+import 'package:vocus/features/volume/models/automation_status.dart';
+import 'package:vocus/features/volume/providers/automation_provider.dart';
 import 'package:vocus/features/schedule/screens/schedule_screen.dart';
 import 'package:shimmer/shimmer.dart';
 
+class MockAutomationNotifier extends AutomationNotifier {
+  final AutomationStatus _status;
+  MockAutomationNotifier(this._status);
+
+  @override
+  AutomationStatus build() => _status;
+}
+
 void main() {
+  final dummyStatus = AutomationStatus(
+    isEnabled: false,
+    currentVolume: 0.5,
+    activeEvents: [],
+  );
+
   testWidgets('ScheduleScreen shows skeleton loader when loading', (tester) async {
     final completer = Completer<List<CalendarEvent>>();
     final loadingProvider = FutureProvider<List<CalendarEvent>>((ref) => completer.future);
@@ -16,9 +33,11 @@ void main() {
       ProviderScope(
         overrides: [
           calendarEventsProvider.overrideWith((ref) => ref.watch(loadingProvider.future)),
+          automationProvider.overrideWith(() => MockAutomationNotifier(dummyStatus)),
+          currentUserProvider.overrideWithValue(null),
         ],
         child: const MaterialApp(
-          home: ScheduleScreen(),
+          home: const ScheduleScreen(),
         ),
       ),
     );
@@ -54,9 +73,11 @@ void main() {
               ),
             ];
           }),
+          automationProvider.overrideWith(() => MockAutomationNotifier(dummyStatus)),
+          currentUserProvider.overrideWithValue(null),
         ],
         child: const MaterialApp(
-          home: ScheduleScreen(),
+          home: const ScheduleScreen(),
         ),
       ),
     );

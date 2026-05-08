@@ -7,20 +7,34 @@ import 'package:vocus/features/volume/providers/automation_provider.dart';
 import 'package:vocus/features/volume/providers/volume_rules_provider.dart';
 import 'package:vocus/features/volume/services/automation_service.dart';
 import 'package:vocus/features/volume/services/volume_service.dart';
+import 'package:vocus/features/volume/services/foreground_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MockAutomationService extends Mock implements AutomationService {}
 class MockVolumeService extends Mock implements VolumeService {}
+class MockForegroundService extends Mock implements ForegroundServiceWrapper {}
+class MockSharedPreferences extends Mock implements SharedPreferences {}
 
 void main() {
   late MockAutomationService mockAutomationService;
   late MockVolumeService mockVolumeService;
+  late MockForegroundService mockForegroundService;
+  late MockSharedPreferences mockSharedPreferences;
 
   setUp(() {
     mockAutomationService = MockAutomationService();
     mockVolumeService = MockVolumeService();
+    mockForegroundService = MockForegroundService();
+    mockSharedPreferences = MockSharedPreferences();
+
+    when(() => mockSharedPreferences.setString(any(), any())).thenAnswer((_) async => true);
+    when(() => mockSharedPreferences.setDouble(any(), any())).thenAnswer((_) async => true);
+    when(() => mockSharedPreferences.setBool(any(), any())).thenAnswer((_) async => true);
+    when(() => mockSharedPreferences.getBool(any())).thenReturn(null);
+    when(() => mockSharedPreferences.getDouble(any())).thenReturn(null);
   });
 
   ProviderContainer createContainer({
@@ -32,6 +46,8 @@ void main() {
       overrides: [
         automationServiceProvider.overrideWithValue(mockAutomationService),
         volumeServiceProvider.overrideWithValue(mockVolumeService),
+        foregroundServiceProvider.overrideWithValue(mockForegroundService),
+        sharedPreferencesProvider.overrideWithValue(mockSharedPreferences),
         volumeRulesProvider.overrideWith(() => _MockVolumeRulesNotifier(rules)),
         calendarEventsProvider.overrideWith((ref) => events),
         automationEnabledProvider.overrideWith(() => _MockEnabledNotifier(enabled)),
@@ -82,6 +98,26 @@ void main() {
 
       expect(status.isEnabled, false);
       verifyNever(() => mockVolumeService.setVolume(any()));
+    });
+  });
+
+  group('AutomationEnabledNotifier', () {
+    test('should start foreground service when enabled', () {
+      when(() => mockForegroundService.start()).thenAnswer((_) async => true);
+      final container = createContainer(enabled: false);
+      
+      container.read(automationEnabledProvider.notifier).set(true);
+      
+      verify(() => mockForegroundService.start()).called(1);
+    });
+
+    test('should stop foreground service when disabled', () {
+      when(() => mockForegroundService.stop()).thenAnswer((_) async => true);
+      final container = createContainer(enabled: true);
+      
+      container.read(automationEnabledProvider.notifier).set(false);
+      
+      verify(() => mockForegroundService.stop()).called(1);
     });
   });
 }

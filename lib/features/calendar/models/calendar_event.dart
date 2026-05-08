@@ -25,6 +25,36 @@ class CalendarEvent {
     this.isAllDay = false,
   });
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'startTime': startTime.toIso8601String(),
+      'endTime': endTime.toIso8601String(),
+      'calendarId': calendarId,
+      'calendarTitle': calendarTitle,
+      'calendarColor': calendarColor,
+      'volumeOverride': volumeOverride,
+      'isAllDay': isAllDay,
+    };
+  }
+
+  factory CalendarEvent.fromJson(Map<String, dynamic> json) {
+    return CalendarEvent(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      description: json['description'] as String?,
+      startTime: DateTime.parse(json['startTime'] as String),
+      endTime: DateTime.parse(json['endTime'] as String),
+      calendarId: json['calendarId'] as String,
+      calendarTitle: json['calendarTitle'] as String?,
+      calendarColor: json['calendarColor'] as String?,
+      volumeOverride: json['volumeOverride'] as double?,
+      isAllDay: json['isAllDay'] as bool? ?? false,
+    );
+  }
+
   factory CalendarEvent.fromGoogleEvent(google.Event event, String calendarId,
       {String? calendarTitle, String? calendarColor}) {
     final isAllDay = event.start?.dateTime == null && event.start?.date != null;
