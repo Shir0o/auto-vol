@@ -1,21 +1,27 @@
-import 'package:vocus/core/providers/common_providers.dart';
 import 'package:vocus/features/volume/models/volume_rule.dart';
 import 'package:vocus/features/volume/providers/volume_rules_provider.dart';
 import 'package:vocus/features/volume/screens/rules_screen.dart';
+import 'package:vocus/features/calendar/providers/calendar_provider.dart';
+import 'package:vocus/features/calendar/models/calendar_entry.dart';
+import 'package:vocus/core/providers/common_providers.dart';
+import 'package:vocus/features/volume/repositories/volume_rules_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class MockVolumeRulesNotifier extends AsyncNotifier<List<VolumeRule>>
-    with Mock
-    implements VolumeRulesNotifier {}
+class MockVolumeRulesRepository extends Mock implements VolumeRulesRepository {}
 
 void main() {
-  late MockVolumeRulesNotifier mockNotifier;
+  late MockVolumeRulesRepository mockRepository;
+  late SharedPreferences prefs;
 
-  setUp(() {
-    mockNotifier = MockVolumeRulesNotifier();
+  setUp(() async {
+    mockRepository = MockVolumeRulesRepository();
+    SharedPreferences.setMockInitialValues({});
+    prefs = await SharedPreferences.getInstance();
+
     registerFallbackValue(
       VolumeRule(
         id: '1',
@@ -27,10 +33,16 @@ void main() {
     );
   });
 
-  Widget createRulesScreen(AsyncValue<List<VolumeRule>> state) {
+  Widget createRulesScreen() {
     return ProviderScope(
-      overrides: [volumeRulesProvider.overrideWith(() => mockNotifier)],
-      child: MaterialApp(home: const RulesScreen()),
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        availableCalendarsProvider.overrideWith((ref) async => [
+          CalendarEntry(id: 'primary', title: 'Primary', isPrimary: true),
+        ]),
+        volumeRulesRepositoryProvider.overrideWithValue(mockRepository),
+      ],
+      child: const MaterialApp(home: RulesScreen()),
     );
   }
 
@@ -44,9 +56,9 @@ void main() {
         priority: 1,
       );
 
-      when(() => mockNotifier.build()).thenAnswer((_) async => [rule]);
+      when(() => mockRepository.loadRules()).thenAnswer((_) async => [rule]);
 
-      await tester.pumpWidget(createRulesScreen(AsyncData([rule])));
+      await tester.pumpWidget(createRulesScreen());
       await tester.pumpAndSettle();
 
       expect(find.text('Meeting'), findsOneWidget);
@@ -54,9 +66,9 @@ void main() {
     });
 
     testWidgets('should show empty state when no rules', (tester) async {
-      when(() => mockNotifier.build()).thenAnswer((_) async => []);
+      when(() => mockRepository.loadRules()).thenAnswer((_) async => []);
 
-      await tester.pumpWidget(createRulesScreen(const AsyncData([])));
+      await tester.pumpWidget(createRulesScreen());
       await tester.pumpAndSettle();
 
       expect(find.text('No rules defined'), findsOneWidget);
@@ -71,10 +83,10 @@ void main() {
         priority: 1,
       );
 
-      when(() => mockNotifier.build()).thenAnswer((_) async => [rule]);
-      when(() => mockNotifier.updateRule(any())).thenAnswer((_) async {});
+      when(() => mockRepository.loadRules()).thenAnswer((_) async => [rule]);
+      when(() => mockRepository.saveRules(any())).thenAnswer((_) async {});
 
-      await tester.pumpWidget(createRulesScreen(AsyncData([rule])));
+      await tester.pumpWidget(createRulesScreen());
       await tester.pumpAndSettle();
 
       // Tap on the rule to edit
@@ -83,7 +95,7 @@ void main() {
 
       expect(find.text('Edit Rule'), findsOneWidget);
 
-      // Change priority - use find.descendant to target the dialog
+      // Change priority
       await tester.tap(find.descendant(
         of: find.byType(AlertDialog),
         matching: find.byIcon(Icons.add),
@@ -94,16 +106,16 @@ void main() {
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
 
-      verify(() => mockNotifier.updateRule(any(
-            that: isA<VolumeRule>().having((r) => r.priority, 'priority', 2),
+      verify(() => mockRepository.saveRules(any(
+            that: contains(isA<VolumeRule>().having((r) => r.priority, 'priority', 2)),
           ))).called(1);
     });
 
     testWidgets('should call addRule when a new rule is added', (tester) async {
-      when(() => mockNotifier.build()).thenAnswer((_) async => []);
-      when(() => mockNotifier.addRule(any())).thenAnswer((_) async {});
+      when(() => mockRepository.loadRules()).thenAnswer((_) async => []);
+      when(() => mockRepository.saveRules(any())).thenAnswer((_) async {});
 
-      await tester.pumpWidget(createRulesScreen(const AsyncData([])));
+      await tester.pumpWidget(createRulesScreen());
       await tester.pumpAndSettle();
 
       // Tap FAB to add
@@ -120,8 +132,8 @@ void main() {
       await tester.tap(find.text('Add'));
       await tester.pumpAndSettle();
 
-      verify(() => mockNotifier.addRule(any(
-            that: isA<VolumeRule>().having((r) => r.eventTitlePattern, 'pattern', 'Workout'),
+      verify(() => mockRepository.saveRules(any(
+            that: contains(isA<VolumeRule>().having((r) => r.eventTitlePattern, 'pattern', 'Workout')),
           ))).called(1);
     });
   });

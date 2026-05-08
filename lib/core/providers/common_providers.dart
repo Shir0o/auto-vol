@@ -1,4 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vocus/core/services/permission_service.dart';
@@ -9,65 +8,77 @@ import 'package:vocus/features/volume/repositories/volume_rules_repository.dart'
 import 'package:vocus/features/volume/services/automation_service.dart';
 import 'package:vocus/features/volume/services/volume_service.dart';
 import 'package:vocus/features/volume/services/foreground_service.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'package:googleapis/calendar/v3.dart' as google;
+part 'common_providers.g.dart';
 
-final googleSignInProvider = Provider<GoogleSignIn>((ref) {
+@Riverpod(keepAlive: true)
+GoogleSignIn googleSignIn(Ref ref) {
   return GoogleSignIn.instance;
-});
+}
 
-final authServiceProvider = Provider<AuthService>((ref) {
+@Riverpod(keepAlive: true)
+AuthService authService(Ref ref) {
   return AuthService(ref.watch(googleSignInProvider));
-});
+}
 
-final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
+@Riverpod(keepAlive: true)
+SharedPreferences sharedPreferences(Ref ref) {
   throw UnimplementedError();
-});
+}
 
-final volumeRulesRepositoryProvider = Provider<VolumeRulesRepository>((ref) {
+@Riverpod(keepAlive: true)
+VolumeRulesRepository volumeRulesRepository(Ref ref) {
   return VolumeRulesRepository(ref.watch(sharedPreferencesProvider));
-});
+}
 
-final volumeServiceProvider = Provider<VolumeService>((ref) {
+@Riverpod(keepAlive: true)
+VolumeService volumeService(Ref ref) {
   return VolumeService();
-});
+}
 
-final automationServiceProvider = Provider<AutomationService>((ref) {
+@Riverpod(keepAlive: true)
+AutomationService automationService(Ref ref) {
   return AutomationService();
-});
+}
 
-final foregroundServiceProvider = Provider<ForegroundServiceWrapper>((ref) {
+@Riverpod(keepAlive: true)
+ForegroundServiceWrapper foregroundService(Ref ref) {
   return ForegroundServiceWrapper();
-});
+}
 
-final permissionServiceProvider = Provider<PermissionService>((ref) {
+@Riverpod(keepAlive: true)
+PermissionService permissionService(Ref ref) {
   return PermissionService();
-});
+}
 
-final tickProvider = StreamProvider<DateTime>((ref) {
+@riverpod
+Stream<DateTime> tick(Ref ref) {
   return Stream.periodic(const Duration(minutes: 1), (_) => DateTime.now());
-});
+}
 
-final calendarRefreshTickProvider = StreamProvider<DateTime>((ref) {
+@riverpod
+Stream<DateTime> calendarRefreshTick(Ref ref) {
   return Stream.periodic(const Duration(minutes: 15), (_) => DateTime.now());
-});
+}
 
-final notificationPolicyAccessProvider = FutureProvider<bool>((ref) {
+@riverpod
+Future<bool> notificationPolicyAccess(Ref ref) {
   return ref.watch(permissionServiceProvider).hasNotificationPolicyAccess();
-});
+}
 
-final ignoreBatteryOptimizationsProvider = FutureProvider<bool>((ref) {
+@riverpod
+Future<bool> ignoreBatteryOptimizations(Ref ref) {
   return ref.watch(permissionServiceProvider).isIgnoringBatteryOptimizations();
-});
+}
 
-final calendarRepositoryProvider = FutureProvider<CalendarRepository>((
-  ref,
-) async {
+@riverpod
+Future<CalendarRepository> calendarRepository(Ref ref) async {
   final user = ref.watch(currentUserProvider);
   if (user == null) throw Exception('Not authenticated');
 
-  final authService = ref.read(authServiceProvider);
-  final api = await authService.getCalendarApi(user);
+  final service = ref.read(authServiceProvider);
+  final api = await service.getCalendarApi(user);
   if (api == null) throw Exception('Failed to get API');
   return CalendarRepository(api);
-});
+}

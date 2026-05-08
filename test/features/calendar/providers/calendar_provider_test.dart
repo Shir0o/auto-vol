@@ -12,16 +12,16 @@ import 'package:vocus/features/volume/providers/event_overrides_provider.dart';
 
 class MockCalendarRepository extends Mock implements CalendarRepository {}
 
-class FakeEventOverridesNotifier extends EventOverridesNotifier {
+class FakeEventOverrides extends EventOverrides {
   final Map<String, double> _initialState;
-  FakeEventOverridesNotifier(this._initialState);
+  FakeEventOverrides(this._initialState);
   @override
   FutureOr<Map<String, double>> build() => _initialState;
 }
 
-class FakeEnabledCalendarIdsNotifier extends EnabledCalendarIdsNotifier {
+class FakeEnabledCalendarIds extends EnabledCalendarIds {
   final Set<String> _initialState;
-  FakeEnabledCalendarIdsNotifier(this._initialState);
+  FakeEnabledCalendarIds(this._initialState);
   @override
   Set<String> build() => _initialState;
 }
@@ -131,7 +131,7 @@ void main() {
             (ref) async => mockRepository,
           ),
           enabledCalendarIdsProvider.overrideWith(
-            () => FakeEnabledCalendarIdsNotifier({'cal-1', 'cal-2'}),
+            () => FakeEnabledCalendarIds({'cal-1', 'cal-2'}),
           ),
           availableCalendarsProvider.overrideWith(
             (ref) async => [
@@ -140,7 +140,7 @@ void main() {
             ],
           ),
           eventOverridesProvider.overrideWith(
-            () => FakeEventOverridesNotifier({}),
+            () => FakeEventOverrides({}),
           ),
         ],
       );
@@ -202,7 +202,7 @@ void main() {
             (ref) async => mockRepository,
           ),
           enabledCalendarIdsProvider.overrideWith(
-            () => FakeEnabledCalendarIdsNotifier({'primary'}),
+            () => FakeEnabledCalendarIds({'primary'}),
           ),
           availableCalendarsProvider.overrideWith(
             (ref) async => [
@@ -210,7 +210,7 @@ void main() {
             ],
           ),
           eventOverridesProvider.overrideWith(
-            () => FakeEventOverridesNotifier({}),
+            () => FakeEventOverrides({}),
           ),
         ],
       );
@@ -266,7 +266,7 @@ void main() {
           (ref) async => mockRepository,
         ),
         enabledCalendarIdsProvider.overrideWith(
-          () => FakeEnabledCalendarIdsNotifier({'primary'}),
+          () => FakeEnabledCalendarIds({'primary'}),
         ),
         availableCalendarsProvider.overrideWith(
           (ref) async => [
@@ -274,7 +274,7 @@ void main() {
           ],
         ),
         eventOverridesProvider.overrideWith(
-          () => FakeEventOverridesNotifier({'e1': 0.8}),
+          () => FakeEventOverrides({'e1': 0.8}),
         ),
       ],
     );
@@ -311,7 +311,7 @@ void main() {
           (ref) async => mockRepository,
         ),
         enabledCalendarIdsProvider.overrideWith(
-          () => FakeEnabledCalendarIdsNotifier({'primary'}),
+          () => FakeEnabledCalendarIds({'primary'}),
         ),
         availableCalendarsProvider.overrideWith(
           (ref) async => [
@@ -319,7 +319,7 @@ void main() {
           ],
         ),
         eventOverridesProvider.overrideWith(
-          () => FakeEventOverridesNotifier({}),
+          () => FakeEventOverrides({}),
         ),
         calendarRefreshTickProvider.overrideWith((ref) => tickController.stream),
       ],

@@ -2,16 +2,18 @@ import 'package:vocus/core/providers/common_providers.dart';
 import 'package:vocus/features/calendar/models/calendar_entry.dart';
 import 'package:vocus/features/calendar/models/calendar_event.dart';
 import 'package:vocus/features/volume/providers/event_overrides_provider.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final availableCalendarsProvider = FutureProvider<List<CalendarEntry>>((
-  ref,
-) async {
+part 'calendar_provider.g.dart';
+
+@riverpod
+Future<List<CalendarEntry>> availableCalendars(Ref ref) async {
   final repository = await ref.watch(calendarRepositoryProvider.future);
   return repository.fetchCalendars();
-});
+}
 
-class EnabledCalendarIdsNotifier extends Notifier<Set<String>> {
+@riverpod
+class EnabledCalendarIds extends _$EnabledCalendarIds {
   static const _storageKey = 'enabled_calendar_ids';
 
   @override
@@ -22,7 +24,6 @@ class EnabledCalendarIdsNotifier extends Notifier<Set<String>> {
       return stored.toSet();
     }
 
-    // Default: only primary calendar if nothing stored
     final availableAsync = ref.watch(availableCalendarsProvider);
     return availableAsync.when(
       data: (calendars) => calendars.isEmpty
@@ -32,8 +33,8 @@ class EnabledCalendarIdsNotifier extends Notifier<Set<String>> {
                   .firstWhere((c) => c.isPrimary, orElse: () => calendars.first)
                   .id,
             },
-      loading: () => {},
-      error: (_, __) => {},
+      loading: () => <String>{},
+      error: (_, __) => <String>{},
     );
   }
 
@@ -51,13 +52,14 @@ class EnabledCalendarIdsNotifier extends Notifier<Set<String>> {
   }
 }
 
-class IncludeAllDayEventsNotifier extends Notifier<bool> {
+@riverpod
+class IncludeAllDayEvents extends _$IncludeAllDayEvents {
   static const _storageKey = 'include_all_day_events';
 
   @override
   bool build() {
     final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getBool(_storageKey) ?? true; // Default to true
+    return prefs.getBool(_storageKey) ?? true;
   }
 
   Future<void> toggle() async {
@@ -66,55 +68,45 @@ class IncludeAllDayEventsNotifier extends Notifier<bool> {
   }
 }
 
-final includeAllDayEventsProvider =
-    NotifierProvider<IncludeAllDayEventsNotifier, bool>(() {
-      return IncludeAllDayEventsNotifier();
-    });
-
-final enabledCalendarIdsProvider =
-    NotifierProvider<EnabledCalendarIdsNotifier, Set<String>>(() {
-      return EnabledCalendarIdsNotifier();
-    });
-
-final calendarEventsProvider = FutureProvider<List<CalendarEvent>>((ref) async {
-  ref.watch(calendarRefreshTickProvider); // Watch periodic refresh tick
+@riverpod
+Future<List<CalendarEvent>> calendarEvents(Ref ref) async {
+  ref.watch(calendarRefreshTickProvider);
   final repository = await ref.watch(calendarRepositoryProvider.future);
   final enabledIds = ref.watch(enabledCalendarIdsProvider);
   final includeAllDay = ref.watch(includeAllDayEventsProvider);
-  final availableAsync = await ref.watch(availableCalendarsProvider.future);
+  final availableCalendarsList = await ref.watch(availableCalendarsProvider.future);
   final overridesAsync = ref.watch(eventOverridesProvider);
 
-  if (enabledIds.isEmpty) return [];
+  if (enabledIds.isEmpty) return <CalendarEvent>[];
 
-  final calendarMap = {for (var c in availableAsync) c.id: c};
+  final calendarMap = {for (var c in availableCalendarsList) c.id: c};
 
-  final allEvents = await Future.wait(
-    enabledIds.map((id) {
-      final cal = calendarMap[id];
-      return repository.fetchEvents(
-        id,
-        calendarTitle: cal?.title,
-        calendarColor: cal?.color,
-      );
-    }),
-  );
+  final List<Future<List<CalendarEvent>>> fetchFutures = enabledIds.map((String id) {
+    final cal = calendarMap[id];
+    return repository.fetchEvents(
+      id,
+      calendarTitle: cal?.title,
+      calendarColor: cal?.color,
+    );
+  }).toList();
 
-  final flattened = allEvents.expand((e) => e).toList();
+  final List<List<CalendarEvent>> allEventsResults =
+      await Future.wait<List<CalendarEvent>>(fetchFutures);
 
-  // Apply overrides
-  final overrides = overridesAsync.value ?? {};
-  final withOverrides = flattened.map((event) {
+  final List<CalendarEvent> flattened = allEventsResults.expand((e) => e).toList();
+
+  final Map<String, double> overrides = overridesAsync.value ?? {};
+  final List<CalendarEvent> withOverrides = flattened.map<CalendarEvent>((event) {
     if (overrides.containsKey(event.id)) {
       return event.copyWith(volumeOverride: overrides[event.id]);
     }
     return event;
   }).toList();
 
-  // Filter all-day events if not included
-  final filtered = includeAllDay
+  final List<CalendarEvent> filtered = includeAllDay
       ? withOverrides
       : withOverrides.where((e) => !e.isAllDay).toList();
 
   filtered.sort((a, b) => a.startTime.compareTo(b.startTime));
   return filtered;
-});
+}

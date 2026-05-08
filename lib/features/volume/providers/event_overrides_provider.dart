@@ -1,14 +1,18 @@
 import 'dart:async';
 import 'package:vocus/core/providers/common_providers.dart';
 import 'package:vocus/features/volume/repositories/event_overrides_repository.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final eventOverridesRepositoryProvider = Provider<EventOverridesRepository>((ref) {
+part 'event_overrides_provider.g.dart';
+
+@riverpod
+EventOverridesRepository eventOverridesRepository(Ref ref) {
   final prefs = ref.watch(sharedPreferencesProvider);
   return EventOverridesRepository(prefs);
-});
+}
 
-class EventOverridesNotifier extends AsyncNotifier<Map<String, double>> {
+@riverpod
+class EventOverrides extends _$EventOverrides {
   @override
   FutureOr<Map<String, double>> build() async {
     final repository = ref.watch(eventOverridesRepositoryProvider);
@@ -35,7 +39,3 @@ class EventOverridesNotifier extends AsyncNotifier<Map<String, double>> {
     await repository.saveOverrides(updatedOverrides);
   }
 }
-
-final eventOverridesProvider = AsyncNotifierProvider<EventOverridesNotifier, Map<String, double>>(() {
-  return EventOverridesNotifier();
-});

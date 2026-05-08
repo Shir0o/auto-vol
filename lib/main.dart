@@ -119,8 +119,9 @@ class VocusApp extends ConsumerWidget {
       ref.read(permissionServiceProvider).requestInitialPermissions();
       final user = await ref.read(authServiceProvider).signInSilently();
       if (user != null) {
-        ref.read(authStateNotifierProvider.notifier).updateState(user);
+        ref.read(authStateProvider.notifier).updateState(user);
       }
+
     });
 
     return MaterialApp(
