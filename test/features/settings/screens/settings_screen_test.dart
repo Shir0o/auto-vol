@@ -76,12 +76,19 @@ void main() {
       expect(find.textContaining('Holidays'), findsOneWidget);
 
       // Initial state: Work should be enabled (default primary)
-      // Switches order: 0: Auto-Volume, 1: All-Day, 2: Work, 3: Holidays
+      // Switches order: 
+      // 0: Auto-Volume
+      // 1: Automate Ringer
+      // 2: Automate Notifications
+      // 3: Automate DND
+      // 4: All-Day
+      // 5: Work
+      // 6: Holidays
       final switches = find.byType(Switch);
 
-      final allDaySwitch = switches.at(1);
-      final workSwitch = switches.at(2);
-      final holidaysSwitch = switches.at(3);
+      final allDaySwitch = switches.at(4);
+      final workSwitch = switches.at(5);
+      final holidaysSwitch = switches.at(6);
 
       expect(tester.widget<Switch>(allDaySwitch).value, isTrue);
       expect(tester.widget<Switch>(workSwitch).value, isTrue);
@@ -138,14 +145,14 @@ void main() {
     expect(allDayToggleFinder, findsOneWidget);
 
     final switches = find.byType(Switch);
-    expect(tester.widget<Switch>(switches.at(1)).value, isTrue);
+    expect(tester.widget<Switch>(switches.at(4)).value, isTrue);
 
     // Toggle it
     await tester.tap(allDayToggleFinder);
     await tester.pumpAndSettle();
 
     // Verify state changed
-    expect(tester.widget<Switch>(switches.at(1)).value, isFalse);
+    expect(tester.widget<Switch>(switches.at(4)).value, isFalse);
     expect(prefs.getBool('include_all_day_events'), isFalse);
   });
 

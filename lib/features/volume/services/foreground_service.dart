@@ -56,23 +56,60 @@ class ForegroundTaskHandler extends TaskHandler {
       defaultVolume: defaultVolume,
     );
 
-    // Snapshot and restore logic
-    final snapshot = prefs.getDouble('volume_snapshot');
+    // Snapshot and restore logic for multiple streams
+    final automateRinger = prefs.getBool('automate_ringer') ?? false;
+    final automateNotification = prefs.getBool('automate_notification') ?? false;
+    final automateDnd = prefs.getBool('automate_dnd') ?? false;
+
+    final streams = [
+      VolumeStream.media,
+      if (automateRinger) VolumeStream.ringer,
+      if (automateNotification) VolumeStream.notification,
+    ];
 
     if (activeEvents.isNotEmpty) {
-      if (snapshot == null) {
-        final current = await _volumeService.getVolume();
-        if (current != null) {
-          await prefs.setDouble('volume_snapshot', current);
+      // Handle DND
+      final dndSnapshot = prefs.getBool('dnd_snapshot');
+      if (automateDnd && dndSnapshot == null) {
+        final isDnd = await _volumeService.isDndEnabled();
+        await prefs.setBool('dnd_snapshot', isDnd);
+        await _volumeService.setDndMode(true);
+      }
+
+      for (final stream in streams) {
+        final snapshot = prefs.getDouble('volume_snapshot_${stream.name}');
+        if (snapshot == null) {
+          final current = await _volumeService.getVolume(stream: stream);
+          if (current != null) {
+            await prefs.setDouble('volume_snapshot_${stream.name}', current);
+          }
+        }
+        await _volumeService.setVolume(result.volume, stream: stream);
+      }
+    } else {
+      // Restore DND
+      final dndSnapshot = prefs.getBool('dnd_snapshot');
+      if (dndSnapshot != null) {
+        await _volumeService.setDndMode(dndSnapshot);
+        await prefs.remove('dnd_snapshot');
+      }
+
+      // Check if we have any snapshots to restore
+      bool hadSnapshots = false;
+      for (final stream in VolumeStream.values) {
+        final snapshot = prefs.getDouble('volume_snapshot_${stream.name}');
+        if (snapshot != null) {
+          await _volumeService.setVolume(snapshot, stream: stream);
+          await prefs.remove('volume_snapshot_${stream.name}');
+          hadSnapshots = true;
         }
       }
-      await _volumeService.setVolume(result.volume);
-    } else {
-      if (snapshot != null) {
-        await _volumeService.setVolume(snapshot);
-        await prefs.remove('volume_snapshot');
-      } else {
-        await _volumeService.setVolume(defaultVolume);
+
+      if (!hadSnapshots) {
+        // No active events and no snapshots - set all enabled to default
+        for (final stream in streams) {
+          await _volumeService.setVolume(defaultVolume, stream: stream);
+        }
       }
     }
 

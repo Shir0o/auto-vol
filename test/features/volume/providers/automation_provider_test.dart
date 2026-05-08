@@ -36,6 +36,7 @@ void main() {
   late NotifierProvider<_ManualListNotifier<CalendarEvent>, List<CalendarEvent>> eventsStateProvider;
 
   setUp(() {
+    registerFallbackValue(VolumeStream.media);
     mockAutomationService = MockAutomationService();
     mockVolumeService = MockVolumeService();
     mockForegroundService = MockForegroundService();
@@ -54,13 +55,16 @@ void main() {
     when(() => mockSharedPreferences.remove(any())).thenAnswer((_) async => true);
     when(() => mockSharedPreferences.getBool(any())).thenReturn(null);
     when(() => mockSharedPreferences.getDouble(any())).thenReturn(null);
-    when(() => mockVolumeService.getVolume()).thenAnswer((_) async => 0.5);
+    when(() => mockVolumeService.getVolume(stream: any(named: 'stream')))
+        .thenAnswer((_) async => 0.5);
   });
 
   ProviderContainer createContainer({
     List<VolumeRule> rules = const [],
     List<CalendarEvent> events = const [],
     bool enabled = true,
+    bool automateRinger = false,
+    bool automateNotification = false,
     Stream<DateTime>? tickStream,
   }) {
     final container = ProviderContainer(
@@ -69,10 +73,18 @@ void main() {
         volumeServiceProvider.overrideWithValue(mockVolumeService),
         foregroundServiceProvider.overrideWithValue(mockForegroundService),
         sharedPreferencesProvider.overrideWithValue(mockSharedPreferences),
-        calendarEventsProvider.overrideWith((ref) => ref.watch(eventsStateProvider)),
+        calendarEventsProvider.overrideWith(
+          (ref) => ref.watch(eventsStateProvider),
+        ),
         volumeRulesProvider.overrideWith(() => _MockVolumeRulesNotifier(rules)),
         automationEnabledProvider.overrideWith(
           () => _MockEnabledNotifier(enabled),
+        ),
+        automateRingerProvider.overrideWith(
+          () => _MockRingerNotifier(automateRinger),
+        ),
+        automateNotificationProvider.overrideWith(
+          () => _MockNotificationNotifier(automateNotification),
         ),
         if (tickStream != null) tickProvider.overrideWith((ref) => tickStream),
       ],
@@ -88,7 +100,7 @@ void main() {
       'should snapshot current volume before event starts and restore it after event ends',
       () async {
         final tickController = StreamController<DateTime>(sync: true);
-        
+
         // Initial state: no events
         when(
           () => mockAutomationService.calculateTargetVolume(
@@ -98,20 +110,26 @@ void main() {
           ),
         ).thenReturn(AutomationResult(volume: 0.5, isDefault: true));
 
-        when(() => mockVolumeService.getVolume()).thenAnswer((_) async => 0.7);
-        when(() => mockVolumeService.setVolume(any())).thenAnswer((_) async {});
+        when(
+          () => mockVolumeService.getVolume(stream: any(named: 'stream')),
+        ).thenAnswer((_) async => 0.7);
+        when(
+          () => mockVolumeService.setVolume(any(), stream: any(named: 'stream')),
+        ).thenAnswer((_) async {});
 
         final container = createContainer(
-          events: [], 
-          enabled: true, 
+          events: [],
+          enabled: true,
           tickStream: tickController.stream,
         );
 
         container.listen(automationProvider, (_, __) {});
 
-        // Initial build - no events, should use default (0.5)
+        // Initial build - no events, should use default (0.5) for media
         await Future.delayed(const Duration(milliseconds: 10));
-        verify(() => mockVolumeService.setVolume(0.5)).called(greaterThanOrEqualTo(1));
+        verify(
+          () => mockVolumeService.setVolume(0.5, stream: VolumeStream.media),
+        ).called(greaterThanOrEqualTo(1));
 
         // Event starts
         final activeEvent = CalendarEvent(
@@ -133,12 +151,16 @@ void main() {
         // Update events
         container.read(eventsStateProvider.notifier).state = [activeEvent];
         tickController.add(DateTime.now());
-        
+
         await Future.delayed(const Duration(milliseconds: 10));
-        
-        // Should have snapshotted 0.7 (mocked getVolume) and set to 0.2
-        verify(() => mockVolumeService.getVolume()).called(greaterThanOrEqualTo(1));
-        verify(() => mockVolumeService.setVolume(0.2)).called(greaterThanOrEqualTo(1));
+
+        // Should have snapshotted 0.7 (mocked getVolume) and set to 0.2 for media
+        verify(
+          () => mockVolumeService.getVolume(stream: VolumeStream.media),
+        ).called(greaterThanOrEqualTo(1));
+        verify(
+          () => mockVolumeService.setVolume(0.2, stream: VolumeStream.media),
+        ).called(greaterThanOrEqualTo(1));
 
         // Event ends
         when(
@@ -155,8 +177,10 @@ void main() {
         await Future.delayed(const Duration(milliseconds: 10));
 
         // Should have restored 0.7 instead of setting to 0.5
-        verify(() => mockVolumeService.setVolume(0.7)).called(1);
-        
+        verify(
+          () => mockVolumeService.setVolume(0.7, stream: VolumeStream.media),
+        ).called(1);
+
         tickController.close();
       },
     );
@@ -181,7 +205,9 @@ void main() {
           ),
         ).thenReturn(AutomationResult(volume: 0.1));
 
-        when(() => mockVolumeService.setVolume(any())).thenAnswer((_) async {});
+        when(
+          () => mockVolumeService.setVolume(any(), stream: any(named: 'stream')),
+        ).thenAnswer((_) async {});
 
         final container = createContainer(events: [activeEvent], enabled: true);
 
@@ -194,7 +220,9 @@ void main() {
         expect(status.isEnabled, true);
         expect(status.currentVolume, 0.1);
         expect(status.activeEvents, [activeEvent]);
-        verify(() => mockVolumeService.setVolume(0.1)).called(1);
+        verify(
+          () => mockVolumeService.setVolume(0.1, stream: VolumeStream.media),
+        ).called(1);
       },
     );
 
@@ -204,7 +232,9 @@ void main() {
       final status = container.read(automationProvider);
 
       expect(status.isEnabled, false);
-      verifyNever(() => mockVolumeService.setVolume(any()));
+      verifyNever(
+        () => mockVolumeService.setVolume(any(), stream: any(named: 'stream')),
+      );
     });
   });
 
@@ -240,6 +270,22 @@ class _MockVolumeRulesNotifier extends VolumeRulesNotifier {
 class _MockEnabledNotifier extends AutomationEnabledNotifier {
   final bool _enabled;
   _MockEnabledNotifier(this._enabled);
+
+  @override
+  bool build() => _enabled;
+}
+
+class _MockRingerNotifier extends AutomateRingerNotifier {
+  final bool _enabled;
+  _MockRingerNotifier(this._enabled);
+
+  @override
+  bool build() => _enabled;
+}
+
+class _MockNotificationNotifier extends AutomateNotificationNotifier {
+  final bool _enabled;
+  _MockNotificationNotifier(this._enabled);
 
   @override
   bool build() => _enabled;
