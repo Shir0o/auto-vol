@@ -7,6 +7,7 @@ class GlassCard extends StatelessWidget {
   final double blur;
   final double opacity;
   final BorderRadius? borderRadius;
+  final VoidCallback? onTap;
 
   const GlassCard({
     super.key,
@@ -15,6 +16,7 @@ class GlassCard extends StatelessWidget {
     this.blur = 20.0,
     this.opacity = 0.1,
     this.borderRadius,
+    this.onTap,
   });
 
   @override
@@ -23,17 +25,20 @@ class GlassCard extends StatelessWidget {
       borderRadius: borderRadius ?? BorderRadius.circular(24),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-        child: Container(
-          padding: padding ?? const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(opacity),
-            borderRadius: borderRadius ?? BorderRadius.circular(24),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.15),
-              width: 0.5,
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
+            padding: padding ?? const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(opacity),
+              borderRadius: borderRadius ?? BorderRadius.circular(24),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.15),
+                width: 0.5,
+              ),
             ),
+            child: child,
           ),
-          child: child,
         ),
       ),
     );

@@ -8,11 +8,11 @@ class AuthService {
   AuthService(this._googleSignIn);
 
   Future<GoogleSignInAccount?> signIn() async {
-    return await _googleSignIn.signIn();
+    return await _googleSignIn.authenticate();
   }
 
   Future<GoogleSignInAccount?> signInSilently() async {
-    return await _googleSignIn.signInSilently();
+    return await _googleSignIn.attemptLightweightAuthentication();
   }
 
   Future<void> signOut() async {

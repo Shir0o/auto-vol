@@ -11,14 +11,7 @@ import 'package:vocus/features/volume/services/volume_service.dart';
 import 'package:googleapis/calendar/v3.dart' as google;
 
 final googleSignInProvider = Provider<GoogleSignIn>((ref) {
-  return GoogleSignIn(
-    clientId: '1088393636693-p5k62kk0u2tqvnv4uojhv5eh9v6cjmhb.apps.googleusercontent.com',
-    serverClientId: '1088393636693-p5k62kk0u2tqvnv4uojhv5eh9v6cjmhb.apps.googleusercontent.com',
-    scopes: [
-      google.CalendarApi.calendarReadonlyScope,
-      'email',
-    ],
-  );
+  return GoogleSignIn.instance;
 });
 
 final authServiceProvider = Provider<AuthService>((ref) {
