@@ -3,6 +3,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vocus/core/services/permission_service.dart';
 import 'package:vocus/features/calendar/services/auth_service.dart';
+import 'package:vocus/features/calendar/providers/auth_provider.dart';
 import 'package:vocus/features/calendar/repositories/calendar_repository.dart';
 import 'package:vocus/features/volume/repositories/volume_rules_repository.dart';
 import 'package:vocus/features/volume/services/automation_service.dart';

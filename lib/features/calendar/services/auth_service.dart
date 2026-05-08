@@ -15,10 +15,7 @@ class AuthService {
   }
 
   Future<GoogleSignInAccount?> signInSilently() async {
-    // If we already have a user, just return it
-    if (_googleSignIn.currentUser != null) {
-      return _googleSignIn.currentUser;
-    }
+    // Rely on attemptLightweightAuthentication to restore session or return null
     return await _googleSignIn.attemptLightweightAuthentication();
   }
 
