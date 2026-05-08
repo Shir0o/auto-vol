@@ -1,7 +1,6 @@
 import 'package:vocus/features/dashboard/screens/dashboard_screen.dart';
 import 'package:vocus/features/schedule/screens/schedule_screen.dart';
 import 'package:vocus/features/settings/screens/settings_screen.dart';
-import 'package:vocus/features/vips/screens/vips_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -25,7 +24,6 @@ class MainScreen extends ConsumerWidget {
     final screens = [
       const DashboardScreen(),
       const ScheduleScreen(),
-      const VipsScreen(),
       const SettingsScreen(),
     ];
 
@@ -45,10 +43,6 @@ class MainScreen extends ConsumerWidget {
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),
             label: 'Schedule',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.verified_user),
-            label: 'VIPs',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
