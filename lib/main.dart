@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:workmanager/workmanager.dart';
 import 'package:vocus/features/calendar/services/background/sync_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'dart:io';
 
@@ -32,6 +33,14 @@ void callbackDispatcher() {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Load environment variables
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    // ignore: avoid_print
+    print('Note: .env file not found or failed to load. Falling back to build-time definitions.');
+  }
+
   // Initialize Workmanager
   await Workmanager().initialize(
     callbackDispatcher,
@@ -49,21 +58,22 @@ void main() async {
   // Initialize foreground task
   await VocusForegroundService.init();
 
-  // Initialize Google Sign-In. Client IDs can be overridden at build time via
-  // --dart-define so contributors can use their own OAuth credentials without
-  // editing this file. On Android, the "Web Client ID" from the Google Cloud
-  // Console must be used as the clientId/serverClientId to satisfy the
-  // Credential Manager.
-  const iosClientId = String.fromEnvironment(
-    'GOOGLE_IOS_CLIENT_ID',
-    defaultValue:
-        '1088393636693-5acqni1bji55g47tgs183lnli6cv1a0i.apps.googleusercontent.com',
-  );
-  const webClientId = String.fromEnvironment(
-    'GOOGLE_WEB_CLIENT_ID',
-    defaultValue:
-        '1088393636693-lm37rmn0q08204ppv2cbm56d3bcta9tj.apps.googleusercontent.com',
-  );
+  // Initialize Google Sign-In. Client IDs are loaded from .env file or provided
+  // at build time via --dart-define.
+  // On Android, the "Web Client ID" from the Google Cloud Console must be used
+  // as the clientId/serverClientId to satisfy the Credential Manager.
+  final iosClientId = dotenv.env['GOOGLE_IOS_CLIENT_ID'] ??
+      const String.fromEnvironment('GOOGLE_IOS_CLIENT_ID');
+  final webClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID'] ??
+      const String.fromEnvironment('GOOGLE_WEB_CLIENT_ID');
+
+  if (iosClientId.isEmpty || webClientId.isEmpty) {
+    // ignore: avoid_print
+    print(
+      'WARNING: GOOGLE_IOS_CLIENT_ID or GOOGLE_WEB_CLIENT_ID not found in .env or build-time definitions.',
+    );
+  }
+
   await GoogleSignIn.instance.initialize(
     clientId: Platform.isIOS ? iosClientId : webClientId,
     serverClientId: webClientId,
@@ -112,13 +122,9 @@ class VocusApp extends ConsumerWidget {
       }
     });
 
-    // Request permissions and silent sign-in on startup
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
+    // Request initial permissions on startup
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(permissionServiceProvider).requestInitialPermissions();
-      final user = await ref.read(authServiceProvider).signInSilently();
-      if (user != null) {
-        ref.read(authStateProvider.notifier).updateState(user);
-      }
     });
 
     return MaterialApp(

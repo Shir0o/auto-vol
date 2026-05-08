@@ -405,7 +405,7 @@ final class AutomationProvider
   }
 }
 
-String _$automationHash() => r'1f1431853942a7fdb8209ab871e549768b9b1308';
+String _$automationHash() => r'50d1018c8620fce700a601925ec5ac0f77cf24aa';
 
 abstract class _$Automation extends $Notifier<AutomationStatus> {
   AutomationStatus build();

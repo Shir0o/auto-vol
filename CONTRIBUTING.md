@@ -7,7 +7,12 @@ Thanks for your interest! This guide covers the basics for contributing.
 1. Install Flutter on the stable channel (Dart SDK `>= 3.11.5`). Verify with `flutter --version`.
 2. Fork and clone the repo.
 3. `flutter pub get`
-4. Create your own Google Cloud OAuth client (iOS + Web) and pass the IDs at run/build time via `--dart-define`. Do **not** edit committed values in `lib/main.dart`:
+4. Create your own Google Cloud OAuth client (iOS + Web).
+5. Copy `.env.example` to `.env` and fill in your actual credentials. This file is ignored by git:
+   ```bash
+   cp .env.example .env
+   ```
+6. Alternatively, you can still pass them via `--dart-define` at run/build time:
    ```bash
    flutter run \
      --dart-define=GOOGLE_IOS_CLIENT_ID=<your-ios-client-id> \

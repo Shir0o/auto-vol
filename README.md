@@ -26,6 +26,14 @@ Vocus automatically adjusts your device's media volume based on your Google Cale
 3. Enable "Auto-Volume" in settings.
 4. (Optional) Define automation rules for specific event keywords.
 
+## Configuration
+
+To run the app locally, you need to provide your own Google Cloud OAuth client IDs. 
+
+1. Copy `.env.example` to `.env`.
+2. Fill in `GOOGLE_IOS_CLIENT_ID` and `GOOGLE_WEB_CLIENT_ID`.
+3. The `.env` file is already added to `.gitignore` to prevent leaking secrets.
+
 ## Development
 
 Run tests with:

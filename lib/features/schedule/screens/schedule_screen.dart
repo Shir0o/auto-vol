@@ -19,9 +19,8 @@ class ScheduleScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final eventsAsync = ref.watch(calendarEventsProvider);
+    final authState = ref.watch(authStateProvider);
     final automationStatus = ref.watch(automationProvider);
-    final currentUser = ref.watch(currentUserProvider);
 
     return Scaffold(
       body: Stack(
@@ -36,34 +35,45 @@ class ScheduleScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildHeader(ref, automationStatus),
-                if (currentUser == null)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0,
-                      vertical: 10,
-                    ),
-                    child: _buildOnboardingCard(ref),
-                  ),
                 Expanded(
-                  child: eventsAsync.when(
-                    data: (events) {
-                      final rules = ref.watch(volumeRulesProvider).value ?? [];
-                      return RefreshIndicator(
-                        onRefresh: () async =>
-                            ref.invalidate(calendarEventsProvider),
-                        color: VocusColors.primary,
-                        backgroundColor: VocusColors.surface,
-                        child: _buildTimeline(
-                          context,
-                          ref,
-                          events,
-                          rules,
-                          automationStatus,
-                        ),
+                  child: authState.when(
+                    loading: () => _buildSkeletonLoader(),
+                    error: (err, _) => Center(child: Text('Auth Error: $err')),
+                    data: (user) {
+                      if (user == null) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20.0,
+                            vertical: 10,
+                          ),
+                          child: _buildOnboardingCard(ref),
+                        );
+                      }
+
+                      final eventsAsync = ref.watch(calendarEventsProvider);
+                      return eventsAsync.when(
+                        data: (events) {
+                          final rules =
+                              ref.watch(volumeRulesProvider).value ?? [];
+                          return RefreshIndicator(
+                            onRefresh: () async =>
+                                ref.invalidate(calendarEventsProvider),
+                            color: VocusColors.primary,
+                            backgroundColor: VocusColors.surface,
+                            child: _buildTimeline(
+                              context,
+                              ref,
+                              events,
+                              rules,
+                              automationStatus,
+                            ),
+                          );
+                        },
+                        loading: () => _buildSkeletonLoader(),
+                        error: (err, stack) =>
+                            Center(child: Text('Schedule Error: $err')),
                       );
                     },
-                    loading: () => _buildSkeletonLoader(),
-                    error: (err, stack) => Center(child: Text('Error: $err')),
                   ),
                 ),
               ],

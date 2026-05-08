@@ -196,4 +196,4 @@ final class CalendarEventsProvider
   }
 }
 
-String _$calendarEventsHash() => r'859003482bc083ca32ac620bd87093cd808413fb';
+String _$calendarEventsHash() => r'6862414b3bc49cc16df84fa36319a5d6b9414cdc';

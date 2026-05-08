@@ -71,6 +71,15 @@ class IncludeAllDayEvents extends _$IncludeAllDayEvents {
 @riverpod
 Future<List<CalendarEvent>> calendarEvents(Ref ref) async {
   ref.watch(calendarRefreshTickProvider);
+
+  // If we don't have stored enabled IDs, wait for available calendars to
+  // determine defaults, otherwise we flicker with an empty list.
+  final prefs = ref.watch(sharedPreferencesProvider);
+  final stored = prefs.getStringList('enabled_calendar_ids');
+  if (stored == null) {
+    await ref.watch(availableCalendarsProvider.future);
+  }
+
   final repository = await ref.watch(calendarRepositoryProvider.future);
   final enabledIds = ref.watch(enabledCalendarIdsProvider);
   final includeAllDay = ref.watch(includeAllDayEventsProvider);

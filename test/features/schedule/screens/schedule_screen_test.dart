@@ -14,6 +14,7 @@ import 'package:vocus/features/volume/models/volume_rule.dart';
 import 'package:vocus/features/volume/providers/volume_rules_provider.dart';
 import 'package:vocus/features/schedule/screens/schedule_screen.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class MockAutomation extends Notifier<AutomationStatus>
     with Mock
@@ -45,6 +46,16 @@ class MockEventOverrides extends AsyncNotifier<Map<String, double>>
   FutureOr<Map<String, double>> build() async => _overrides;
 }
 
+class MockAuthState extends AsyncNotifier<GoogleSignInAccount?>
+    with Mock
+    implements AuthState {
+  final GoogleSignInAccount? _user;
+  MockAuthState(this._user);
+
+  @override
+  FutureOr<GoogleSignInAccount?> build() => _user;
+}
+
 void main() {
   late MockEventOverrides mockOverrides;
   late MockVolumeRules mockRules;
@@ -74,6 +85,8 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
 
+    final mockUser = MockGoogleSignInAccount();
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -82,7 +95,8 @@ void main() {
           volumeRulesProvider.overrideWith(() => mockRules),
           eventOverridesProvider.overrideWith(() => mockOverrides),
           automationProvider.overrideWith(() => MockAutomation(dummyStatus)),
-          currentUserProvider.overrideWithValue(null),
+          authStateProvider.overrideWith(() => MockAuthState(mockUser)),
+          currentUserProvider.overrideWith((ref) => mockUser),
         ],
         child: const MaterialApp(home: ScheduleScreen()),
       ),
@@ -98,6 +112,7 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
 
     final now = DateTime.now();
+    final mockUser = MockGoogleSignInAccount();
     final event1 = CalendarEvent(
       id: '1',
       title: 'Meeting',
@@ -116,7 +131,8 @@ void main() {
           volumeRulesProvider.overrideWith(() => mockRules),
           eventOverridesProvider.overrideWith(() => mockOverrides),
           automationProvider.overrideWith(() => MockAutomation(dummyStatus)),
-          currentUserProvider.overrideWithValue(null),
+          authStateProvider.overrideWith(() => MockAuthState(mockUser)),
+          currentUserProvider.overrideWith((ref) => mockUser),
         ],
         child: const MaterialApp(home: ScheduleScreen()),
       ),
@@ -135,6 +151,7 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
 
     final now = DateTime.now();
+    final mockUser = MockGoogleSignInAccount();
     final event = CalendarEvent(
       id: '1',
       title: 'Event',
@@ -151,7 +168,8 @@ void main() {
           volumeRulesProvider.overrideWith(() => mockRules),
           eventOverridesProvider.overrideWith(() => mockOverrides),
           automationProvider.overrideWith(() => MockAutomation(dummyStatus)),
-          currentUserProvider.overrideWithValue(null),
+          authStateProvider.overrideWith(() => MockAuthState(mockUser)),
+          currentUserProvider.overrideWith((ref) => mockUser),
         ],
         child: const MaterialApp(home: ScheduleScreen()),
       ),
@@ -178,6 +196,7 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
 
     final now = DateTime.now();
+    final mockUser = MockGoogleSignInAccount();
     final event = CalendarEvent(
       id: '1',
       title: 'Event',
@@ -195,7 +214,8 @@ void main() {
           volumeRulesProvider.overrideWith(() => mockRules),
           eventOverridesProvider.overrideWith(() => mockOverrides),
           automationProvider.overrideWith(() => MockAutomation(dummyStatus)),
-          currentUserProvider.overrideWithValue(null),
+          authStateProvider.overrideWith(() => MockAuthState(mockUser)),
+          currentUserProvider.overrideWith((ref) => mockUser),
         ],
         child: const MaterialApp(home: ScheduleScreen()),
       ),
@@ -230,6 +250,7 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
 
     final now = DateTime.now();
+    final mockUser = MockGoogleSignInAccount();
     final event1 = CalendarEvent(
       id: 'e1',
       title: 'Meeting 1',
@@ -278,7 +299,8 @@ void main() {
           ),
           eventOverridesProvider.overrideWith(() => mockOverrides),
           automationProvider.overrideWith(() => MockAutomation(status)),
-          currentUserProvider.overrideWithValue(null),
+          authStateProvider.overrideWith(() => MockAuthState(mockUser)),
+          currentUserProvider.overrideWith((ref) => mockUser),
         ],
         child: const MaterialApp(home: ScheduleScreen()),
       ),
@@ -297,3 +319,5 @@ void main() {
     expect(find.byIcon(Icons.warning_amber_rounded), findsWidgets);
   });
 }
+
+class MockGoogleSignInAccount extends Mock implements GoogleSignInAccount {}

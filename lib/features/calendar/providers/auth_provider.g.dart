@@ -13,7 +13,7 @@ part of 'auth_provider.dart';
 final authStateProvider = AuthStateProvider._();
 
 final class AuthStateProvider
-    extends $NotifierProvider<AuthState, GoogleSignInAccount?> {
+    extends $AsyncNotifierProvider<AuthState, GoogleSignInAccount?> {
   AuthStateProvider._()
     : super(
         from: null,
@@ -31,29 +31,26 @@ final class AuthStateProvider
   @$internal
   @override
   AuthState create() => AuthState();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(GoogleSignInAccount? value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<GoogleSignInAccount?>(value),
-    );
-  }
 }
 
-String _$authStateHash() => r'1b75287008fa470a8e81281dc164198d3c6b5193';
+String _$authStateHash() => r'ef4b4b9a63dba5b23a215bfc9d06ad6fe4accf82';
 
-abstract class _$AuthState extends $Notifier<GoogleSignInAccount?> {
-  GoogleSignInAccount? build();
+abstract class _$AuthState extends $AsyncNotifier<GoogleSignInAccount?> {
+  FutureOr<GoogleSignInAccount?> build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<GoogleSignInAccount?, GoogleSignInAccount?>;
+    final ref =
+        this.ref
+            as $Ref<AsyncValue<GoogleSignInAccount?>, GoogleSignInAccount?>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<GoogleSignInAccount?, GoogleSignInAccount?>,
-              GoogleSignInAccount?,
+              AnyNotifier<
+                AsyncValue<GoogleSignInAccount?>,
+                GoogleSignInAccount?
+              >,
+              AsyncValue<GoogleSignInAccount?>,
               Object?,
               Object?
             >;
@@ -106,7 +103,7 @@ final class CurrentUserProvider
   }
 }
 
-String _$currentUserHash() => r'b1ca0e8c2a87bc7208ed00ebda7eaf88b7603e45';
+String _$currentUserHash() => r'9a217186696db9686b707eb16c088948dbf50957';
 
 @ProviderFor(isStatusAuthenticated)
 final isStatusAuthenticatedProvider = IsStatusAuthenticatedProvider._();
