@@ -170,7 +170,19 @@ class SettingsScreen extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('Automate Ringer', style: TextStyle(fontSize: 16)),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Automate Ringer', style: TextStyle(fontSize: 16)),
+                SizedBox(height: 2),
+                Text(
+                  'Sync phone call volume with your schedule',
+                  style: TextStyle(fontSize: 12, color: VocusColors.outline),
+                ),
+              ],
+            ),
+          ),
           Switch(
             value: enabled,
             onChanged: (value) =>
@@ -189,7 +201,19 @@ class SettingsScreen extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('Automate Notifications', style: TextStyle(fontSize: 16)),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Automate Notifications', style: TextStyle(fontSize: 16)),
+                SizedBox(height: 2),
+                Text(
+                  'Sync message and app alerts with your schedule',
+                  style: TextStyle(fontSize: 12, color: VocusColors.outline),
+                ),
+              ],
+            ),
+          ),
           Switch(
             value: enabled,
             onChanged: (value) =>
@@ -208,7 +232,19 @@ class SettingsScreen extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('Automate Do Not Disturb', style: TextStyle(fontSize: 16)),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Automate Do Not Disturb', style: TextStyle(fontSize: 16)),
+                SizedBox(height: 2),
+                Text(
+                  'Silence all alerts automatically during events',
+                  style: TextStyle(fontSize: 12, color: VocusColors.outline),
+                ),
+              ],
+            ),
+          ),
           Switch(
             value: enabled,
             onChanged: (value) =>
@@ -230,15 +266,31 @@ class SettingsScreen extends ConsumerWidget {
       child: const Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Icon(Icons.rule, color: VocusColors.primary),
-              SizedBox(width: 16),
-              Text(
-                'Automation Rules',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-              ),
-            ],
+          Expanded(
+            child: Row(
+              children: [
+                Icon(Icons.rule, color: VocusColors.primary),
+                SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Automation Rules',
+                        style:
+                            TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      ),
+                      SizedBox(height: 2),
+                      Text(
+                        'Define volume levels for specific event titles',
+                        style:
+                            TextStyle(fontSize: 12, color: VocusColors.outline),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
           Icon(Icons.chevron_right, color: VocusColors.outline),
         ],
