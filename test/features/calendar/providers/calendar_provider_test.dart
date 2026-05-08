@@ -96,11 +96,15 @@ void main() {
     expect(container.read(enabledCalendarIdsProvider), isNot(contains('cal-1')));
   });
 
-  test('calendarEventsProvider aggregates and sorts events from enabled calendars', () async {
+  test('calendarEventsProvider aggregates and sorts events from enabled calendars with metadata', () async {
     final container = ProviderContainer(
       overrides: [
         calendarRepositoryProvider.overrideWith((ref) async => mockRepository),
         enabledCalendarIdsProvider.overrideWith(() => FakeEnabledCalendarIdsNotifier({'cal-1', 'cal-2'})),
+        availableCalendarsProvider.overrideWith((ref) async => [
+              CalendarEntry(id: 'cal-1', title: 'Work', color: '#FF0000'),
+              CalendarEntry(id: 'cal-2', title: 'Personal', color: '#00FF00'),
+            ]),
       ],
     );
     addTearDown(container.dispose);
@@ -112,6 +116,8 @@ void main() {
       startTime: now.add(const Duration(hours: 2)),
       endTime: now.add(const Duration(hours: 3)),
       calendarId: 'cal-1',
+      calendarTitle: 'Work',
+      calendarColor: '#FF0000',
     );
     final event2 = CalendarEvent(
       id: 'e2',
@@ -119,16 +125,24 @@ void main() {
       startTime: now.add(const Duration(hours: 1)),
       endTime: now.add(const Duration(hours: 2)),
       calendarId: 'cal-2',
+      calendarTitle: 'Personal',
+      calendarColor: '#00FF00',
     );
 
-    when(() => mockRepository.fetchEvents('cal-1')).thenAnswer((_) async => [event1]);
-    when(() => mockRepository.fetchEvents('cal-2')).thenAnswer((_) async => [event2]);
+    when(() => mockRepository.fetchEvents('cal-1',
+        calendarTitle: 'Work',
+        calendarColor: '#FF0000')).thenAnswer((_) async => [event1]);
+    when(() => mockRepository.fetchEvents('cal-2',
+        calendarTitle: 'Personal',
+        calendarColor: '#00FF00')).thenAnswer((_) async => [event2]);
 
     final results = await container.read(calendarEventsProvider.future);
 
     expect(results.length, 2);
     // Should be sorted by start time
     expect(results.first.id, 'e2');
+    expect(results.first.calendarTitle, 'Personal');
     expect(results.last.id, 'e1');
+    expect(results.last.calendarTitle, 'Work');
   });
 }

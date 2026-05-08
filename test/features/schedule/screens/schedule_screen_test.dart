@@ -49,6 +49,8 @@ void main() {
                 startTime: DateTime.now().add(const Duration(hours: 1)),
                 endTime: DateTime.now().add(const Duration(hours: 2)),
                 calendarId: 'primary',
+                calendarTitle: 'Work',
+                calendarColor: '#FF0000',
               ),
             ];
           }),
@@ -62,6 +64,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Test Event 1'), findsOneWidget);
+    expect(find.text('Work'), findsOneWidget);
     expect(callCount, 1);
 
     // Find RefreshIndicator

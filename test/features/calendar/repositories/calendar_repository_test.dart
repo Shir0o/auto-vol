@@ -51,7 +51,7 @@ void main() {
   });
 
   group('CalendarRepository.fetchEvents', () {
-    test('should fetch and convert google events to CalendarEvent list', () async {
+    test('should fetch and convert google events to CalendarEvent list with metadata', () async {
       final mockEvents = MockEvents();
       final mockEvent = MockEvent();
       final start = MockEventDateTime();
@@ -69,14 +69,19 @@ void main() {
       when(() => mockEvent.summary).thenReturn('Test Event');
       when(() => mockEvent.start).thenReturn(start);
       when(() => mockEvent.end).thenReturn(end);
-      when(() => start.dateTime).thenReturn(DateTime.now());
-      when(() => end.dateTime).thenReturn(DateTime.now().add(const Duration(hours: 1)));
+      when(() => start.dateTime).thenReturn(DateTime.now().toUtc());
+      when(() => end.dateTime).thenReturn(DateTime.now().add(const Duration(hours: 1)).toUtc());
 
-      final results = await repository.fetchEvents('primary');
+      final results = await repository.fetchEvents(
+        'primary',
+        calendarTitle: 'Work',
+        calendarColor: '#FF0000',
+      );
 
       expect(results.length, 1);
       expect(results.first.title, 'Test Event');
-      expect(results.first.id, '123');
+      expect(results.first.calendarTitle, 'Work');
+      expect(results.first.calendarColor, '#FF0000');
     });
   });
 }

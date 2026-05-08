@@ -146,9 +146,15 @@ class ScheduleScreen extends ConsumerWidget {
   }
 
   Widget _buildEventItem(CalendarEvent event) {
-    final startTimeStr = DateFormat('HH:mm').format(event.startTime);
+    final timeFormat = DateFormat('h:mm a');
+    final startTimeStr = timeFormat.format(event.startTime);
+    final endTimeStr = timeFormat.format(event.endTime);
     final now = DateTime.now();
     final isActive = event.startTime.isBefore(now) && event.endTime.isAfter(now);
+
+    final calColor = event.calendarColor != null
+        ? Color(int.parse(event.calendarColor!.replaceAll('#', '0xFF')))
+        : VocusColors.primary;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 24.0),
@@ -156,15 +162,28 @@ class ScheduleScreen extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 60,
-            child: Text(
-              startTimeStr,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: isActive ? VocusColors.primary : VocusColors.outline,
-              ),
-              textAlign: TextAlign.right,
+            width: 75,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  startTimeStr,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: isActive ? VocusColors.primary : VocusColors.onBackground,
+                  ),
+                  textAlign: TextAlign.right,
+                ),
+                Text(
+                  endTimeStr,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: VocusColors.outline,
+                  ),
+                  textAlign: TextAlign.right,
+                ),
+              ],
             ),
           ),
           const SizedBox(width: 16),
@@ -177,24 +196,38 @@ class ScheduleScreen extends ConsumerWidget {
                 children: [
                   Row(
                     children: [
-                      if (isActive)
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: VocusColors.primary,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      if (isActive) const SizedBox(width: 8),
-                      Text(
-                        isActive ? 'In Progress' : 'Upcoming',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: isActive ? VocusColors.primary : VocusColors.outline,
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: calColor,
+                          shape: BoxShape.circle,
                         ),
                       ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          event.calendarTitle ?? 'Unknown Calendar',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: calColor.withOpacity(0.8),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (isActive) ...[
+                        const SizedBox(width: 8),
+                        const Text(
+                          '• NOW',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: VocusColors.primary,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -206,7 +239,7 @@ class ScheduleScreen extends ConsumerWidget {
                       color: VocusColors.onSurface,
                     ),
                   ),
-                  if (event.description != null)
+                  if (event.description != null && event.description!.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 4.0),
                       child: Text(
@@ -215,6 +248,8 @@ class ScheduleScreen extends ConsumerWidget {
                           fontSize: 14,
                           color: VocusColors.outline,
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                 ],

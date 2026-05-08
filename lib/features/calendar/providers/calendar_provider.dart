@@ -47,11 +47,21 @@ final enabledCalendarIdsProvider = NotifierProvider<EnabledCalendarIdsNotifier, 
 final calendarEventsProvider = FutureProvider<List<CalendarEvent>>((ref) async {
   final repository = await ref.watch(calendarRepositoryProvider.future);
   final enabledIds = ref.watch(enabledCalendarIdsProvider);
+  final availableAsync = await ref.watch(availableCalendarsProvider.future);
 
   if (enabledIds.isEmpty) return [];
 
+  final calendarMap = {for (var c in availableAsync) c.id: c};
+
   final allEvents = await Future.wait(
-    enabledIds.map((id) => repository.fetchEvents(id)),
+    enabledIds.map((id) {
+      final cal = calendarMap[id];
+      return repository.fetchEvents(
+        id,
+        calendarTitle: cal?.title,
+        calendarColor: cal?.color,
+      );
+    }),
   );
 
   final flattened = allEvents.expand((e) => e).toList();
