@@ -44,6 +44,12 @@ class SettingsScreen extends ConsumerWidget {
                 _buildSectionHeader('Automation'),
                 _buildAutomationToggle(ref, automationEnabled),
                 const SizedBox(height: 12),
+                _buildRingerToggle(ref),
+                const SizedBox(height: 12),
+                _buildNotificationToggle(ref),
+                const SizedBox(height: 12),
+                _buildDndToggle(ref),
+                const SizedBox(height: 12),
                 _buildRulesEntry(context),
                 const SizedBox(height: 24),
                 _buildSectionHeader('Focus'),
@@ -150,6 +156,63 @@ class SettingsScreen extends ConsumerWidget {
             value: enabled,
             onChanged: (value) =>
                 ref.read(automationEnabledProvider.notifier).set(value),
+            activeColor: VocusColors.primary,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRingerToggle(WidgetRef ref) {
+    final enabled = ref.watch(automateRingerProvider);
+    return GlassCard(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text('Automate Ringer', style: TextStyle(fontSize: 16)),
+          Switch(
+            value: enabled,
+            onChanged: (value) =>
+                ref.read(automateRingerProvider.notifier).set(value),
+            activeColor: VocusColors.primary,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNotificationToggle(WidgetRef ref) {
+    final enabled = ref.watch(automateNotificationProvider);
+    return GlassCard(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text('Automate Notifications', style: TextStyle(fontSize: 16)),
+          Switch(
+            value: enabled,
+            onChanged: (value) =>
+                ref.read(automateNotificationProvider.notifier).set(value),
+            activeColor: VocusColors.primary,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDndToggle(WidgetRef ref) {
+    final enabled = ref.watch(automateDndProvider);
+    return GlassCard(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text('Automate Do Not Disturb', style: TextStyle(fontSize: 16)),
+          Switch(
+            value: enabled,
+            onChanged: (value) =>
+                ref.read(automateDndProvider.notifier).set(value),
             activeColor: VocusColors.primary,
           ),
         ],
@@ -316,9 +379,10 @@ class SettingsScreen extends ConsumerWidget {
           'Do Not Disturb Access',
           'Required to change volume during DND',
           dndAccess,
-          () => ref.read(permissionServiceProvider).requestNotificationPolicyAccess().then(
-                (_) => ref.invalidate(notificationPolicyAccessProvider),
-              ),
+          () => ref
+              .read(permissionServiceProvider)
+              .requestNotificationPolicyAccess()
+              .then((_) => ref.invalidate(notificationPolicyAccessProvider)),
         ),
         const SizedBox(height: 12),
         _buildPermissionRow(
@@ -327,9 +391,10 @@ class SettingsScreen extends ConsumerWidget {
           'Battery Optimization',
           'Exempt app to ensure reliable background monitoring',
           batteryOpt,
-          () => ref.read(permissionServiceProvider).requestIgnoreBatteryOptimizations().then(
-                (_) => ref.invalidate(ignoreBatteryOptimizationsProvider),
-              ),
+          () => ref
+              .read(permissionServiceProvider)
+              .requestIgnoreBatteryOptimizations()
+              .then((_) => ref.invalidate(ignoreBatteryOptimizationsProvider)),
         ),
       ],
     );

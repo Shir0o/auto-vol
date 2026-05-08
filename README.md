@@ -1,69 +1,34 @@
 # Vocus
 
-[![CI](https://github.com/Shir0o/auto-vol/actions/workflows/ci.yml/badge.svg)](https://github.com/Shir0o/auto-vol/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+Auto-Volume utility for Google Calendar users.
 
-A small Flutter utility that automatically adjusts your device volume based on your Google Calendar events. Stay focused during meetings without thinking about it.
+Vocus automatically adjusts your device's media volume based on your Google Calendar schedule. It ensures your device is quiet during meetings and restores your volume afterwards.
 
 ## Features
 
-- **Google Calendar sync** — connect once, view your upcoming week.
-- **Multi-calendar support** — pick which calendars drive automation.
-- **Per-rule volume control** — match events by calendar + title pattern, set a target volume, and let the highest-priority rule win.
-- **Default volume fallback** — set the level used when no event is active.
-- **Schedule view** — Google-Calendar-style timeline grouped by day.
-- **Android foreground service** — keeps automation running while the app is backgrounded.
+- **Automatic Volume Management**: Syncs with Google Calendar to determine when you're in a meeting.
+- **Smart Rules**: Create keyword-based rules (e.g., "Focus", "Meeting") to set specific volume levels.
+- **Volume Restore**: Remembers your volume before a meeting starts and restores it when the meeting ends.
+- **Background Monitoring**: Uses a foreground service to maintain automation even when the app is backgrounded.
+- **In-Event Overrides**: Supports `[vol:X]` or `!silent` patterns in event titles/descriptions for one-off overrides.
 
-## Status
+## Implementation Details
 
-Early development. Foundation in place (auth, calendar fetch, rule engine, rules UI, foreground service). See open issues for active work.
+- Built with Flutter & Riverpod.
+- Follows Test-Driven Development (TDD).
+- Integrates with Google Calendar API.
+- Uses `flutter_foreground_task` for reliable background execution.
 
-## Getting started
+## Getting Started
 
-### Prerequisites
+1. Sign in with your Google account.
+2. Select the calendars you want to monitor.
+3. Enable "Auto-Volume" in settings.
+4. (Optional) Define automation rules for specific event keywords.
 
-- Flutter (stable channel) shipping a Dart SDK `>= 3.11.5`. Verify with `flutter --version`.
-- A Google Cloud OAuth client (iOS + Web) with the Calendar API enabled.
+## Development
 
-### Setup
-
-```bash
-git clone https://github.com/Shir0o/auto-vol.git
-cd auto-vol
-flutter pub get
-flutter run \
-  --dart-define=GOOGLE_IOS_CLIENT_ID=<your-ios-client-id> \
-  --dart-define=GOOGLE_WEB_CLIENT_ID=<your-web-client-id>
-```
-
-If you omit the `--dart-define` flags, the maintainer's placeholder client IDs (set in [`lib/main.dart`](lib/main.dart)) are used — sign-in will not work outside the maintainer's project. Provide your own OAuth client IDs to develop locally.
-
-### Running tests
-
+Run tests with:
 ```bash
 flutter test
 ```
-
-This project follows **Test-Driven Development** — write a failing test before adding behavior. See [`GEMINI.md`](GEMINI.md).
-
-## Architecture
-
-```
-lib/
-├── core/                  # cross-cutting (theme, providers, services, widgets)
-└── features/
-    ├── calendar/          # Google Sign-In + Calendar API fetch
-    ├── schedule/          # timeline UI
-    ├── settings/          # settings UI
-    └── volume/            # rule engine + volume control + foreground service
-```
-
-State management is [Riverpod](https://riverpod.dev). Persistence is `shared_preferences`. Volume control uses [`flutter_volume_controller`](https://pub.dev/packages/flutter_volume_controller).
-
-## Contributing
-
-Contributions welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## License
-
-[MIT](LICENSE) © Tony Wang

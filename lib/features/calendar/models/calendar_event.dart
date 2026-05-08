@@ -88,11 +88,19 @@ class CalendarEvent {
     String? calendarColor,
   }) {
     final isAllDay = event.start?.dateTime == null && event.start?.date != null;
+    final summary = event.summary ?? 'No Title';
+    final description = event.description;
+
+    // Parse volume override from summary first, then description
+    double? volumeOverride = parseVolumeOverride(summary);
+    if (volumeOverride == null && description != null) {
+      volumeOverride = parseVolumeOverride(description);
+    }
 
     return CalendarEvent(
       id: event.id ?? '',
-      title: event.summary ?? 'No Title',
-      description: event.description,
+      title: summary,
+      description: description,
       startTime: (event.start?.dateTime ?? event.start?.date ?? DateTime.now())
           .toLocal(),
       endTime: (event.end?.dateTime ?? event.end?.date ?? DateTime.now())
@@ -100,7 +108,27 @@ class CalendarEvent {
       calendarId: calendarId,
       calendarTitle: calendarTitle,
       calendarColor: calendarColor,
+      volumeOverride: volumeOverride,
       isAllDay: isAllDay,
     );
+  }
+
+  static double? parseVolumeOverride(String text) {
+    // Check for [vol:0.5] or [vol:20%]
+    final volRegExp = RegExp(r'\[vol:(\d+(\.\d+)?)%?\]');
+    final match = volRegExp.firstMatch(text);
+    if (match != null) {
+      final valueStr = match.group(1)!;
+      final isPercentage = match.group(0)!.contains('%');
+      double value = double.parse(valueStr);
+      return (isPercentage ? value / 100.0 : value).clamp(0.0, 1.0);
+    }
+
+    final lowerText = text.toLowerCase();
+    if (lowerText.contains('!silent')) return 0.0;
+    if (lowerText.contains('!mute')) return 0.0;
+    if (lowerText.contains('!loud')) return 1.0;
+
+    return null;
   }
 }

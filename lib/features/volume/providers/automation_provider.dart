@@ -4,11 +4,14 @@ import 'package:vocus/core/providers/common_providers.dart';
 import 'package:vocus/features/calendar/providers/calendar_provider.dart';
 import 'package:vocus/features/volume/models/automation_status.dart';
 import 'package:vocus/features/volume/providers/volume_rules_provider.dart';
-import 'package:vocus/features/volume/services/foreground_service.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vocus/features/volume/services/volume_service.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:intl/intl.dart';
 
-class AutomationEnabledNotifier extends Notifier<bool> {
+part 'automation_provider.g.dart';
+
+@riverpod
+class AutomationEnabled extends _$AutomationEnabled {
   @override
   bool build() {
     return ref.watch(sharedPreferencesProvider).getBool('automation_enabled') ??
@@ -18,21 +21,17 @@ class AutomationEnabledNotifier extends Notifier<bool> {
   void set(bool value) {
     state = value;
     ref.read(sharedPreferencesProvider).setBool('automation_enabled', value);
-    final foregroundService = ref.read(foregroundServiceProvider);
+    final service = ref.read(foregroundServiceProvider);
     if (value) {
-      foregroundService.start();
+      service.start();
     } else {
-      foregroundService.stop();
+      service.stop();
     }
   }
 }
 
-final automationEnabledProvider =
-    NotifierProvider<AutomationEnabledNotifier, bool>(() {
-      return AutomationEnabledNotifier();
-    });
-
-class DefaultVolumeNotifier extends Notifier<double> {
+@riverpod
+class DefaultVolume extends _$DefaultVolume {
   @override
   double build() {
     return ref.watch(sharedPreferencesProvider).getDouble('default_volume') ??
@@ -45,32 +44,134 @@ class DefaultVolumeNotifier extends Notifier<double> {
   }
 }
 
-final defaultVolumeProvider = NotifierProvider<DefaultVolumeNotifier, double>(
-  () {
-    return DefaultVolumeNotifier();
-  },
-);
+@riverpod
+class AutomateRinger extends _$AutomateRinger {
+  @override
+  bool build() {
+    return ref.watch(sharedPreferencesProvider).getBool('automate_ringer') ??
+        false;
+  }
 
-class AutomationNotifier extends Notifier<AutomationStatus> {
+  void set(bool value) {
+    state = value;
+    ref.read(sharedPreferencesProvider).setBool('automate_ringer', value);
+  }
+}
+
+@riverpod
+class AutomateNotification extends _$AutomateNotification {
+  @override
+  bool build() {
+    return ref
+            .watch(sharedPreferencesProvider)
+            .getBool('automate_notification') ??
+        false;
+  }
+
+  void set(bool value) {
+    state = value;
+    ref.read(sharedPreferencesProvider).setBool('automate_notification', value);
+  }
+}
+
+@riverpod
+class AutomateDnd extends _$AutomateDnd {
+  @override
+  bool build() {
+    return ref.watch(sharedPreferencesProvider).getBool('automate_dnd') ??
+        false;
+  }
+
+  void set(bool value) {
+    state = value;
+    ref.read(sharedPreferencesProvider).setBool('automate_dnd', value);
+  }
+}
+
+@riverpod
+class VolumeSnapshot extends _$VolumeSnapshot {
+  @override
+  Map<VolumeStream, double> build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    final snapshots = <VolumeStream, double>{};
+
+    for (final stream in VolumeStream.values) {
+      final val = prefs.getDouble('volume_snapshot_${stream.name}');
+      if (val != null) snapshots[stream] = val;
+    }
+    return snapshots;
+  }
+
+  void set(VolumeStream stream, double? value) {
+    final newState = Map<VolumeStream, double>.from(state);
+    if (value == null) {
+      newState.remove(stream);
+      ref
+          .read(sharedPreferencesProvider)
+          .remove('volume_snapshot_${stream.name}');
+    } else {
+      newState[stream] = value;
+      ref
+          .read(sharedPreferencesProvider)
+          .setDouble('volume_snapshot_${stream.name}', value);
+    }
+    state = newState;
+  }
+
+  void clearAll() {
+    state = <VolumeStream, double>{};
+    for (final stream in VolumeStream.values) {
+      ref
+          .read(sharedPreferencesProvider)
+          .remove('volume_snapshot_${stream.name}');
+    }
+  }
+}
+
+@riverpod
+class DndSnapshot extends _$DndSnapshot {
+  @override
+  bool? build() {
+    return ref.watch(sharedPreferencesProvider).getBool('dnd_snapshot');
+  }
+
+  void set(bool? value) {
+    state = value;
+    if (value == null) {
+      ref.read(sharedPreferencesProvider).remove('dnd_snapshot');
+    } else {
+      ref.read(sharedPreferencesProvider).setBool('dnd_snapshot', value);
+    }
+  }
+}
+
+@riverpod
+class Automation extends _$Automation {
+  final Map<VolumeStream, double> _lastAppliedVolume = {};
+
   @override
   AutomationStatus build() {
+    ref.watch(tickProvider);
     final enabled = ref.watch(automationEnabledProvider);
+    final automateRinger = ref.watch(automateRingerProvider);
+    final automateNotification = ref.watch(automateNotificationProvider);
+    final automateDnd = ref.watch(automateDndProvider);
     final eventsAsync = ref.watch(calendarEventsProvider);
     final events = eventsAsync.value ?? [];
     final rules = ref.watch(volumeRulesProvider).value ?? [];
-    final defaultVolume = ref.watch(defaultVolumeProvider);
+    final defaultVol = ref.watch(defaultVolumeProvider);
+    final snapshots = ref.watch(volumeSnapshotProvider);
+    final dndSnap = ref.watch(dndSnapshotProvider);
 
-    // Sync to SharedPreferences for background service
     final prefs = ref.read(sharedPreferencesProvider);
-    
-    // Only sync if data is actually available to avoid clearing cache during loading
+
     if (eventsAsync.hasValue) {
       prefs.setString(
         'cached_events',
         jsonEncode(events.map((e) => e.toJson()).toList()),
       );
     }
-    prefs.setDouble('default_volume', defaultVolume);
+    prefs.setDouble('default_volume', defaultVol);
 
     final now = DateTime.now();
     final activeEvents = events
@@ -80,7 +181,7 @@ class AutomationNotifier extends Notifier<AutomationStatus> {
     if (!enabled) {
       return AutomationStatus(
         isEnabled: false,
-        currentVolume: defaultVolume,
+        currentVolume: defaultVol,
         activeEvents: [],
         lastUpdated: DateFormat('HH:mm:ss').format(now),
       );
@@ -92,16 +193,63 @@ class AutomationNotifier extends Notifier<AutomationStatus> {
     final result = automationService.calculateTargetVolume(
       activeEvents: activeEvents,
       rules: rules,
-      defaultVolume: defaultVolume,
+      defaultVolume: defaultVol,
     );
 
-    // Side effect: update system volume
-    // Using scheduleMicrotask to avoid updating during build
-    Future.microtask(() => volumeService.setVolume(result.volume));
+    Future.microtask(() async {
+      final streams = [
+        VolumeStream.media,
+        if (automateRinger) VolumeStream.ringer,
+        if (automateNotification) VolumeStream.notification,
+      ];
+
+      if (activeEvents.isNotEmpty) {
+        if (automateDnd && dndSnap == null) {
+          final isDnd = await volumeService.isDndEnabled();
+          ref.read(dndSnapshotProvider.notifier).set(isDnd);
+          await volumeService.setDndMode(true);
+        }
+
+        for (final stream in streams) {
+          if (!snapshots.containsKey(stream)) {
+            final current = await volumeService.getVolume(stream: stream);
+            if (current != null) {
+              ref.read(volumeSnapshotProvider.notifier).set(stream, current);
+            }
+          }
+          if (_lastAppliedVolume[stream] != result.volume) {
+            await volumeService.setVolume(result.volume, stream: stream);
+            _lastAppliedVolume[stream] = result.volume;
+          }
+        }
+      } else {
+        if (dndSnap != null) {
+          await volumeService.setDndMode(dndSnap);
+          ref.read(dndSnapshotProvider.notifier).set(null);
+        }
+
+        if (snapshots.isNotEmpty) {
+          for (final entry in snapshots.entries) {
+            await volumeService.setVolume(entry.value, stream: entry.key);
+            _lastAppliedVolume[entry.key] = entry.value;
+          }
+          ref.read(volumeSnapshotProvider.notifier).clearAll();
+        } else {
+          for (final stream in streams) {
+            if (_lastAppliedVolume[stream] != defaultVol) {
+              await volumeService.setVolume(defaultVol, stream: stream);
+              _lastAppliedVolume[stream] = defaultVol;
+            }
+          }
+        }
+      }
+    });
 
     return AutomationStatus(
       isEnabled: true,
-      currentVolume: result.volume,
+      currentVolume: activeEvents.isEmpty && snapshots.isNotEmpty
+          ? snapshots[VolumeStream.media] ?? result.volume
+          : result.volume,
       activeEvents: activeEvents,
       winningEvent: result.winningEvent,
       winningRule: result.winningRule,
@@ -109,8 +257,3 @@ class AutomationNotifier extends Notifier<AutomationStatus> {
     );
   }
 }
-
-final automationProvider =
-    NotifierProvider<AutomationNotifier, AutomationStatus>(() {
-      return AutomationNotifier();
-    });

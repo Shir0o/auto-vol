@@ -2,7 +2,11 @@ import 'package:permission_handler/permission_handler.dart';
 
 class PermissionService {
   Future<void> requestInitialPermissions() async {
-    await [Permission.notification].request();
+    await [
+      Permission.notification,
+      Permission.accessNotificationPolicy,
+      Permission.ignoreBatteryOptimizations,
+    ].request();
   }
 
   Future<bool> hasNotificationPolicyAccess() async {
@@ -20,7 +24,7 @@ class PermissionService {
   Future<void> requestIgnoreBatteryOptimizations() async {
     await Permission.ignoreBatteryOptimizations.request();
   }
-  
+
   Future<void> openSystemSettings() async {
     await openAppSettings();
   }

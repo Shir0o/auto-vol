@@ -68,5 +68,58 @@ void main() {
       expect(event.endTime, endTime);
       expect(event.calendarId, 'calendar_abc');
     });
+
+    group('parseVolumeOverride', () {
+      test('should parse [vol:0.2] format', () {
+        expect(CalendarEvent.parseVolumeOverride('Meeting [vol:0.2]'), 0.2);
+        expect(CalendarEvent.parseVolumeOverride('[vol:1.0] Focus'), 1.0);
+      });
+
+      test('should parse percentage [vol:20%] format', () {
+        expect(CalendarEvent.parseVolumeOverride('Meeting [vol:20%]'), 0.2);
+        expect(CalendarEvent.parseVolumeOverride('[vol:100%] Alarm'), 1.0);
+      });
+
+      test('should parse !silent and !mute as 0.0', () {
+        expect(CalendarEvent.parseVolumeOverride('Deep Work !silent'), 0.0);
+        expect(CalendarEvent.parseVolumeOverride('!mute this'), 0.0);
+      });
+
+      test('should parse !loud as 1.0', () {
+        expect(CalendarEvent.parseVolumeOverride('Emergency !loud'), 1.0);
+      });
+
+      test('should return null if no pattern found', () {
+        expect(
+          CalendarEvent.parseVolumeOverride('Just a normal meeting'),
+          null,
+        );
+      });
+    });
+
+    test(
+      'fromGoogleEvent should parse volumeOverride from title or description',
+      () {
+        final googleEvent = MockGoogleEvent();
+        final start = MockEventDateTime();
+        final end = MockEventDateTime();
+
+        when(() => googleEvent.id).thenReturn('1');
+        when(() => googleEvent.summary).thenReturn('Meeting [vol:0.1]');
+        when(() => googleEvent.description).thenReturn('Notes');
+        when(() => googleEvent.start).thenReturn(start);
+        when(() => googleEvent.end).thenReturn(end);
+        when(() => start.dateTime).thenReturn(DateTime.now());
+        when(() => end.dateTime).thenReturn(DateTime.now());
+
+        final event = CalendarEvent.fromGoogleEvent(googleEvent, 'cal');
+        expect(event.volumeOverride, 0.1);
+
+        when(() => googleEvent.summary).thenReturn('Silent meeting');
+        when(() => googleEvent.description).thenReturn('Details !silent');
+        final event2 = CalendarEvent.fromGoogleEvent(googleEvent, 'cal');
+        expect(event2.volumeOverride, 0.0);
+      },
+    );
   });
 }

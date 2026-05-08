@@ -62,4 +62,25 @@ class AutomationService {
 
     return AutomationResult(volume: defaultVolume, isDefault: true);
   }
+
+  double? getTargetVolumeForEvent({
+    required CalendarEvent event,
+    required List<VolumeRule> rules,
+  }) {
+    if (event.volumeOverride != null) return event.volumeOverride;
+
+    VolumeRule? matchingRule;
+    int highestPriority = -1;
+
+    for (final rule in rules) {
+      if (rule.calendarId == event.calendarId && rule.matches(event.title)) {
+        if (rule.priority > highestPriority) {
+          highestPriority = rule.priority;
+          matchingRule = rule;
+        }
+      }
+    }
+
+    return matchingRule?.volumeLevel;
+  }
 }
