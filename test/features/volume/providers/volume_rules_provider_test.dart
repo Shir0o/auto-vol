@@ -65,5 +65,33 @@ void main() {
       expect(container.read(volumeRulesProvider).value, [rule]);
       verify(() => mockRepository.saveRules([rule])).called(1);
     });
+
+    test('updateRule should update existing rule and save', () async {
+      final rule = VolumeRule(
+        id: '1',
+        calendarId: 'c1',
+        eventTitlePattern: 'p1',
+        volumeLevel: 0.5,
+        priority: 1,
+      );
+      final updatedRule = VolumeRule(
+        id: '1',
+        calendarId: 'c2',
+        eventTitlePattern: 'p2',
+        volumeLevel: 0.8,
+        priority: 2,
+      );
+
+      when(() => mockRepository.loadRules()).thenAnswer((_) async => [rule]);
+      when(() => mockRepository.saveRules(any())).thenAnswer((_) async {});
+
+      final container = createContainer();
+      await container.read(volumeRulesProvider.notifier).future;
+
+      await container.read(volumeRulesProvider.notifier).updateRule(updatedRule);
+
+      expect(container.read(volumeRulesProvider).value, [updatedRule]);
+      verify(() => mockRepository.saveRules([updatedRule])).called(1);
+    });
   });
 }

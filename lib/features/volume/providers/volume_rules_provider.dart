@@ -19,6 +19,16 @@ class VolumeRulesNotifier extends AsyncNotifier<List<VolumeRule>> {
     await repository.saveRules(updatedRules);
   }
 
+  Future<void> updateRule(VolumeRule rule) async {
+    final currentRules = state.value ?? [];
+    final updatedRules =
+        currentRules.map((r) => r.id == rule.id ? rule : r).toList();
+    state = AsyncData(updatedRules);
+
+    final repository = ref.read(volumeRulesRepositoryProvider);
+    await repository.saveRules(updatedRules);
+  }
+
   Future<void> deleteRule(String id) async {
     final currentRules = state.value ?? [];
     final updatedRules = currentRules.where((r) => r.id != id).toList();

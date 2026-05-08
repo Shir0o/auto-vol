@@ -1,5 +1,7 @@
 import 'package:vocus/core/theme/vocus_theme.dart';
 import 'package:vocus/core/widgets/glass_card.dart';
+import 'package:vocus/features/calendar/models/calendar_entry.dart';
+import 'package:vocus/features/calendar/providers/calendar_provider.dart';
 import 'package:vocus/features/volume/models/volume_rule.dart';
 import 'package:vocus/features/volume/providers/volume_rules_provider.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +32,7 @@ class RulesScreen extends ConsumerWidget {
             child: rulesAsync.when(
               data: (rules) => rules.isEmpty
                   ? _buildEmptyState()
-                  : _buildRulesList(ref, rules),
+                  : _buildRulesList(context, ref, rules),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (err, _) => Center(child: Text('Error: $err')),
             ),
@@ -38,7 +40,7 @@ class RulesScreen extends ConsumerWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddRuleDialog(context, ref),
+        onPressed: () => _showRuleDialog(context, ref),
         backgroundColor: VocusColors.primary,
         child: const Icon(Icons.add, color: Colors.black),
       ),
@@ -74,7 +76,7 @@ class RulesScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildRulesList(WidgetRef ref, List<VolumeRule> rules) {
+  Widget _buildRulesList(BuildContext context, WidgetRef ref, List<VolumeRule> rules) {
     return ListView.builder(
       padding: const EdgeInsets.all(20),
       itemCount: rules.length,
@@ -84,6 +86,7 @@ class RulesScreen extends ConsumerWidget {
           padding: const EdgeInsets.only(bottom: 12.0),
           child: GlassCard(
             padding: const EdgeInsets.all(16),
+            onTap: () => _showRuleDialog(context, ref, rule: rule),
             child: Row(
               children: [
                 Container(
@@ -108,6 +111,13 @@ class RulesScreen extends ConsumerWidget {
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        '${rule.calendarId} • Priority: ${rule.priority}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: VocusColors.outline,
                         ),
                       ),
                       Text(
@@ -139,42 +149,92 @@ class RulesScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _showAddRuleDialog(BuildContext context, WidgetRef ref) async {
-    final titleController = TextEditingController();
-    double volume = 0.0;
+  Future<void> _showRuleDialog(BuildContext context, WidgetRef ref, {VolumeRule? rule}) async {
+    final titleController = TextEditingController(text: rule?.eventTitlePattern);
+    double volume = rule?.volumeLevel ?? 0.0;
+    int priority = rule?.priority ?? 1;
+    String? selectedCalendarId = rule?.calendarId;
+
+    final calendarsAsync = ref.read(availableCalendarsProvider);
+    final calendars = calendarsAsync.value ?? [];
+    
+    if (selectedCalendarId == null && calendars.isNotEmpty) {
+      selectedCalendarId = calendars.firstWhere((c) => c.isPrimary, orElse: () => calendars.first).id;
+    } else if (selectedCalendarId == null) {
+      selectedCalendarId = 'primary';
+    }
 
     return showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
           backgroundColor: VocusColors.surface,
-          title: const Text('Add Rule'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Keyword',
-                  hintText: 'e.g. Meeting, Focus, Workout',
-                  labelStyle: TextStyle(color: VocusColors.outline),
+          title: Text(rule == null ? 'Add Rule' : 'Edit Rule'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextField(
+                  controller: titleController,
+                  decoration: const InputDecoration(
+                    labelText: 'Keyword',
+                    hintText: 'e.g. Meeting, Focus, Workout',
+                    labelStyle: TextStyle(color: VocusColors.outline),
+                  ),
+                  style: const TextStyle(color: Colors.white),
                 ),
-                style: const TextStyle(color: Colors.white),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Volume'),
-                  Text('${(volume * 100).toInt()}%'),
-                ],
-              ),
-              Slider(
-                value: volume,
-                onChanged: (val) => setState(() => volume = val),
-                activeColor: VocusColors.primary,
-              ),
-            ],
+                const SizedBox(height: 24),
+                const Text('Calendar', style: TextStyle(color: VocusColors.outline, fontSize: 12)),
+                DropdownButton<String>(
+                  value: selectedCalendarId,
+                  isExpanded: true,
+                  dropdownColor: VocusColors.surface,
+                  items: [
+                    if (calendars.isEmpty)
+                      const DropdownMenuItem(value: 'primary', child: Text('Primary')),
+                    ...calendars.map((c) => DropdownMenuItem(
+                          value: c.id,
+                          child: Text(c.title, overflow: TextOverflow.ellipsis),
+                        )),
+                  ],
+                  onChanged: (val) => setState(() => selectedCalendarId = val),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Priority'),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.remove),
+                          onPressed: priority > 1 ? () => setState(() => priority--) : null,
+                        ),
+                        Text('$priority'),
+                        IconButton(
+                          icon: const Icon(Icons.add),
+                          onPressed: () => setState(() => priority++),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Volume'),
+                    Text('${(volume * 100).toInt()}%'),
+                  ],
+                ),
+                Slider(
+                  value: volume,
+                  onChanged: (val) => setState(() => volume = val),
+                  activeColor: VocusColors.primary,
+                ),
+              ],
+            ),
           ),
           actions: [
             TextButton(
@@ -187,21 +247,23 @@ class RulesScreen extends ConsumerWidget {
             ElevatedButton(
               onPressed: () {
                 if (titleController.text.isNotEmpty) {
-                  ref
-                      .read(volumeRulesProvider.notifier)
-                      .addRule(
-                        VolumeRule(
-                          id: DateTime.now().millisecondsSinceEpoch.toString(),
-                          calendarId: 'primary',
-                          eventTitlePattern: titleController.text,
-                          volumeLevel: volume,
-                          priority: 1,
-                        ),
-                      );
+                  final newRule = VolumeRule(
+                    id: rule?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+                    calendarId: selectedCalendarId ?? 'primary',
+                    eventTitlePattern: titleController.text,
+                    volumeLevel: volume,
+                    priority: priority,
+                  );
+                  
+                  if (rule == null) {
+                    ref.read(volumeRulesProvider.notifier).addRule(newRule);
+                  } else {
+                    ref.read(volumeRulesProvider.notifier).updateRule(newRule);
+                  }
                   Navigator.pop(context);
                 }
               },
-              child: const Text('Add'),
+              child: Text(rule == null ? 'Add' : 'Save'),
             ),
           ],
         ),

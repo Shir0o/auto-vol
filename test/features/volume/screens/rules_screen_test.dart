@@ -61,5 +61,68 @@ void main() {
 
       expect(find.text('No rules defined'), findsOneWidget);
     });
+
+    testWidgets('should call updateRule when a rule is edited', (tester) async {
+      final rule = VolumeRule(
+        id: '1',
+        calendarId: 'primary',
+        eventTitlePattern: 'Meeting',
+        volumeLevel: 0.0,
+        priority: 1,
+      );
+
+      when(() => mockNotifier.build()).thenAnswer((_) async => [rule]);
+      when(() => mockNotifier.updateRule(any())).thenAnswer((_) async {});
+
+      await tester.pumpWidget(createRulesScreen(AsyncData([rule])));
+      await tester.pumpAndSettle();
+
+      // Tap on the rule to edit
+      await tester.tap(find.text('Meeting'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Edit Rule'), findsOneWidget);
+
+      // Change priority - use find.descendant to target the dialog
+      await tester.tap(find.descendant(
+        of: find.byType(AlertDialog),
+        matching: find.byIcon(Icons.add),
+      ));
+      await tester.pumpAndSettle();
+
+      // Tap Save
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      verify(() => mockNotifier.updateRule(any(
+            that: isA<VolumeRule>().having((r) => r.priority, 'priority', 2),
+          ))).called(1);
+    });
+
+    testWidgets('should call addRule when a new rule is added', (tester) async {
+      when(() => mockNotifier.build()).thenAnswer((_) async => []);
+      when(() => mockNotifier.addRule(any())).thenAnswer((_) async {});
+
+      await tester.pumpWidget(createRulesScreen(const AsyncData([])));
+      await tester.pumpAndSettle();
+
+      // Tap FAB to add
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Add Rule'), findsOneWidget);
+
+      // Enter keyword
+      await tester.enterText(find.byType(TextField), 'Workout');
+      await tester.pumpAndSettle();
+
+      // Tap Add
+      await tester.tap(find.text('Add'));
+      await tester.pumpAndSettle();
+
+      verify(() => mockNotifier.addRule(any(
+            that: isA<VolumeRule>().having((r) => r.eventTitlePattern, 'pattern', 'Workout'),
+          ))).called(1);
+    });
   });
 }
