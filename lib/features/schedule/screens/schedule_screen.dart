@@ -134,14 +134,80 @@ class ScheduleScreen extends ConsumerWidget {
   }
 
   Widget _buildTimeline(List<CalendarEvent> events) {
+    if (events.isEmpty) {
+      return const Center(
+        child: Text(
+          'No upcoming events',
+          style: TextStyle(color: VocusColors.outline),
+        ),
+      );
+    }
+
+    final groupedEvents = <DateTime, List<CalendarEvent>>{};
+    for (var event in events) {
+      final date = DateTime(event.startTime.year, event.startTime.month, event.startTime.day);
+      groupedEvents.putIfAbsent(date, () => []).add(event);
+    }
+
+    final sortedDates = groupedEvents.keys.toList()..sort();
+
     return ListView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      itemCount: events.length,
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      itemCount: sortedDates.length,
       itemBuilder: (context, index) {
-        final event = events[index];
-        return _buildEventItem(event);
+        final date = sortedDates[index];
+        final dayEvents = groupedEvents[date]!;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildDateHeader(date),
+            ...dayEvents.map((e) => _buildEventItem(e)),
+            const SizedBox(height: 16),
+          ],
+        );
       },
+    );
+  }
+
+  Widget _buildDateHeader(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final tomorrow = today.add(const Duration(days: 1));
+
+    String dayLabel;
+    if (date == today) {
+      dayLabel = 'Today';
+    } else if (date == tomorrow) {
+      dayLabel = 'Tomorrow';
+    } else {
+      dayLabel = DateFormat('EEEE').format(date);
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: Row(
+        children: [
+          Text(
+            dayLabel.toUpperCase(),
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+              color: VocusColors.primary,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            '• ${DateFormat('MMMM d').format(date)}',
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: VocusColors.outline,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -157,106 +223,94 @@ class ScheduleScreen extends ConsumerWidget {
         : VocusColors.primary;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 24.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 75,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  startTimeStr,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: isActive ? VocusColors.primary : VocusColors.onBackground,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+      child: GlassCard(
+        padding: EdgeInsets.zero,
+        opacity: isActive ? 0.2 : 0.1,
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                width: 6,
+                decoration: BoxDecoration(
+                  color: calColor,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    bottomLeft: Radius.circular(24),
                   ),
-                  textAlign: TextAlign.right,
                 ),
-                Text(
-                  endTimeStr,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: VocusColors.outline,
-                  ),
-                  textAlign: TextAlign.right,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: GlassCard(
-              padding: const EdgeInsets.all(16),
-              opacity: isActive ? 0.2 : 0.1,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: calColor,
-                          shape: BoxShape.circle,
+                      Text(
+                        event.title,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: VocusColors.onSurface,
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          event.calendarTitle ?? 'Unknown Calendar',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: calColor.withOpacity(0.8),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Text(
+                            '$startTimeStr - $endTimeStr',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: VocusColors.outline,
+                            ),
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              '• ${event.calendarTitle ?? 'Unknown'}',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: calColor.withOpacity(0.8),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (isActive) ...[
+                            const SizedBox(width: 8),
+                            const Text(
+                              '• NOW',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: VocusColors.primary,
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
-                      if (isActive) ...[
-                        const SizedBox(width: 8),
-                        const Text(
-                          '• NOW',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: VocusColors.primary,
+                      if (event.description != null && event.description!.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            event.description!,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: VocusColors.onSurface.withOpacity(0.6),
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                      ],
                     ],
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    event.title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: VocusColors.onSurface,
-                    ),
-                  ),
-                  if (event.description != null && event.description!.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Text(
-                        event.description!,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: VocusColors.outline,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

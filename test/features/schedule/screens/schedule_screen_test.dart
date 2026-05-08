@@ -64,7 +64,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Test Event 1'), findsOneWidget);
-    expect(find.text('Work'), findsOneWidget);
+    expect(find.textContaining('Work'), findsOneWidget);
+    expect(find.text('TODAY'), findsOneWidget);
     expect(callCount, 1);
 
     // Find RefreshIndicator
