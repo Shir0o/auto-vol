@@ -22,11 +22,8 @@ void main() async {
         ? '1088393636693-5acqni1bji55g47tgs183lnli6cv1a0i.apps.googleusercontent.com' 
         : '1088393636693-lm37rmn0q08204ppv2cbm56d3bcta9tj.apps.googleusercontent.com',
     serverClientId: '1088393636693-lm37rmn0q08204ppv2cbm56d3bcta9tj.apps.googleusercontent.com',
-    scopes: [
-      'https://www.googleapis.com/auth/calendar.readonly',
-    ],
   );
-...
+
   final prefs = await SharedPreferences.getInstance();
 
   runApp(
