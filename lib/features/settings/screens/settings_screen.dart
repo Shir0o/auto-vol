@@ -5,6 +5,7 @@ import 'package:vocus/features/calendar/models/calendar_entry.dart';
 import 'package:vocus/features/calendar/providers/auth_provider.dart';
 import 'package:vocus/features/calendar/providers/calendar_provider.dart';
 import 'package:vocus/features/volume/providers/automation_provider.dart';
+import 'package:vocus/features/volume/screens/rules_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -38,6 +39,8 @@ class SettingsScreen extends ConsumerWidget {
                 const SizedBox(height: 24),
                 _buildSectionHeader('Automation'),
                 _buildAutomationToggle(ref, automationEnabled),
+                const SizedBox(height: 12),
+                _buildRulesEntry(context),
                 const SizedBox(height: 24),
                 _buildSectionHeader('Focus'),
                 _buildDefaultVolumeSlider(ref, defaultVolume),
@@ -137,6 +140,32 @@ class SettingsScreen extends ConsumerWidget {
             onChanged: (value) => ref.read(automationEnabledProvider.notifier).set(value),
             activeColor: VocusColors.primary,
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRulesEntry(BuildContext context) {
+    return GlassCard(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const RulesScreen()),
+      ),
+      child: const Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.rule, color: VocusColors.primary),
+              SizedBox(width: 16),
+              Text(
+                'Automation Rules',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+            ],
+          ),
+          Icon(Icons.chevron_right, color: VocusColors.outline),
         ],
       ),
     );
