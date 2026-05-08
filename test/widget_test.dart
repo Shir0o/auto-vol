@@ -39,7 +39,7 @@ void main() {
     // Wait for async initialization
     await tester.pumpAndSettle();
 
-    expect(find.text('Flow State'), findsOneWidget);
+    expect(find.text('Schedule'), findsNWidgets(2));
     expect(find.text('Settings'), findsOneWidget);
   });
 }
