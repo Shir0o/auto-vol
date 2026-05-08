@@ -5,6 +5,7 @@ import 'package:vocus/features/calendar/providers/calendar_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ScheduleScreen extends ConsumerWidget {
   const ScheduleScreen({super.key});
@@ -24,8 +25,13 @@ class ScheduleScreen extends ConsumerWidget {
                 _buildHeader(),
                 Expanded(
                   child: eventsAsync.when(
-                    data: (events) => _buildTimeline(events),
-                    loading: () => const Center(child: CircularProgressIndicator()),
+                    data: (events) => RefreshIndicator(
+                      onRefresh: () async => ref.invalidate(calendarEventsProvider),
+                      color: VocusColors.primary,
+                      backgroundColor: VocusColors.surface,
+                      child: _buildTimeline(events),
+                    ),
+                    loading: () => _buildSkeletonLoader(),
                     error: (err, stack) => Center(child: Text('Error: $err')),
                   ),
                 ),
@@ -63,8 +69,73 @@ class ScheduleScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildSkeletonLoader() {
+    return Shimmer.fromColors(
+      baseColor: VocusColors.surface.withOpacity(0.3),
+      highlightColor: VocusColors.surface.withOpacity(0.1),
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        itemCount: 5,
+        itemBuilder: (context, index) => Padding(
+          padding: const EdgeInsets.only(bottom: 24.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 60,
+                height: 14,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: GlassCard(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 80,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        width: double.infinity,
+                        height: 18,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Container(
+                        width: 150,
+                        height: 14,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildTimeline(List<CalendarEvent> events) {
     return ListView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       itemCount: events.length,
       itemBuilder: (context, index) {

@@ -9,18 +9,45 @@ class MockEventsResource extends Mock implements google.EventsResource {}
 class MockEvents extends Mock implements google.Events {}
 class MockEvent extends Mock implements google.Event {}
 class MockEventDateTime extends Mock implements google.EventDateTime {}
+class MockCalendarListResource extends Mock implements google.CalendarListResource {}
+class MockCalendarList extends Mock implements google.CalendarList {}
+class MockCalendarListEntry extends Mock implements google.CalendarListEntry {}
 
 void main() {
   late CalendarRepository repository;
   late MockCalendarApi mockApi;
   late MockEventsResource mockEventsResource;
+  late MockCalendarListResource mockCalendarListResource;
 
   setUp(() {
     mockApi = MockCalendarApi();
     mockEventsResource = MockEventsResource();
+    mockCalendarListResource = MockCalendarListResource();
     repository = CalendarRepository(mockApi);
 
     when(() => mockApi.events).thenReturn(mockEventsResource);
+    when(() => mockApi.calendarList).thenReturn(mockCalendarListResource);
+  });
+
+  group('CalendarRepository.fetchCalendars', () {
+    test('should fetch and convert google calendar list to CalendarEntry list', () async {
+      final mockCalendarList = MockCalendarList();
+      final mockEntry = MockCalendarListEntry();
+
+      when(() => mockCalendarListResource.list()).thenAnswer((_) async => mockCalendarList);
+      when(() => mockCalendarList.items).thenReturn([mockEntry]);
+      when(() => mockEntry.id).thenReturn('cal-1');
+      when(() => mockEntry.summary).thenReturn('My Calendar');
+      when(() => mockEntry.description).thenReturn('Work');
+      when(() => mockEntry.primary).thenReturn(true);
+
+      final results = await repository.fetchCalendars();
+
+      expect(results.length, 1);
+      expect(results.first.id, 'cal-1');
+      expect(results.first.title, 'My Calendar');
+      expect(results.first.isPrimary, true);
+    });
   });
 
   group('CalendarRepository.fetchEvents', () {

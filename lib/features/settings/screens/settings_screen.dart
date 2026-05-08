@@ -1,7 +1,9 @@
 import 'package:vocus/core/providers/common_providers.dart';
 import 'package:vocus/core/theme/vocus_theme.dart';
 import 'package:vocus/core/widgets/glass_card.dart';
+import 'package:vocus/features/calendar/models/calendar_entry.dart';
 import 'package:vocus/features/calendar/providers/auth_provider.dart';
+import 'package:vocus/features/calendar/providers/calendar_provider.dart';
 import 'package:vocus/features/volume/providers/automation_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,6 +16,8 @@ class SettingsScreen extends ConsumerWidget {
     final automationEnabled = ref.watch(automationEnabledProvider);
     final defaultVolume = ref.watch(defaultVolumeProvider);
     final currentUser = ref.watch(currentUserProvider);
+    final calendarsAsync = ref.watch(availableCalendarsProvider);
+    final enabledCalendarIds = ref.watch(enabledCalendarIdsProvider);
 
     return Scaffold(
       body: Stack(
@@ -54,6 +58,23 @@ class SettingsScreen extends ConsumerWidget {
                     }
                   },
                 ),
+                if (currentUser != null) ...[
+                  const SizedBox(height: 24),
+                  _buildSectionHeader('Managed Calendars'),
+                  calendarsAsync.when(
+                    data: (calendars) => Column(
+                      children: calendars.map((cal) {
+                        final isEnabled = enabledCalendarIds.contains(cal.id);
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12.0),
+                          child: _buildCalendarToggle(ref, cal, isEnabled),
+                        );
+                      }).toList(),
+                    ),
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                    error: (err, _) => Text('Failed to load calendars: $err'),
+                  ),
+                ],
               ],
             ),
           ),
@@ -123,6 +144,49 @@ class SettingsScreen extends ConsumerWidget {
           Slider(
             value: volume,
             onChanged: (value) => ref.read(defaultVolumeProvider.notifier).set(value),
+            activeColor: VocusColors.primary,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCalendarToggle(WidgetRef ref, CalendarEntry cal, bool isEnabled) {
+    return GlassCard(
+      padding: const EdgeInsets.all(16),
+      onTap: () => ref.read(enabledCalendarIdsProvider.notifier).toggle(cal.id),
+      child: Row(
+        children: [
+          Container(
+            width: 12,
+            height: 12,
+            decoration: BoxDecoration(
+              color: cal.color != null ? Color(int.parse(cal.color!.replaceAll('#', '0xFF'))) : VocusColors.primary,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  cal.title,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                if (cal.description != null)
+                  Text(
+                    cal.description!,
+                    style: const TextStyle(fontSize: 12, color: VocusColors.outline),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+              ],
+            ),
+          ),
+          Switch(
+            value: isEnabled,
+            onChanged: (value) => ref.read(enabledCalendarIdsProvider.notifier).toggle(cal.id),
             activeColor: VocusColors.primary,
           ),
         ],
