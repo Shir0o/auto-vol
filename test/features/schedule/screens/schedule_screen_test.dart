@@ -142,7 +142,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Meeting'), findsOneWidget);
-    expect(find.textContaining('Work'), findsOneWidget);
   });
 
   testWidgets('ScheduleScreen highlights winning event and shows conflicts', (

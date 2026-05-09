@@ -661,19 +661,6 @@ class ScheduleScreen extends ConsumerWidget {
                               color: VocusColors.outline,
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              '• ${event.calendarTitle ?? 'Unknown'}',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                                color: calColor.withOpacity(0.8),
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
                           if (isActive) ...[
                             const SizedBox(width: 8),
                             const Text(
