@@ -16,24 +16,37 @@ void startCallback() {
 }
 
 class ForegroundTaskHandler extends TaskHandler {
-  late AutomationService _automationService;
-  late VolumeService _volumeService;
-  late VolumeRulesRepository _rulesRepository;
+  AutomationService? _automationService;
+  VolumeService? _volumeService;
+  VolumeRulesRepository? _rulesRepository;
+
+  void setDependencies({
+    AutomationService? automationService,
+    VolumeService? volumeService,
+    VolumeRulesRepository? rulesRepository,
+  }) {
+    _automationService = automationService;
+    _volumeService = volumeService;
+    _rulesRepository = rulesRepository;
+  }
 
   @override
   Future<void> onStart(DateTime timestamp, TaskStarter taskStarter) async {
-    _automationService = AutomationService();
-    _volumeService = VolumeService();
+    _automationService ??= AutomationService();
+    _volumeService ??= VolumeService();
     final prefs = await SharedPreferences.getInstance();
-    _rulesRepository = VolumeRulesRepository(prefs);
+    _rulesRepository ??= VolumeRulesRepository(prefs);
   }
 
   @override
   Future<void> onRepeatEvent(DateTime timestamp) async {
     final prefs = await SharedPreferences.getInstance();
+    final automationService = _automationService ?? AutomationService();
+    final volumeService = _volumeService ?? VolumeService();
+    final rulesRepository = _rulesRepository ?? VolumeRulesRepository(prefs);
 
     // Load rules
-    final rules = await _rulesRepository.loadRules();
+    final rules = await rulesRepository.loadRules();
 
     // Load cached events (synced by main isolate)
     final eventsJson = prefs.getString('cached_events');
@@ -49,7 +62,7 @@ class ForegroundTaskHandler extends TaskHandler {
         .where((e) => e.startTime.isBefore(now) && e.endTime.isAfter(now))
         .toList();
 
-    final result = _automationService.calculateTargetVolume(
+    final result = automationService.calculateTargetVolume(
       activeEvents: activeEvents,
       rules: rules,
       defaultVolume: defaultVolume,
@@ -71,44 +84,35 @@ class ForegroundTaskHandler extends TaskHandler {
       // Handle DND
       final dndSnapshot = prefs.getBool('dnd_snapshot');
       if (automateDnd && dndSnapshot == null) {
-        final isDnd = await _volumeService.isDndEnabled();
+        final isDnd = await volumeService.isDndEnabled();
         await prefs.setBool('dnd_snapshot', isDnd);
-        await _volumeService.setDndMode(true);
+        await volumeService.setDndMode(true);
       }
 
       for (final stream in streams) {
         final snapshot = prefs.getDouble('volume_snapshot_${stream.name}');
         if (snapshot == null) {
-          final current = await _volumeService.getVolume(stream: stream);
+          final current = await volumeService.getVolume(stream: stream);
           if (current != null) {
             await prefs.setDouble('volume_snapshot_${stream.name}', current);
           }
         }
-        await _volumeService.setVolume(result.volume, stream: stream);
+        await volumeService.setVolume(result.volume, stream: stream);
       }
     } else {
       // Restore DND
       final dndSnapshot = prefs.getBool('dnd_snapshot');
       if (dndSnapshot != null) {
-        await _volumeService.setDndMode(dndSnapshot);
+        await volumeService.setDndMode(dndSnapshot);
         await prefs.remove('dnd_snapshot');
       }
 
       // Check if we have any snapshots to restore
-      bool hadSnapshots = false;
       for (final stream in VolumeStream.values) {
         final snapshot = prefs.getDouble('volume_snapshot_${stream.name}');
         if (snapshot != null) {
-          await _volumeService.setVolume(snapshot, stream: stream);
+          await volumeService.setVolume(snapshot, stream: stream);
           await prefs.remove('volume_snapshot_${stream.name}');
-          hadSnapshots = true;
-        }
-      }
-
-      if (!hadSnapshots) {
-        // No active events and no snapshots - set all enabled to default
-        for (final stream in streams) {
-          await _volumeService.setVolume(defaultVolume, stream: stream);
         }
       }
     }
