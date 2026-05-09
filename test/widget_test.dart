@@ -13,8 +13,8 @@ class MockAuthService extends Mock implements AuthService {}
 class MockPermissionService extends Mock implements PermissionService {}
 
 void main() {
-  testWidgets('VocusApp renders MainScreen', (WidgetTester tester) async {
-    SharedPreferences.setMockInitialValues({});
+  testWidgets('VocusApp renders MainScreen when onboarding is completed', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({'onboarding_completed': true});
     final prefs = await SharedPreferences.getInstance();
 
     final mockAuthService = MockAuthService();
@@ -41,5 +41,32 @@ void main() {
 
     expect(find.text('Schedule'), findsNWidgets(2));
     expect(find.text('Settings'), findsOneWidget);
+  });
+
+  testWidgets('VocusApp renders WelcomeScreen when onboarding is NOT completed', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({'onboarding_completed': false});
+    final prefs = await SharedPreferences.getInstance();
+
+    final mockAuthService = MockAuthService();
+    final mockPermissionService = MockPermissionService();
+
+    when(() => mockAuthService.signInSilently()).thenAnswer((_) async => null);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          authServiceProvider.overrideWithValue(mockAuthService),
+          permissionServiceProvider.overrideWithValue(mockPermissionService),
+        ],
+        child: const VocusApp(),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('Welcome to Vocus'), findsOneWidget);
+    expect(find.text('Notification Access'), findsOneWidget);
+    expect(find.text('Get Started'), findsOneWidget);
   });
 }

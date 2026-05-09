@@ -437,6 +437,40 @@ final class CalendarRefreshTickProvider
 String _$calendarRefreshTickHash() =>
     r'2ee401c5b24e2b88aa90e7e70c9a76fbbbf876fe';
 
+@ProviderFor(notificationPermission)
+final notificationPermissionProvider = NotificationPermissionProvider._();
+
+final class NotificationPermissionProvider
+    extends $FunctionalProvider<AsyncValue<bool>, bool, FutureOr<bool>>
+    with $FutureModifier<bool>, $FutureProvider<bool> {
+  NotificationPermissionProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'notificationPermissionProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$notificationPermissionHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<bool> create(Ref ref) {
+    return notificationPermission(ref);
+  }
+}
+
+String _$notificationPermissionHash() =>
+    r'510dee8dcaafd49802a7675b6ec3eac81c4b0701';
+
 @ProviderFor(notificationPolicyAccess)
 final notificationPolicyAccessProvider = NotificationPolicyAccessProvider._();
 

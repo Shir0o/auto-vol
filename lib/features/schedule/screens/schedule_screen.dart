@@ -9,6 +9,7 @@ import 'package:vocus/features/volume/models/automation_status.dart';
 import 'package:vocus/features/volume/providers/automation_provider.dart';
 import 'package:vocus/features/volume/providers/volume_rules_provider.dart';
 import 'package:vocus/features/volume/providers/event_overrides_provider.dart';
+import 'package:vocus/features/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -21,6 +22,15 @@ class ScheduleScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authStateProvider);
     final automationStatus = ref.watch(automationProvider);
+
+    final notificationPermission = ref.watch(notificationPermissionProvider);
+    final dndAccess = ref.watch(notificationPolicyAccessProvider);
+    final batteryOpt = ref.watch(ignoreBatteryOptimizationsProvider);
+
+    final hasMissingPermissions =
+        (notificationPermission.value == false) ||
+        (dndAccess.value == false) ||
+        (batteryOpt.value == false);
 
     return Scaffold(
       body: Stack(
@@ -35,6 +45,7 @@ class ScheduleScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildHeader(ref, automationStatus),
+                if (hasMissingPermissions) _buildMissingPermissionsBanner(ref),
                 Expanded(
                   child: authState.when(
                     loading: () => _buildSkeletonLoader(),
@@ -239,6 +250,62 @@ class ScheduleScreen extends ConsumerWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildMissingPermissionsBanner(WidgetRef ref) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+      child: GlassCard(
+        padding: const EdgeInsets.all(16),
+        opacity: 0.15,
+        border: Border.all(color: Colors.orangeAccent.withOpacity(0.3)),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.warning_amber_rounded,
+              color: Colors.orangeAccent,
+              size: 24,
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Missing Permissions',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: VocusColors.onSurface,
+                    ),
+                  ),
+                  Text(
+                    'Some features may not work as expected.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: VocusColors.outline,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                ref.read(selectedIndexProvider.notifier).set(1);
+              },
+              child: const Text(
+                'Fix in Settings',
+                style: TextStyle(
+                  color: VocusColors.primary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

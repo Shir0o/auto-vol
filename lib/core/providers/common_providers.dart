@@ -63,6 +63,11 @@ Stream<DateTime> calendarRefreshTick(Ref ref) {
 }
 
 @riverpod
+Future<bool> notificationPermission(Ref ref) {
+  return ref.watch(permissionServiceProvider).hasNotificationPermission();
+}
+
+@riverpod
 Future<bool> notificationPolicyAccess(Ref ref) {
   return ref.watch(permissionServiceProvider).hasNotificationPolicyAccess();
 }

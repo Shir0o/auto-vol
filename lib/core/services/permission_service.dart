@@ -9,12 +9,20 @@ class PermissionService {
     ].request();
   }
 
+  Future<bool> hasNotificationPermission() async {
+    return await Permission.notification.isGranted;
+  }
+
   Future<bool> hasNotificationPolicyAccess() async {
     return await Permission.accessNotificationPolicy.isGranted;
   }
 
   Future<bool> isIgnoringBatteryOptimizations() async {
     return await Permission.ignoreBatteryOptimizations.isGranted;
+  }
+
+  Future<void> requestNotificationPermission() async {
+    await Permission.notification.request();
   }
 
   Future<void> requestNotificationPolicyAccess() async {

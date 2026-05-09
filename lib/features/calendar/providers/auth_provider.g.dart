@@ -103,7 +103,7 @@ final class CurrentUserProvider
   }
 }
 
-String _$currentUserHash() => r'9a217186696db9686b707eb16c088948dbf50957';
+String _$currentUserHash() => r'4fe95ec2922fa366e773e48b091bc550505dfcd7';
 
 @ProviderFor(isStatusAuthenticated)
 final isStatusAuthenticatedProvider = IsStatusAuthenticatedProvider._();

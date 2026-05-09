@@ -13,6 +13,7 @@ import 'package:vocus/features/calendar/providers/auth_provider.dart';
 import 'package:vocus/features/volume/models/volume_rule.dart';
 import 'package:vocus/features/volume/providers/volume_rules_provider.dart';
 import 'package:vocus/features/schedule/screens/schedule_screen.dart';
+import 'package:vocus/features/main_screen.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -317,6 +318,110 @@ void main() {
 
     // Verify conflict icon (warning)
     expect(find.byIcon(Icons.warning_amber_rounded), findsWidgets);
+  });
+
+  testWidgets('ScheduleScreen shows banner when permissions are missing', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+
+    final mockUser = MockGoogleSignInAccount();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          calendarEventsProvider.overrideWith((ref) => <CalendarEvent>[]),
+          volumeRulesProvider.overrideWith(() => mockRules),
+          eventOverridesProvider.overrideWith(() => mockOverrides),
+          automationProvider.overrideWith(() => MockAutomation(dummyStatus)),
+          authStateProvider.overrideWith(() => MockAuthState(mockUser)),
+          currentUserProvider.overrideWith((ref) => mockUser),
+          notificationPermissionProvider.overrideWith((ref) => false),
+          notificationPolicyAccessProvider.overrideWith((ref) => false),
+          ignoreBatteryOptimizationsProvider.overrideWith((ref) => false),
+        ],
+        child: const MaterialApp(home: ScheduleScreen()),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('Missing Permissions'), findsOneWidget);
+    expect(find.text('Fix in Settings'), findsOneWidget);
+  });
+
+  testWidgets('ScheduleScreen hides banner when all permissions are granted', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+
+    final mockUser = MockGoogleSignInAccount();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          calendarEventsProvider.overrideWith((ref) => <CalendarEvent>[]),
+          volumeRulesProvider.overrideWith(() => mockRules),
+          eventOverridesProvider.overrideWith(() => mockOverrides),
+          automationProvider.overrideWith(() => MockAutomation(dummyStatus)),
+          authStateProvider.overrideWith(() => MockAuthState(mockUser)),
+          currentUserProvider.overrideWith((ref) => mockUser),
+          notificationPermissionProvider.overrideWith((ref) => true),
+          notificationPolicyAccessProvider.overrideWith((ref) => true),
+          ignoreBatteryOptimizationsProvider.overrideWith((ref) => true),
+        ],
+        child: const MaterialApp(home: ScheduleScreen()),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('Missing Permissions'), findsNothing);
+  });
+
+  testWidgets('ScheduleScreen navigates to Settings when Fix in Settings is tapped', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+
+    final mockUser = MockGoogleSignInAccount();
+
+    final container = ProviderContainer(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        calendarEventsProvider.overrideWith((ref) => <CalendarEvent>[]),
+        volumeRulesProvider.overrideWith(() => mockRules),
+        eventOverridesProvider.overrideWith(() => mockOverrides),
+        automationProvider.overrideWith(() => MockAutomation(dummyStatus)),
+        authStateProvider.overrideWith(() => MockAuthState(mockUser)),
+        currentUserProvider.overrideWith((ref) => mockUser),
+        notificationPermissionProvider.overrideWith((ref) => false),
+        notificationPolicyAccessProvider.overrideWith((ref) => false),
+        ignoreBatteryOptimizationsProvider.overrideWith((ref) => false),
+      ],
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(home: ScheduleScreen()),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    final fixButton = find.text('Fix in Settings');
+    expect(fixButton, findsOneWidget);
+
+    await tester.tap(fixButton);
+    await tester.pump();
+
+    expect(container.read(selectedIndexProvider), 1);
   });
 }
 

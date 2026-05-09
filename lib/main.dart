@@ -1,6 +1,8 @@
 import 'package:vocus/core/providers/common_providers.dart';
 import 'package:vocus/core/theme/vocus_theme.dart';
 import 'package:vocus/features/main_screen.dart';
+import 'package:vocus/features/onboarding/providers/onboarding_controller.dart';
+import 'package:vocus/features/onboarding/screens/welcome_screen.dart';
 import 'package:vocus/features/calendar/providers/auth_provider.dart';
 import 'package:vocus/features/volume/providers/automation_provider.dart';
 import 'package:vocus/features/volume/services/foreground_service.dart';
@@ -126,15 +128,12 @@ class VocusApp extends ConsumerWidget {
       }
     });
 
-    // Request initial permissions on startup
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(permissionServiceProvider).requestInitialPermissions();
-    });
+    final onboardingCompleted = ref.watch(onboardingControllerProvider);
 
     return MaterialApp(
       title: 'Vocus',
       theme: VocusTheme.darkTheme,
-      home: const MainScreen(),
+      home: onboardingCompleted ? const MainScreen() : const WelcomeScreen(),
       debugShowCheckedModeBanner: false,
       scaffoldMessengerKey: ref.watch(scaffoldMessengerKeyProvider),
     );
