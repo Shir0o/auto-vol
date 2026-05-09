@@ -8,7 +8,6 @@ import 'package:vocus/features/volume/models/volume_rule.dart';
 import 'package:vocus/features/volume/models/automation_status.dart';
 import 'package:vocus/features/volume/providers/automation_provider.dart';
 import 'package:vocus/features/volume/providers/volume_rules_provider.dart';
-import 'package:vocus/features/volume/providers/event_overrides_provider.dart';
 import 'package:vocus/features/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -733,137 +732,10 @@ class ScheduleScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      event.volumeOverride != null
-                          ? Icons.edit
-                          : Icons.volume_up_outlined,
-                      color: event.volumeOverride != null
-                          ? VocusColors.primary
-                          : VocusColors.outline,
-                    ),
-                    onPressed: () =>
-                        _showVolumeOverrideDialog(context, ref, event),
-                    tooltip: 'Tune Volume',
-                  ),
-                  if (event.volumeOverride != null)
-                    Text(
-                      '${(event.volumeOverride! * 100).toInt()}%',
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: VocusColors.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                ],
-              ),
               const SizedBox(width: 8),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  void _showVolumeOverrideDialog(
-    BuildContext context,
-    WidgetRef ref,
-    CalendarEvent event,
-  ) {
-    double currentVal = event.volumeOverride ?? 0.5;
-
-    showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            backgroundColor: VocusColors.surface,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-              side: BorderSide(color: VocusColors.primary.withOpacity(0.2)),
-            ),
-            title: Text(
-              'Tune Volume for "${event.title}"',
-              style: const TextStyle(
-                fontSize: 18,
-                color: VocusColors.onSurface,
-              ),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'This will override any general rules for this specific event.',
-                  style: TextStyle(fontSize: 12, color: VocusColors.outline),
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    const Icon(Icons.volume_mute, color: VocusColors.outline),
-                    Expanded(
-                      child: Slider(
-                        value: currentVal,
-                        activeColor: VocusColors.primary,
-                        inactiveColor: VocusColors.outline.withOpacity(0.3),
-                        onChanged: (val) => setState(() => currentVal = val),
-                      ),
-                    ),
-                    const Icon(Icons.volume_up, color: VocusColors.primary),
-                  ],
-                ),
-                Text(
-                  '${(currentVal * 100).toInt()}%',
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: VocusColors.primary,
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text(
-                  'CANCEL',
-                  style: TextStyle(color: VocusColors.outline),
-                ),
-              ),
-              if (event.volumeOverride != null)
-                TextButton(
-                  onPressed: () {
-                    ref
-                        .read(eventOverridesProvider.notifier)
-                        .removeOverride(event.id);
-                    Navigator.pop(context);
-                  },
-                  child: const Text(
-                    'RESET',
-                    style: TextStyle(color: Colors.redAccent),
-                  ),
-                ),
-              ElevatedButton(
-                onPressed: () {
-                  ref
-                      .read(eventOverridesProvider.notifier)
-                      .setOverride(event.id, currentVal);
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: VocusColors.primary,
-                  foregroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Text('APPLY'),
-              ),
-            ],
-          );
-        },
       ),
     );
   }
