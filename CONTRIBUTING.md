@@ -12,7 +12,12 @@ Thanks for your interest! This guide covers the basics for contributing.
    ```bash
    cp .env.example .env
    ```
-6. Alternatively, you can still pass them via `--dart-define` at run/build time:
+6. Set up git hooks to automate formatting:
+   ```bash
+   ./scripts/setup_hooks.sh
+   ```
+
+Alternatively, you can still pass credentials via `--dart-define` at run/build time:
    ```bash
    flutter run \
      --dart-define=GOOGLE_IOS_CLIENT_ID=<your-ios-client-id> \
