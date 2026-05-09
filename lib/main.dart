@@ -39,7 +39,7 @@ void main() async {
   } catch (e) {
     // ignore: avoid_print
     print(
-      'Note: .env file not found or failed to load. Falling back to build-time definitions.',
+      'Note: .env file not found or failed to load: $e. Falling back to build-time definitions.',
     );
   }
 
