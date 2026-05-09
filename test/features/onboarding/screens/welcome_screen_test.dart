@@ -25,12 +25,15 @@ void main() {
     mockPermissionService = MockPermissionService();
     mockAuthService = MockAuthService();
 
-    when(() => mockPermissionService.hasNotificationPermission())
-        .thenAnswer((_) async => false);
-    when(() => mockPermissionService.hasNotificationPolicyAccess())
-        .thenAnswer((_) async => false);
-    when(() => mockPermissionService.isIgnoringBatteryOptimizations())
-        .thenAnswer((_) async => false);
+    when(
+      () => mockPermissionService.hasNotificationPermission(),
+    ).thenAnswer((_) async => false);
+    when(
+      () => mockPermissionService.hasNotificationPolicyAccess(),
+    ).thenAnswer((_) async => false);
+    when(
+      () => mockPermissionService.isIgnoringBatteryOptimizations(),
+    ).thenAnswer((_) async => false);
 
     when(() => mockAuthService.signInSilently()).thenAnswer((_) async => null);
   });
@@ -59,8 +62,9 @@ void main() {
     });
 
     testWidgets('calls signIn when Google button is pressed', (tester) async {
-      when(() => mockAuthService.signIn())
-          .thenAnswer((_) async => MockGoogleSignInAccount());
+      when(
+        () => mockAuthService.signIn(),
+      ).thenAnswer((_) async => MockGoogleSignInAccount());
 
       await tester.pumpWidget(createWelcomeScreen());
 
@@ -71,8 +75,9 @@ void main() {
     });
 
     testWidgets('shows "Linked" when signed in', (tester) async {
-      when(() => mockAuthService.signInSilently())
-          .thenAnswer((_) async => MockGoogleSignInAccount());
+      when(
+        () => mockAuthService.signInSilently(),
+      ).thenAnswer((_) async => MockGoogleSignInAccount());
 
       await tester.pumpWidget(createWelcomeScreen());
       await tester.pumpAndSettle();
@@ -80,25 +85,29 @@ void main() {
       expect(find.text('Linked'), findsOneWidget);
     });
 
-    testWidgets('calls requestNotificationPermission when button is pressed',
-        (tester) async {
-      when(() => mockPermissionService.requestNotificationPermission())
-          .thenAnswer((_) async => {});
+    testWidgets('calls requestNotificationPermission when button is pressed', (
+      tester,
+    ) async {
+      when(
+        () => mockPermissionService.requestNotificationPermission(),
+      ).thenAnswer((_) async => {});
 
       await tester.pumpWidget(createWelcomeScreen());
 
       await tester.tap(find.widgetWithText(ElevatedButton, 'Allow').first);
       await tester.pump();
 
-      verify(() => mockPermissionService.requestNotificationPermission())
-          .called(1);
+      verify(
+        () => mockPermissionService.requestNotificationPermission(),
+      ).called(1);
     });
 
     testWidgets('shows "Granted" when permission is already allowed', (
       tester,
     ) async {
-      when(() => mockPermissionService.hasNotificationPermission())
-          .thenAnswer((_) async => true);
+      when(
+        () => mockPermissionService.hasNotificationPermission(),
+      ).thenAnswer((_) async => true);
 
       await tester.pumpWidget(createWelcomeScreen());
       await tester.pumpAndSettle();

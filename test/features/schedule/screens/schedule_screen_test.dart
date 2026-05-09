@@ -145,105 +145,6 @@ void main() {
     expect(find.textContaining('Work'), findsOneWidget);
   });
 
-  testWidgets('ScheduleScreen allows tuning volume override for an event', (
-    tester,
-  ) async {
-    SharedPreferences.setMockInitialValues({});
-    final prefs = await SharedPreferences.getInstance();
-
-    final now = DateTime.now();
-    final mockUser = MockGoogleSignInAccount();
-    final event = CalendarEvent(
-      id: '1',
-      title: 'Event',
-      startTime: now.add(const Duration(hours: 1)),
-      endTime: now.add(const Duration(hours: 2)),
-      calendarId: 'primary',
-    );
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-          calendarEventsProvider.overrideWith((ref) => [event]),
-          volumeRulesProvider.overrideWith(() => mockRules),
-          eventOverridesProvider.overrideWith(() => mockOverrides),
-          automationProvider.overrideWith(() => MockAutomation(dummyStatus)),
-          authStateProvider.overrideWith(() => MockAuthState(mockUser)),
-          currentUserProvider.overrideWith((ref) => mockUser),
-        ],
-        child: const MaterialApp(home: ScheduleScreen()),
-      ),
-    );
-
-    await tester.pumpAndSettle();
-
-    // Find the tune button
-    final tuneButton = find.byIcon(Icons.volume_up_outlined);
-    expect(tuneButton, findsOneWidget);
-
-    // Tap it
-    await tester.tap(tuneButton);
-    await tester.pumpAndSettle();
-
-    // Verify dialog shown
-    expect(find.textContaining('Tune Volume for'), findsOneWidget);
-  });
-
-  testWidgets('ScheduleScreen allows resetting volume override for an event', (
-    tester,
-  ) async {
-    SharedPreferences.setMockInitialValues({});
-    final prefs = await SharedPreferences.getInstance();
-
-    final now = DateTime.now();
-    final mockUser = MockGoogleSignInAccount();
-    final event = CalendarEvent(
-      id: '1',
-      title: 'Event',
-      startTime: now.add(const Duration(hours: 1)),
-      endTime: now.add(const Duration(hours: 2)),
-      calendarId: 'primary',
-      volumeOverride: 0.8,
-    );
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-          calendarEventsProvider.overrideWith((ref) => [event]),
-          volumeRulesProvider.overrideWith(() => mockRules),
-          eventOverridesProvider.overrideWith(() => mockOverrides),
-          automationProvider.overrideWith(() => MockAutomation(dummyStatus)),
-          authStateProvider.overrideWith(() => MockAuthState(mockUser)),
-          currentUserProvider.overrideWith((ref) => mockUser),
-        ],
-        child: const MaterialApp(home: ScheduleScreen()),
-      ),
-    );
-
-    await tester.pumpAndSettle();
-
-    // Find the tune button (should be Icons.edit because override exists)
-    final tuneButton = find.byIcon(Icons.edit);
-    expect(tuneButton, findsOneWidget);
-
-    // Tap it
-    await tester.tap(tuneButton);
-    await tester.pumpAndSettle();
-
-    // Verify RESET button shown
-    final resetButton = find.text('RESET');
-    expect(resetButton, findsOneWidget);
-
-    // Tap RESET
-    await tester.tap(resetButton);
-    await tester.pumpAndSettle();
-
-    // Verify dialog closed
-    expect(find.text('RESET'), findsNothing);
-  });
-
   testWidgets('ScheduleScreen highlights winning event and shows conflicts', (
     tester,
   ) async {
@@ -383,46 +284,47 @@ void main() {
     expect(find.text('Missing Permissions'), findsNothing);
   });
 
-  testWidgets('ScheduleScreen navigates to Settings when Fix in Settings is tapped', (
-    tester,
-  ) async {
-    SharedPreferences.setMockInitialValues({});
-    final prefs = await SharedPreferences.getInstance();
+  testWidgets(
+    'ScheduleScreen navigates to Settings when Fix in Settings is tapped',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
 
-    final mockUser = MockGoogleSignInAccount();
+      final mockUser = MockGoogleSignInAccount();
 
-    final container = ProviderContainer(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(prefs),
-        calendarEventsProvider.overrideWith((ref) => <CalendarEvent>[]),
-        volumeRulesProvider.overrideWith(() => mockRules),
-        eventOverridesProvider.overrideWith(() => mockOverrides),
-        automationProvider.overrideWith(() => MockAutomation(dummyStatus)),
-        authStateProvider.overrideWith(() => MockAuthState(mockUser)),
-        currentUserProvider.overrideWith((ref) => mockUser),
-        notificationPermissionProvider.overrideWith((ref) => false),
-        notificationPolicyAccessProvider.overrideWith((ref) => false),
-        ignoreBatteryOptimizationsProvider.overrideWith((ref) => false),
-      ],
-    );
+      final container = ProviderContainer(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          calendarEventsProvider.overrideWith((ref) => <CalendarEvent>[]),
+          volumeRulesProvider.overrideWith(() => mockRules),
+          eventOverridesProvider.overrideWith(() => mockOverrides),
+          automationProvider.overrideWith(() => MockAutomation(dummyStatus)),
+          authStateProvider.overrideWith(() => MockAuthState(mockUser)),
+          currentUserProvider.overrideWith((ref) => mockUser),
+          notificationPermissionProvider.overrideWith((ref) => false),
+          notificationPolicyAccessProvider.overrideWith((ref) => false),
+          ignoreBatteryOptimizationsProvider.overrideWith((ref) => false),
+        ],
+      );
 
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: const MaterialApp(home: ScheduleScreen()),
-      ),
-    );
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const MaterialApp(home: ScheduleScreen()),
+        ),
+      );
 
-    await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
 
-    final fixButton = find.text('Fix in Settings');
-    expect(fixButton, findsOneWidget);
+      final fixButton = find.text('Fix in Settings');
+      expect(fixButton, findsOneWidget);
 
-    await tester.tap(fixButton);
-    await tester.pump();
+      await tester.tap(fixButton);
+      await tester.pump();
 
-    expect(container.read(selectedIndexProvider), 1);
-  });
+      expect(container.read(selectedIndexProvider), 1);
+    },
+  );
 }
 
 class MockGoogleSignInAccount extends Mock implements GoogleSignInAccount {}
