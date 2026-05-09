@@ -186,7 +186,8 @@ void main() {
         // Initial build - no events, should NOT set volume
         await Future.delayed(const Duration(milliseconds: 10));
         verifyNever(
-          () => mockVolumeService.setVolume(any(), stream: any(named: 'stream')),
+          () =>
+              mockVolumeService.setVolume(any(), stream: any(named: 'stream')),
         );
 
         // Event starts

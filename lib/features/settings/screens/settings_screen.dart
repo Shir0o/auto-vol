@@ -277,14 +277,18 @@ class SettingsScreen extends ConsumerWidget {
                     children: [
                       Text(
                         'Automation Rules',
-                        style:
-                            TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                       SizedBox(height: 2),
                       Text(
                         'Define volume levels for specific event titles',
-                        style:
-                            TextStyle(fontSize: 12, color: VocusColors.outline),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: VocusColors.outline,
+                        ),
                       ),
                     ],
                   ),
