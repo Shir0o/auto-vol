@@ -38,7 +38,9 @@ void main() async {
     await dotenv.load(fileName: ".env");
   } catch (e) {
     // ignore: avoid_print
-    print('Note: .env file not found or failed to load. Falling back to build-time definitions.');
+    print(
+      'Note: .env file not found or failed to load: $e. Falling back to build-time definitions.',
+    );
   }
 
   // Initialize Workmanager
@@ -62,9 +64,11 @@ void main() async {
   // at build time via --dart-define.
   // On Android, the "Web Client ID" from the Google Cloud Console must be used
   // as the clientId/serverClientId to satisfy the Credential Manager.
-  final iosClientId = dotenv.env['GOOGLE_IOS_CLIENT_ID'] ??
+  final iosClientId =
+      dotenv.env['GOOGLE_IOS_CLIENT_ID'] ??
       const String.fromEnvironment('GOOGLE_IOS_CLIENT_ID');
-  final webClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID'] ??
+  final webClientId =
+      dotenv.env['GOOGLE_WEB_CLIENT_ID'] ??
       const String.fromEnvironment('GOOGLE_WEB_CLIENT_ID');
 
   if (iosClientId.isEmpty || webClientId.isEmpty) {

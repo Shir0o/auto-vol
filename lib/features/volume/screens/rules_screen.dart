@@ -95,8 +95,11 @@ class RulesScreen extends ConsumerWidget {
                 children: [
                   const Row(
                     children: [
-                      Icon(Icons.info_outline,
-                          color: VocusColors.primary, size: 20),
+                      Icon(
+                        Icons.info_outline,
+                        color: VocusColors.primary,
+                        size: 20,
+                      ),
                       SizedBox(width: 8),
                       Text(
                         'How Rules Work',
@@ -198,8 +201,10 @@ class RulesScreen extends ConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('• ',
-              style: TextStyle(color: VocusColors.primary, fontSize: 14)),
+          const Text(
+            '• ',
+            style: TextStyle(color: VocusColors.primary, fontSize: 14),
+          ),
           Expanded(
             child: Text(
               text,
