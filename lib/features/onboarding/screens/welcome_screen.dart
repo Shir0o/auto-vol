@@ -221,8 +221,10 @@ class _OnboardingItem extends StatelessWidget {
                     backgroundColor: VocusColors.primary.withOpacity(0.2),
                     foregroundColor: VocusColors.primary,
                     elevation: 0,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

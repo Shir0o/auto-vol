@@ -282,10 +282,7 @@ class ScheduleScreen extends ConsumerWidget {
                   ),
                   Text(
                     'Some features may not work as expected.',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: VocusColors.outline,
-                    ),
+                    style: TextStyle(fontSize: 12, color: VocusColors.outline),
                   ),
                 ],
               ),

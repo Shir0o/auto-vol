@@ -383,46 +383,47 @@ void main() {
     expect(find.text('Missing Permissions'), findsNothing);
   });
 
-  testWidgets('ScheduleScreen navigates to Settings when Fix in Settings is tapped', (
-    tester,
-  ) async {
-    SharedPreferences.setMockInitialValues({});
-    final prefs = await SharedPreferences.getInstance();
+  testWidgets(
+    'ScheduleScreen navigates to Settings when Fix in Settings is tapped',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
 
-    final mockUser = MockGoogleSignInAccount();
+      final mockUser = MockGoogleSignInAccount();
 
-    final container = ProviderContainer(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(prefs),
-        calendarEventsProvider.overrideWith((ref) => <CalendarEvent>[]),
-        volumeRulesProvider.overrideWith(() => mockRules),
-        eventOverridesProvider.overrideWith(() => mockOverrides),
-        automationProvider.overrideWith(() => MockAutomation(dummyStatus)),
-        authStateProvider.overrideWith(() => MockAuthState(mockUser)),
-        currentUserProvider.overrideWith((ref) => mockUser),
-        notificationPermissionProvider.overrideWith((ref) => false),
-        notificationPolicyAccessProvider.overrideWith((ref) => false),
-        ignoreBatteryOptimizationsProvider.overrideWith((ref) => false),
-      ],
-    );
+      final container = ProviderContainer(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          calendarEventsProvider.overrideWith((ref) => <CalendarEvent>[]),
+          volumeRulesProvider.overrideWith(() => mockRules),
+          eventOverridesProvider.overrideWith(() => mockOverrides),
+          automationProvider.overrideWith(() => MockAutomation(dummyStatus)),
+          authStateProvider.overrideWith(() => MockAuthState(mockUser)),
+          currentUserProvider.overrideWith((ref) => mockUser),
+          notificationPermissionProvider.overrideWith((ref) => false),
+          notificationPolicyAccessProvider.overrideWith((ref) => false),
+          ignoreBatteryOptimizationsProvider.overrideWith((ref) => false),
+        ],
+      );
 
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: const MaterialApp(home: ScheduleScreen()),
-      ),
-    );
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const MaterialApp(home: ScheduleScreen()),
+        ),
+      );
 
-    await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
 
-    final fixButton = find.text('Fix in Settings');
-    expect(fixButton, findsOneWidget);
+      final fixButton = find.text('Fix in Settings');
+      expect(fixButton, findsOneWidget);
 
-    await tester.tap(fixButton);
-    await tester.pump();
+      await tester.tap(fixButton);
+      await tester.pump();
 
-    expect(container.read(selectedIndexProvider), 1);
-  });
+      expect(container.read(selectedIndexProvider), 1);
+    },
+  );
 }
 
 class MockGoogleSignInAccount extends Mock implements GoogleSignInAccount {}

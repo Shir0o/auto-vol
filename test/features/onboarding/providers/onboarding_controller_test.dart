@@ -19,9 +19,7 @@ void main() {
       when(() => mockPrefs.getBool('onboarding_completed')).thenReturn(null);
 
       final container = ProviderContainer(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(mockPrefs),
-        ],
+        overrides: [sharedPreferencesProvider.overrideWithValue(mockPrefs)],
       );
       addTearDown(container.dispose);
 
@@ -33,9 +31,7 @@ void main() {
       when(() => mockPrefs.getBool('onboarding_completed')).thenReturn(true);
 
       final container = ProviderContainer(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(mockPrefs),
-        ],
+        overrides: [sharedPreferencesProvider.overrideWithValue(mockPrefs)],
       );
       addTearDown(container.dispose);
 
@@ -45,19 +41,20 @@ void main() {
 
     test('completeOnboarding should update prefs and state', () async {
       when(() => mockPrefs.getBool('onboarding_completed')).thenReturn(false);
-      when(() => mockPrefs.setBool('onboarding_completed', true))
-          .thenAnswer((_) async => true);
+      when(
+        () => mockPrefs.setBool('onboarding_completed', true),
+      ).thenAnswer((_) async => true);
 
       final container = ProviderContainer(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(mockPrefs),
-        ],
+        overrides: [sharedPreferencesProvider.overrideWithValue(mockPrefs)],
       );
       addTearDown(container.dispose);
 
       expect(container.read(onboardingControllerProvider), false);
 
-      container.read(onboardingControllerProvider.notifier).completeOnboarding();
+      container
+          .read(onboardingControllerProvider.notifier)
+          .completeOnboarding();
 
       expect(container.read(onboardingControllerProvider), true);
       verify(() => mockPrefs.setBool('onboarding_completed', true)).called(1);

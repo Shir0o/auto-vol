@@ -37,12 +37,18 @@ class RulesScreen extends ConsumerWidget {
               data: (rules) {
                 final overrides = overridesAsync.value ?? {};
                 final events = eventsAsync.value ?? [];
-                
+
                 if (rules.isEmpty && overrides.isEmpty) {
                   return _buildEmptyState();
                 }
-                
-                return _buildCombinedList(context, ref, rules, overrides, events);
+
+                return _buildCombinedList(
+                  context,
+                  ref,
+                  rules,
+                  overrides,
+                  events,
+                );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (err, _) => Center(child: Text('Error: $err')),
@@ -96,7 +102,7 @@ class RulesScreen extends ConsumerWidget {
 
   void _showEventPicker(BuildContext context, WidgetRef ref) {
     final eventsAsync = ref.read(calendarEventsProvider);
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -116,7 +122,11 @@ class RulesScreen extends ConsumerWidget {
                 itemBuilder: (context, index) {
                   final event = events[index];
                   return ListTile(
-                    title: Text(event.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    title: Text(
+                      event.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     subtitle: Text(
                       '${event.calendarTitle ?? 'Calendar'} • ${_formatTime(event.startTime)}',
                       style: const TextStyle(fontSize: 11),
@@ -136,14 +146,21 @@ class RulesScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel', style: TextStyle(color: VocusColors.outline)),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: VocusColors.outline),
+            ),
           ),
         ],
       ),
     );
   }
 
-  void _showOverrideDialog(BuildContext context, WidgetRef ref, CalendarEvent event) {
+  void _showOverrideDialog(
+    BuildContext context,
+    WidgetRef ref,
+    CalendarEvent event,
+  ) {
     double volume = 0.0;
     showDialog(
       context: context,
@@ -176,11 +193,16 @@ class RulesScreen extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel', style: TextStyle(color: VocusColors.outline)),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: VocusColors.outline),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
-                ref.read(eventOverridesProvider.notifier).setOverride(event.id, volume);
+                ref
+                    .read(eventOverridesProvider.notifier)
+                    .setOverride(event.id, volume);
                 Navigator.pop(context);
               },
               child: const Text('Save'),
@@ -324,69 +346,73 @@ class RulesScreen extends ConsumerWidget {
               ),
             ),
           ),
-          ...rules.map((rule) => Padding(
-                padding: const EdgeInsets.only(bottom: 12.0),
-                child: GlassCard(
-                  padding: const EdgeInsets.all(16),
-                  onTap: () => _showRuleDialog(context, ref, rule: rule),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: VocusColors.primary.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          rule.volumeLevel == 0 ? Icons.volume_off : Icons.volume_up,
-                          color: VocusColors.primary,
-                          size: 20,
-                        ),
+          ...rules.map(
+            (rule) => Padding(
+              padding: const EdgeInsets.only(bottom: 12.0),
+              child: GlassCard(
+                padding: const EdgeInsets.all(16),
+                onTap: () => _showRuleDialog(context, ref, rule: rule),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: VocusColors.primary.withOpacity(0.1),
+                        shape: BoxShape.circle,
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              rule.eventTitlePattern,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              '${rule.calendarId} • Priority: ${rule.priority}',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: VocusColors.outline,
-                              ),
-                            ),
-                            Text(
-                              rule.volumeLevel == 0
-                                  ? 'Muted'
-                                  : 'Volume: ${(rule.volumeLevel * 100).toInt()}%',
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: VocusColors.outline,
-                              ),
-                            ),
-                          ],
-                        ),
+                      child: Icon(
+                        rule.volumeLevel == 0
+                            ? Icons.volume_off
+                            : Icons.volume_up,
+                        color: VocusColors.primary,
+                        size: 20,
                       ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.delete_outline,
-                          color: Colors.redAccent,
-                        ),
-                        onPressed: () => ref
-                            .read(volumeRulesProvider.notifier)
-                            .deleteRule(rule.id),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            rule.eventTitlePattern,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            '${rule.calendarId} • Priority: ${rule.priority}',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: VocusColors.outline,
+                            ),
+                          ),
+                          Text(
+                            rule.volumeLevel == 0
+                                ? 'Muted'
+                                : 'Volume: ${(rule.volumeLevel * 100).toInt()}%',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: VocusColors.outline,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.delete_outline,
+                        color: Colors.redAccent,
+                      ),
+                      onPressed: () => ref
+                          .read(volumeRulesProvider.notifier)
+                          .deleteRule(rule.id),
+                    ),
+                  ],
                 ),
-              )),
+              ),
+            ),
+          ),
         ],
       ],
     );
@@ -402,11 +428,7 @@ class RulesScreen extends ConsumerWidget {
           children: [
             const Row(
               children: [
-                Icon(
-                  Icons.info_outline,
-                  color: VocusColors.primary,
-                  size: 20,
-                ),
+                Icon(Icons.info_outline, color: VocusColors.primary, size: 20),
                 SizedBox(width: 8),
                 Text(
                   'How Automation Works',

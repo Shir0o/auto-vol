@@ -73,7 +73,7 @@ void main() {
 
     testWidgets('should display manual event overrides', (tester) async {
       when(() => mockRepository.loadRules()).thenAnswer((_) async => []);
-      
+
       final event = CalendarEvent(
         id: 'event_123',
         title: 'Specific Important Meeting',
@@ -83,7 +83,10 @@ void main() {
       );
 
       // Set manual override in SharedPreferences
-      await prefs.setString('event_volume_overrides', jsonEncode({'event_123': 0.2}));
+      await prefs.setString(
+        'event_volume_overrides',
+        jsonEncode({'event_123': 0.2}),
+      );
 
       await tester.pumpWidget(createRulesScreen(events: [event]));
       await tester.pumpAndSettle();
