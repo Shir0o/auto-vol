@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:vocus/core/providers/common_providers.dart';
 import 'package:vocus/features/calendar/models/calendar_entry.dart';
-import 'package:vocus/features/calendar/providers/calendar_provider.dart';
 import 'package:vocus/features/calendar/repositories/calendar_repository.dart';
 import 'package:vocus/features/settings/screens/settings_screen.dart';
 import 'package:vocus/features/volume/services/foreground_service.dart';

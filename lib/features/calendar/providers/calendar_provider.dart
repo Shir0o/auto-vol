@@ -34,7 +34,7 @@ class EnabledCalendarIds extends _$EnabledCalendarIds {
                   .id,
             },
       loading: () => <String>{},
-      error: (_, __) => <String>{},
+      error: (error, stackTrace) => <String>{},
     );
   }
 

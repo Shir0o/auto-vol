@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:vocus/core/providers/common_providers.dart';
 import 'package:vocus/features/calendar/models/calendar_event.dart';
 import 'package:vocus/features/calendar/providers/calendar_provider.dart';
-import 'package:vocus/features/volume/models/automation_status.dart';
 import 'package:vocus/features/volume/models/volume_rule.dart';
 import 'package:vocus/features/volume/providers/automation_provider.dart';
 import 'package:vocus/features/volume/providers/volume_rules_provider.dart';
@@ -181,7 +179,7 @@ void main() {
           tickStream: tickController.stream,
         );
 
-        container.listen(automationProvider, (_, __) {});
+        container.listen(automationProvider, (previous, next) {});
 
         // Initial build - no events, should NOT set volume
         await Future.delayed(const Duration(milliseconds: 10));

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:vocus/core/providers/common_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

@@ -25,22 +25,23 @@ class VocusTheme {
       brightness: Brightness.dark,
       scaffoldBackgroundColor: VocusColors.background,
       colorScheme: ColorScheme.dark(
-        background: VocusColors.background,
         surface: VocusColors.surface,
         primary: VocusColors.primary,
         secondary: VocusColors.secondary,
-        onBackground: VocusColors.onBackground,
         onSurface: VocusColors.onSurface,
         onPrimary: VocusColors.onPrimary,
         outline: VocusColors.outline,
-        surfaceVariant: VocusColors.surfaceVariant,
+        surfaceContainerHighest: VocusColors.surfaceVariant,
       ),
       fontFamily: 'Inter',
       cardTheme: CardThemeData(
-        color: VocusColors.surface.withOpacity(0.1),
+        color: VocusColors.surface.withValues(alpha: 0.1),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24), // rounded-xl (1.5rem)
-          side: BorderSide(color: Colors.white.withOpacity(0.15), width: 0.5),
+          side: BorderSide(
+            color: Colors.white.withValues(alpha: 0.15),
+            width: 0.5,
+          ),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(

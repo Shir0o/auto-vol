@@ -2,7 +2,6 @@ import 'package:vocus/features/calendar/models/calendar_event.dart';
 import 'package:vocus/features/volume/models/volume_rule.dart';
 import 'package:vocus/features/volume/services/automation_service.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 void main() {
   late AutomationService automationService;

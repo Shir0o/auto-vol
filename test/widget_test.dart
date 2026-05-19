@@ -2,7 +2,6 @@ import 'package:vocus/core/providers/common_providers.dart';
 import 'package:vocus/core/services/permission_service.dart';
 import 'package:vocus/features/calendar/services/auth_service.dart';
 import 'package:vocus/main.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

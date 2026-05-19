@@ -32,7 +32,7 @@ void main() {
     });
 
     test('signOut should call GoogleSignIn.signOut', () async {
-      when(() => mockGoogleSignIn.signOut()).thenAnswer((_) async => null);
+      when(() => mockGoogleSignIn.signOut()).thenAnswer((_) async {});
 
       await authService.signOut();
 

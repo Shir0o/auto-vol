@@ -156,7 +156,7 @@ class SettingsScreen extends ConsumerWidget {
             value: enabled,
             onChanged: (value) =>
                 ref.read(automationEnabledProvider.notifier).set(value),
-            activeColor: VocusColors.primary,
+            activeThumbColor: VocusColors.primary,
           ),
         ],
       ),
@@ -187,7 +187,7 @@ class SettingsScreen extends ConsumerWidget {
             value: enabled,
             onChanged: (value) =>
                 ref.read(automateRingerProvider.notifier).set(value),
-            activeColor: VocusColors.primary,
+            activeThumbColor: VocusColors.primary,
           ),
         ],
       ),
@@ -218,7 +218,7 @@ class SettingsScreen extends ConsumerWidget {
             value: enabled,
             onChanged: (value) =>
                 ref.read(automateNotificationProvider.notifier).set(value),
-            activeColor: VocusColors.primary,
+            activeThumbColor: VocusColors.primary,
           ),
         ],
       ),
@@ -249,7 +249,7 @@ class SettingsScreen extends ConsumerWidget {
             value: enabled,
             onChanged: (value) =>
                 ref.read(automateDndProvider.notifier).set(value),
-            activeColor: VocusColors.primary,
+            activeThumbColor: VocusColors.primary,
           ),
         ],
       ),
@@ -330,7 +330,7 @@ class SettingsScreen extends ConsumerWidget {
             value: includeAllDay,
             onChanged: (value) =>
                 ref.read(includeAllDayEventsProvider.notifier).toggle(),
-            activeColor: VocusColors.primary,
+            activeThumbColor: VocusColors.primary,
           ),
         ],
       ),
@@ -400,7 +400,9 @@ class SettingsScreen extends ConsumerWidget {
                 : ElevatedButton(
                     onPressed: onRequest,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: VocusColors.primary.withOpacity(0.2),
+                      backgroundColor: VocusColors.primary.withValues(
+                        alpha: 0.2,
+                      ),
                       foregroundColor: VocusColors.primary,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(
@@ -416,7 +418,8 @@ class SettingsScreen extends ConsumerWidget {
               height: 20,
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
-            error: (_, __) => const Icon(Icons.error, color: Colors.redAccent),
+            error: (error, stackTrace) =>
+                const Icon(Icons.error, color: Colors.redAccent),
           ),
         ],
       ),
@@ -505,7 +508,7 @@ class SettingsScreen extends ConsumerWidget {
             value: isEnabled,
             onChanged: (value) =>
                 ref.read(enabledCalendarIdsProvider.notifier).toggle(cal.id),
-            activeColor: VocusColors.primary,
+            activeThumbColor: VocusColors.primary,
           ),
         ],
       ),
@@ -529,8 +532,8 @@ class SettingsScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: isConnected
-                  ? Colors.green.withOpacity(0.1)
-                  : VocusColors.primary.withOpacity(0.1),
+                  ? Colors.green.withValues(alpha: 0.1)
+                  : VocusColors.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(

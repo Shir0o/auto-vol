@@ -18,14 +18,6 @@ void main() {
 
   group('VolumeRulesRepository', () {
     test('should load rules from shared preferences', () async {
-      final rule = VolumeRule(
-        id: '1',
-        calendarId: 'c1',
-        eventTitlePattern: 'p1',
-        volumeLevel: 0.5,
-        priority: 1,
-      );
-
       final ruleJson = jsonEncode({
         'id': '1',
         'calendarId': 'c1',

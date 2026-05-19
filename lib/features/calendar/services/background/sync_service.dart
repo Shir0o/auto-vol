@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'package:vocus/features/calendar/models/calendar_event.dart';
+import 'dart:developer';
+
 import 'package:vocus/features/calendar/repositories/calendar_repository.dart';
 import 'package:vocus/features/calendar/services/auth_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -16,13 +17,13 @@ class SyncService {
     final user = await authService.signInSilently();
 
     if (user == null) {
-      print('SyncService: Not authenticated');
+      log('Not authenticated', name: 'SyncService');
       return false;
     }
 
     final api = await authService.getCalendarApi(user);
     if (api == null) {
-      print('SyncService: Failed to get Calendar API');
+      log('Failed to get Calendar API', name: 'SyncService');
       return false;
     }
 
@@ -31,7 +32,7 @@ class SyncService {
     // Get enabled calendar IDs
     final enabledIds = _prefs.getStringList('enabled_calendar_ids') ?? [];
     if (enabledIds.isEmpty) {
-      print('SyncService: No calendars enabled');
+      log('No calendars enabled', name: 'SyncService');
       return true;
     }
 
@@ -48,10 +49,13 @@ class SyncService {
         jsonEncode(flattened.map((e) => e.toJson()).toList()),
       );
 
-      print('SyncService: Successfully synced ${flattened.length} events');
+      log(
+        'Successfully synced ${flattened.length} events',
+        name: 'SyncService',
+      );
       return true;
     } catch (e) {
-      print('SyncService: Error during sync: $e');
+      log('Error during sync', name: 'SyncService', error: e);
       return false;
     }
   }

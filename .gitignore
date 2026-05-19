@@ -48,3 +48,7 @@ app.*.map.json
 # Environment variables
 .env
 
+# Local agent instructions
+AGENTS.md
+CLAUDE.md
+GEMINI.md

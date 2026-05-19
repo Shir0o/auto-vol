@@ -1,6 +1,5 @@
 import 'package:vocus/core/theme/vocus_theme.dart';
 import 'package:vocus/core/widgets/glass_card.dart';
-import 'package:vocus/features/calendar/models/calendar_entry.dart';
 import 'package:vocus/features/calendar/models/calendar_event.dart';
 import 'package:vocus/features/calendar/providers/calendar_provider.dart';
 import 'package:vocus/features/volume/models/volume_rule.dart';
@@ -225,7 +224,7 @@ class RulesScreen extends ConsumerWidget {
           Icon(
             Icons.rule_folder_outlined,
             size: 64,
-            color: VocusColors.outline.withOpacity(0.3),
+            color: VocusColors.outline.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 16),
           const Text(
@@ -283,7 +282,7 @@ class RulesScreen extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: VocusColors.primary.withOpacity(0.1),
+                        color: VocusColors.primary.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -357,7 +356,7 @@ class RulesScreen extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: VocusColors.primary.withOpacity(0.1),
+                        color: VocusColors.primary.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -496,13 +495,11 @@ class RulesScreen extends ConsumerWidget {
     final calendarsAsync = ref.read(availableCalendarsProvider);
     final calendars = calendarsAsync.value ?? [];
 
-    if (selectedCalendarId == null && calendars.isNotEmpty) {
-      selectedCalendarId = calendars
-          .firstWhere((c) => c.isPrimary, orElse: () => calendars.first)
-          .id;
-    } else if (selectedCalendarId == null) {
-      selectedCalendarId = 'primary';
-    }
+    selectedCalendarId ??= calendars.isEmpty
+        ? 'primary'
+        : calendars
+              .firstWhere((c) => c.isPrimary, orElse: () => calendars.first)
+              .id;
 
     return showDialog(
       context: context,

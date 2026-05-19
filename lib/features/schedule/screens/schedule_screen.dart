@@ -136,9 +136,9 @@ class ScheduleScreen extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -259,7 +259,7 @@ class ScheduleScreen extends ConsumerWidget {
       child: GlassCard(
         padding: const EdgeInsets.all(16),
         opacity: 0.15,
-        border: Border.all(color: Colors.orangeAccent.withOpacity(0.3)),
+        border: Border.all(color: Colors.orangeAccent.withValues(alpha: 0.3)),
         child: Row(
           children: [
             const Icon(
@@ -352,8 +352,8 @@ class ScheduleScreen extends ConsumerWidget {
 
   Widget _buildSkeletonLoader() {
     return Shimmer.fromColors(
-      baseColor: VocusColors.surface.withOpacity(0.3),
-      highlightColor: VocusColors.surface.withOpacity(0.1),
+      baseColor: VocusColors.surface.withValues(alpha: 0.3),
+      highlightColor: VocusColors.surface.withValues(alpha: 0.1),
       child: ListView.builder(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -370,7 +370,7 @@ class ScheduleScreen extends ConsumerWidget {
                   Container(
                     width: 6,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.3),
+                      color: Colors.white.withValues(alpha: 0.3),
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(24),
                         bottomLeft: Radius.circular(24),
@@ -451,7 +451,7 @@ class ScheduleScreen extends ConsumerWidget {
             Icon(
               Icons.calendar_today,
               size: 48,
-              color: VocusColors.outline.withOpacity(0.3),
+              color: VocusColors.outline.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 16),
             const Text(
@@ -598,7 +598,10 @@ class ScheduleScreen extends ConsumerWidget {
         padding: EdgeInsets.zero,
         opacity: isActive ? 0.2 : 0.1,
         border: isWinner
-            ? Border.all(color: VocusColors.primary.withOpacity(0.5), width: 2)
+            ? Border.all(
+                color: VocusColors.primary.withValues(alpha: 0.5),
+                width: 2,
+              )
             : null,
         child: IntrinsicHeight(
           child: Row(
@@ -706,7 +709,9 @@ class ScheduleScreen extends ConsumerWidget {
                             event.description!,
                             style: TextStyle(
                               fontSize: 13,
-                              color: VocusColors.onSurface.withOpacity(0.6),
+                              color: VocusColors.onSurface.withValues(
+                                alpha: 0.6,
+                              ),
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,

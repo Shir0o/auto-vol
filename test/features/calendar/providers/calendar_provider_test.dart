@@ -338,7 +338,7 @@ void main() {
         ),
       ).thenAnswer((_) async => [event]);
 
-      container.listen(calendarEventsProvider, (_, __) {});
+      container.listen(calendarEventsProvider, (previous, next) {});
 
       // Initial fetch
       await container.read(calendarEventsProvider.future);

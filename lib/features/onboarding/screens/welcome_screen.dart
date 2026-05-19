@@ -24,7 +24,7 @@ class WelcomeScreen extends ConsumerWidget {
             end: Alignment.bottomRight,
             colors: [
               VocusColors.background,
-              VocusColors.surfaceVariant.withOpacity(0.2),
+              VocusColors.surfaceVariant.withValues(alpha: 0.2),
             ],
           ),
         ),
@@ -46,7 +46,7 @@ class WelcomeScreen extends ConsumerWidget {
                 Text(
                   'To provide the best experience, we need a few permissions and calendar access to automate your volume levels seamlessly.',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: VocusColors.onSurface.withOpacity(0.7),
+                    color: VocusColors.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -218,7 +218,7 @@ class _OnboardingItem extends StatelessWidget {
                 ElevatedButton(
                   onPressed: onPressed,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: VocusColors.primary.withOpacity(0.2),
+                    backgroundColor: VocusColors.primary.withValues(alpha: 0.2),
                     foregroundColor: VocusColors.primary,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(
@@ -238,7 +238,7 @@ class _OnboardingItem extends StatelessWidget {
             description,
             style: TextStyle(
               fontSize: 14,
-              color: VocusColors.onSurface.withOpacity(0.6),
+              color: VocusColors.onSurface.withValues(alpha: 0.6),
               height: 1.5,
             ),
           ),

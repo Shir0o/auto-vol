@@ -1,11 +1,10 @@
 import 'package:vocus/core/providers/common_providers.dart';
 import 'package:vocus/core/theme/vocus_theme.dart';
 import 'package:vocus/features/main_screen.dart';
-import 'package:vocus/features/onboarding/providers/onboarding_controller.dart';
-import 'package:vocus/features/onboarding/screens/welcome_screen.dart';
-import 'package:vocus/features/calendar/providers/auth_provider.dart';
 import 'package:vocus/features/volume/providers/automation_provider.dart';
 import 'package:vocus/features/volume/services/foreground_service.dart';
+import 'package:vocus/features/onboarding/providers/onboarding_controller.dart';
+import 'package:vocus/features/onboarding/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,18 +14,19 @@ import 'package:workmanager/workmanager.dart';
 import 'package:vocus/features/calendar/services/background/sync_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'dart:developer';
 import 'dart:io';
 
 @pragma('vm:entry-point')
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
-    print('Workmanager: Executing task $task');
+    log('Executing task $task', name: 'Workmanager');
     try {
       final prefs = await SharedPreferences.getInstance();
       final syncService = SyncService(GoogleSignIn.instance, prefs);
       return await syncService.syncCalendars();
     } catch (e) {
-      print('Workmanager: Failed to execute task: $e');
+      log('Failed to execute task', name: 'Workmanager', error: e);
       return false;
     }
   });
@@ -39,17 +39,13 @@ void main() async {
   try {
     await dotenv.load(fileName: ".env");
   } catch (e) {
-    // ignore: avoid_print
-    print(
+    debugPrint(
       'Note: .env file not found or failed to load: $e. Falling back to build-time definitions.',
     );
   }
 
   // Initialize Workmanager
-  await Workmanager().initialize(
-    callbackDispatcher,
-    isInDebugMode: true, // TODO: set to false in production
-  );
+  await Workmanager().initialize(callbackDispatcher);
 
   // Register periodic task
   await Workmanager().registerPeriodicTask(
@@ -74,8 +70,7 @@ void main() async {
       const String.fromEnvironment('GOOGLE_WEB_CLIENT_ID');
 
   if (iosClientId.isEmpty || webClientId.isEmpty) {
-    // ignore: avoid_print
-    print(
+    debugPrint(
       'WARNING: GOOGLE_IOS_CLIENT_ID or GOOGLE_WEB_CLIENT_ID not found in .env or build-time definitions.',
     );
   }

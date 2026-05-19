@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:vocus/features/calendar/models/calendar_event.dart';
-import 'package:vocus/features/volume/models/volume_rule.dart';
 import 'package:vocus/features/volume/services/automation_service.dart';
 import 'package:vocus/features/volume/services/foreground_service.dart';
 import 'package:vocus/features/volume/services/volume_service.dart';

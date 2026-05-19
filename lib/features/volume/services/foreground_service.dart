@@ -1,13 +1,12 @@
 import 'dart:async';
-import 'dart:isolate';
+import 'dart:convert';
+
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vocus/features/calendar/models/calendar_event.dart';
 import 'package:vocus/features/volume/services/automation_service.dart';
 import 'package:vocus/features/volume/services/volume_service.dart';
-import 'package:vocus/features/volume/models/volume_rule.dart';
-import 'package:vocus/features/calendar/models/calendar_event.dart';
 import 'package:vocus/features/volume/repositories/volume_rules_repository.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
 
 // The callback function for the background task
 @pragma('vm:entry-point')

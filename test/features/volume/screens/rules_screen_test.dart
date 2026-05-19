@@ -1,12 +1,10 @@
 import 'package:vocus/features/volume/models/volume_rule.dart';
-import 'package:vocus/features/volume/providers/volume_rules_provider.dart';
 import 'package:vocus/features/volume/screens/rules_screen.dart';
 import 'package:vocus/features/calendar/providers/calendar_provider.dart';
 import 'package:vocus/features/calendar/models/calendar_entry.dart';
 import 'package:vocus/features/calendar/models/calendar_event.dart';
 import 'package:vocus/core/providers/common_providers.dart';
 import 'package:vocus/features/volume/repositories/volume_rules_repository.dart';
-import 'package:vocus/features/volume/providers/event_overrides_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
