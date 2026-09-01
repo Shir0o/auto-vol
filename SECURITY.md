@@ -1,22 +1,18 @@
 # Security Policy
 
-## Supported versions
+## Reporting a Vulnerability
 
-This project is in early development. Security fixes are applied to the `main` branch.
+If you discover a security vulnerability in this project, please report it
+responsibly using GitHub's private vulnerability reporting.
 
-## Reporting a vulnerability
+1. Go to the **Security** tab of this repository.
+2. Click **Report a vulnerability**.
+3. Fill in the details and submit.
 
-Please do not open a public GitHub issue for suspected vulnerabilities.
+Your report will be reviewed and you will receive a response within 7 days.
+Please do not open public issues for security vulnerabilities.
 
-To report a security issue, contact the maintainer privately with:
+## Supported Versions
 
-- A concise description of the issue
-- Steps to reproduce or proof-of-concept details
-- Affected platforms, if known
-- Any suggested mitigation
-
-If GitHub private vulnerability reporting is enabled for the repository, use that first. Otherwise, contact the maintainer listed in [CODEOWNERS](.github/CODEOWNERS).
-
-## Handling credentials
-
-Do not commit `.env` files, OAuth client secrets, API keys, tokens, signing keys, or provisioning profiles. Use `.env.example` for placeholder configuration only.
+Only the latest release on the default branch is actively supported with
+security updates.
