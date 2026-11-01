@@ -87,7 +87,7 @@ abstract class _$EventOverrides extends $AsyncNotifier<Map<String, double>> {
   FutureOr<Map<String, double>> build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref =
         this.ref as $Ref<AsyncValue<Map<String, double>>, Map<String, double>>;
     final element =
@@ -98,6 +98,6 @@ abstract class _$EventOverrides extends $AsyncNotifier<Map<String, double>> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }

@@ -84,13 +84,13 @@ final class EnabledCalendarIdsProvider
 }
 
 String _$enabledCalendarIdsHash() =>
-    r'5ef487be9ea6f0278cbc8c6895c282b54e222712';
+    r'c7b0718e21f324da0b7440390f0df61142aad1fa';
 
 abstract class _$EnabledCalendarIds extends $Notifier<Set<String>> {
   Set<String> build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<Set<String>, Set<String>>;
     final element =
         ref.element
@@ -100,7 +100,7 @@ abstract class _$EnabledCalendarIds extends $Notifier<Set<String>> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -143,7 +143,7 @@ abstract class _$IncludeAllDayEvents extends $Notifier<bool> {
   bool build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<bool, bool>;
     final element =
         ref.element
@@ -153,7 +153,7 @@ abstract class _$IncludeAllDayEvents extends $Notifier<bool> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
