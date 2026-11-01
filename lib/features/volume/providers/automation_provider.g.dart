@@ -47,7 +47,7 @@ abstract class _$AutomationEnabled extends $Notifier<bool> {
   bool build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<bool, bool>;
     final element =
         ref.element
@@ -57,7 +57,7 @@ abstract class _$AutomationEnabled extends $Notifier<bool> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -99,7 +99,7 @@ abstract class _$DefaultVolume extends $Notifier<double> {
   double build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<double, double>;
     final element =
         ref.element
@@ -109,7 +109,7 @@ abstract class _$DefaultVolume extends $Notifier<double> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -151,7 +151,7 @@ abstract class _$AutomateRinger extends $Notifier<bool> {
   bool build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<bool, bool>;
     final element =
         ref.element
@@ -161,7 +161,7 @@ abstract class _$AutomateRinger extends $Notifier<bool> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -204,7 +204,7 @@ abstract class _$AutomateNotification extends $Notifier<bool> {
   bool build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<bool, bool>;
     final element =
         ref.element
@@ -214,7 +214,7 @@ abstract class _$AutomateNotification extends $Notifier<bool> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -255,7 +255,7 @@ abstract class _$AutomateDnd extends $Notifier<bool> {
   bool build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<bool, bool>;
     final element =
         ref.element
@@ -265,7 +265,7 @@ abstract class _$AutomateDnd extends $Notifier<bool> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -307,7 +307,7 @@ abstract class _$VolumeSnapshot extends $Notifier<Map<VolumeStream, double>> {
   Map<VolumeStream, double> build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref =
         this.ref as $Ref<Map<VolumeStream, double>, Map<VolumeStream, double>>;
     final element =
@@ -318,7 +318,7 @@ abstract class _$VolumeSnapshot extends $Notifier<Map<VolumeStream, double>> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -359,7 +359,7 @@ abstract class _$DndSnapshot extends $Notifier<bool?> {
   bool? build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<bool?, bool?>;
     final element =
         ref.element
@@ -369,7 +369,7 @@ abstract class _$DndSnapshot extends $Notifier<bool?> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -411,7 +411,7 @@ abstract class _$Automation extends $Notifier<AutomationStatus> {
   AutomationStatus build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<AutomationStatus, AutomationStatus>;
     final element =
         ref.element
@@ -421,6 +421,6 @@ abstract class _$Automation extends $Notifier<AutomationStatus> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
