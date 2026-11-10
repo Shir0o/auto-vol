@@ -58,3 +58,6 @@ key.properties
 android/key.properties
 android/key.properties.example
 fastlane/play-supply-credentials.json
+
+# Test goldens (ephemeral audit captures)
+/test/goldens/

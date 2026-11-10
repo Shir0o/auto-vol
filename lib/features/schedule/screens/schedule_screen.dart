@@ -40,53 +40,67 @@ class ScheduleScreen extends ConsumerWidget {
             ),
           ),
           SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(ref, automationStatus),
-                if (hasMissingPermissions) _buildMissingPermissionsBanner(ref),
-                Expanded(
-                  child: authState.when(
-                    loading: () => _buildSkeletonLoader(),
-                    error: (err, _) => Center(child: Text('Auth Error: $err')),
-                    data: (user) {
-                      if (user == null) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20.0,
-                            vertical: 10,
-                          ),
-                          child: _buildOnboardingCard(ref),
-                        );
-                      }
+            child: authState.when(
+              loading: () => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(ref, automationStatus),
+                  if (hasMissingPermissions)
+                    _buildMissingPermissionsBanner(ref),
+                  Expanded(child: _buildSkeletonLoader()),
+                ],
+              ),
+              error: (err, _) => Center(child: Text('Auth Error: $err')),
+              data: (user) {
+                if (user == null) {
+                  return ListView(
+                    children: [
+                      _buildHeader(ref, automationStatus),
+                      if (hasMissingPermissions)
+                        _buildMissingPermissionsBanner(ref),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20.0,
+                          vertical: 10,
+                        ),
+                        child: _buildOnboardingCard(ref),
+                      ),
+                    ],
+                  );
+                }
 
-                      final eventsAsync = ref.watch(calendarEventsProvider);
-                      return eventsAsync.when(
-                        data: (events) {
-                          final rules =
-                              ref.watch(volumeRulesProvider).value ?? [];
-                          return RefreshIndicator(
-                            onRefresh: () async =>
-                                ref.invalidate(calendarEventsProvider),
-                            color: VocusColors.primary,
-                            backgroundColor: VocusColors.surface,
-                            child: _buildTimeline(
-                              context,
-                              ref,
-                              events,
-                              rules,
-                              automationStatus,
-                            ),
-                          );
-                        },
-                        loading: () => _buildSkeletonLoader(),
-                        error: (err, stack) =>
-                            Center(child: Text('Schedule Error: $err')),
-                      );
-                    },
+                final eventsAsync = ref.watch(calendarEventsProvider);
+                return eventsAsync.when(
+                  data: (events) {
+                    final rules = ref.watch(volumeRulesProvider).value ?? [];
+                    return RefreshIndicator(
+                      onRefresh: () async =>
+                          ref.invalidate(calendarEventsProvider),
+                      color: VocusColors.primary,
+                      backgroundColor: VocusColors.surface,
+                      child: _buildTimeline(
+                        context,
+                        ref,
+                        events,
+                        rules,
+                        automationStatus,
+                        hasMissingPermissions,
+                      ),
+                    );
+                  },
+                  loading: () => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildHeader(ref, automationStatus),
+                      if (hasMissingPermissions)
+                        _buildMissingPermissionsBanner(ref),
+                      Expanded(child: _buildSkeletonLoader()),
+                    ],
                   ),
-                ),
-              ],
+                  error: (err, stack) =>
+                      Center(child: Text('Schedule Error: $err')),
+                );
+              },
             ),
           ),
         ],
@@ -100,8 +114,11 @@ class ScheduleScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 8,
             children: [
               const Text(
                 'Schedule',
@@ -130,35 +147,50 @@ class ScheduleScreen extends ConsumerWidget {
 
   Widget _buildStatusBadge(WidgetRef ref, AutomationStatus status) {
     final color = status.isEnabled ? VocusColors.primary : VocusColors.outline;
-    return GestureDetector(
-      onTap: () =>
-          ref.read(automationEnabledProvider.notifier).set(!status.isEnabled),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withValues(alpha: 0.3)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              status.isEnabled ? 'MONITORING' : 'PAUSED',
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.1,
-                color: color,
+    return Semantics(
+      button: true,
+      label: status.isEnabled
+          ? 'Automation active, tap to pause'
+          : 'Automation paused, tap to activate',
+      child: InkWell(
+        onTap: () =>
+            ref.read(automationEnabledProvider.notifier).set(!status.isEnabled),
+        borderRadius: BorderRadius.circular(20),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+          child: Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: color.withValues(alpha: 0.3)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: color,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    status.isEnabled ? 'MONITORING' : 'PAUSED',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.1,
+                      color: color,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -195,6 +227,7 @@ class ScheduleScreen extends ConsumerWidget {
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
+                        color: VocusColors.onSurface,
                       ),
                     ),
                     Text(
@@ -442,24 +475,36 @@ class ScheduleScreen extends ConsumerWidget {
     List<CalendarEvent> events,
     List<VolumeRule> rules,
     AutomationStatus automationStatus,
+    bool hasMissingPermissions,
   ) {
     if (events.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.calendar_today,
-              size: 48,
-              color: VocusColors.outline.withValues(alpha: 0.3),
+      return CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          SliverToBoxAdapter(child: _buildHeader(ref, automationStatus)),
+          if (hasMissingPermissions)
+            SliverToBoxAdapter(child: _buildMissingPermissionsBanner(ref)),
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.calendar_today,
+                    size: 48,
+                    color: VocusColors.outline.withValues(alpha: 0.3),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'No upcoming events',
+                    style: TextStyle(color: VocusColors.outline, fontSize: 16),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'No upcoming events',
-              style: TextStyle(color: VocusColors.outline, fontSize: 16),
-            ),
-          ],
-        ),
+          ),
+        ],
       );
     }
 
@@ -475,31 +520,39 @@ class ScheduleScreen extends ConsumerWidget {
 
     final sortedDates = groupedEvents.keys.toList()..sort();
 
-    return ListView.builder(
+    return CustomScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      itemCount: sortedDates.length,
-      itemBuilder: (context, index) {
-        final date = sortedDates[index];
-        final dayEvents = groupedEvents[date]!;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildDateHeader(date),
-            ...dayEvents.map(
-              (e) => _buildEventItem(
-                context,
-                ref,
-                e,
-                events,
-                rules,
-                automationStatus,
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
-        );
-      },
+      slivers: [
+        SliverToBoxAdapter(child: _buildHeader(ref, automationStatus)),
+        if (hasMissingPermissions)
+          SliverToBoxAdapter(child: _buildMissingPermissionsBanner(ref)),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate((context, index) {
+              final date = sortedDates[index];
+              final dayEvents = groupedEvents[date]!;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildDateHeader(date),
+                  ...dayEvents.map(
+                    (e) => _buildEventItem(
+                      context,
+                      ref,
+                      e,
+                      events,
+                      rules,
+                      automationStatus,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              );
+            }, childCount: sortedDates.length),
+          ),
+        ),
+      ],
     );
   }
 
@@ -519,7 +572,9 @@ class ScheduleScreen extends ConsumerWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      child: Row(
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 8,
         children: [
           Text(
             dayLabel.toUpperCase(),
@@ -530,7 +585,6 @@ class ScheduleScreen extends ConsumerWidget {
               color: VocusColors.primary,
             ),
           ),
-          const SizedBox(width: 8),
           Text(
             '• ${DateFormat('MMMM d').format(date)}',
             style: const TextStyle(
@@ -653,7 +707,9 @@ class ScheduleScreen extends ConsumerWidget {
                         ],
                       ),
                       const SizedBox(height: 4),
-                      Row(
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 8,
                         children: [
                           Text(
                             event.isAllDay
@@ -664,8 +720,7 @@ class ScheduleScreen extends ConsumerWidget {
                               color: VocusColors.outline,
                             ),
                           ),
-                          if (isActive) ...[
-                            const SizedBox(width: 8),
+                          if (isActive)
                             const Text(
                               '• NOW',
                               style: TextStyle(
@@ -674,7 +729,6 @@ class ScheduleScreen extends ConsumerWidget {
                                 color: VocusColors.primary,
                               ),
                             ),
-                          ],
                         ],
                       ),
                       if (targetVolume != null)
