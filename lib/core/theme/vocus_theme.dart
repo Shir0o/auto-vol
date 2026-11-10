@@ -8,7 +8,7 @@ class VocusColors {
   static const onBackground = Color(0xFFE0E3E5);
   static const onSurface = Color(0xFFE0E3E5);
   static const onPrimary = Color(0xFF00363A);
-  static const outline = Color(0xFF849495);
+  static const outline = Color(0xFFB0BEC5);
   static const surfaceVariant = Color(0xFF323537);
 
   static const deepSpaceGradient = LinearGradient(

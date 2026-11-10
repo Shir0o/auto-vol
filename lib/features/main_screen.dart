@@ -1,3 +1,4 @@
+import 'package:vocus/core/theme/vocus_theme.dart';
 import 'package:vocus/features/schedule/screens/schedule_screen.dart';
 import 'package:vocus/features/settings/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,7 @@ class MainScreen extends ConsumerWidget {
     return Scaffold(
       body: screens[selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: VocusColors.surface,
         currentIndex: selectedIndex,
         onTap: (index) => ref.read(selectedIndexProvider.notifier).set(index),
         type: BottomNavigationBarType.fixed,
