@@ -198,9 +198,9 @@ class ScheduleScreen extends ConsumerWidget {
 
   Widget _buildActiveAutomationCard(AutomationStatus status) {
     final winningEvent = status.winningEvent;
-    final otherEvents = status.activeEvents
-        .where((e) => e.id != winningEvent?.id)
-        .toList();
+    final otherEvents = winningEvent != null
+        ? status.activeEvents.where((e) => e.id != winningEvent.id).toList()
+        : <CalendarEvent>[];
 
     return GlassCard(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -224,12 +224,15 @@ class ScheduleScreen extends ConsumerWidget {
                       winningEvent != null
                           ? 'Active: "${winningEvent.title}"'
                           : 'Monitoring schedule...',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
                         color: VocusColors.onSurface,
                       ),
                     ),
+                    const SizedBox(height: 4),
                     Text(
                       'Target Volume: ${(status.currentVolume * 100).toInt()}%',
                       style: const TextStyle(
@@ -253,13 +256,10 @@ class ScheduleScreen extends ConsumerWidget {
             ],
           ),
           if (otherEvents.isNotEmpty) ...[
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0),
-              child: Divider(
-                height: 1,
-                color: VocusColors.outline,
-                thickness: 0.1,
-              ),
+            Divider(
+              height: 16,
+              thickness: 1,
+              color: Colors.white.withValues(alpha: 0.08),
             ),
             Row(
               children: [
@@ -273,7 +273,8 @@ class ScheduleScreen extends ConsumerWidget {
                   child: Text(
                     'Overlapping with ${otherEvents.length} other event${otherEvents.length > 1 ? 's' : ''}',
                     style: const TextStyle(
-                      fontSize: 10,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
                       color: Colors.orangeAccent,
                     ),
                   ),
@@ -764,7 +765,7 @@ class ScheduleScreen extends ConsumerWidget {
                             style: TextStyle(
                               fontSize: 13,
                               color: VocusColors.onSurface.withValues(
-                                alpha: 0.6,
+                                alpha: 0.85,
                               ),
                             ),
                             maxLines: 2,
