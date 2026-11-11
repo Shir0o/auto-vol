@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/Shir0o/auto-vol/compare/v1.1.0...v1.1.1) (2026-11-11)
+
+
+### Bug Fixes
+
+* **ui:** improve description contrast and active card hierarchy ([#26](https://github.com/Shir0o/auto-vol/issues/26)) ([1234ddb](https://github.com/Shir0o/auto-vol/commit/1234ddbb4e27907b88c3c95dccab268fba2e44d0))
+
 ## [1.1.0](https://github.com/Shir0o/auto-vol/compare/v1.0.0...v1.1.0) (2026-11-10)
 
 
