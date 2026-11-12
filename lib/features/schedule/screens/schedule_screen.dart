@@ -355,7 +355,11 @@ class ScheduleScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           const Text(
             'Connect your schedule',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: VocusColors.onSurface,
+            ),
           ),
           const SizedBox(height: 8),
           const Text(
