@@ -142,7 +142,11 @@ class SettingsScreen extends ConsumerWidget {
               children: [
                 Text(
                   'Auto-Volume',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: VocusColors.onSurface,
+                  ),
                 ),
                 SizedBox(height: 4),
                 Text(
@@ -174,7 +178,10 @@ class SettingsScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Automate Ringer', style: TextStyle(fontSize: 16)),
+                Text(
+                  'Automate Ringer',
+                  style: TextStyle(fontSize: 16, color: VocusColors.onSurface),
+                ),
                 SizedBox(height: 2),
                 Text(
                   'Sync phone call volume with your schedule',
@@ -205,7 +212,10 @@ class SettingsScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Automate Notifications', style: TextStyle(fontSize: 16)),
+                Text(
+                  'Automate Notifications',
+                  style: TextStyle(fontSize: 16, color: VocusColors.onSurface),
+                ),
                 SizedBox(height: 2),
                 Text(
                   'Sync message and app alerts with your schedule',
@@ -236,7 +246,10 @@ class SettingsScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Automate Do Not Disturb', style: TextStyle(fontSize: 16)),
+                Text(
+                  'Automate Do Not Disturb',
+                  style: TextStyle(fontSize: 16, color: VocusColors.onSurface),
+                ),
                 SizedBox(height: 2),
                 Text(
                   'Silence all alerts automatically during events',
@@ -280,6 +293,7 @@ class SettingsScreen extends ConsumerWidget {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
+                          color: VocusColors.onSurface,
                         ),
                       ),
                       SizedBox(height: 2),
@@ -316,7 +330,11 @@ class SettingsScreen extends ConsumerWidget {
               children: [
                 Text(
                   'Include All-Day Events',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: VocusColors.onSurface,
+                  ),
                 ),
                 SizedBox(height: 4),
                 Text(
@@ -345,7 +363,10 @@ class SettingsScreen extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Alert Volume', style: TextStyle(fontSize: 16)),
+              const Text(
+                'Alert Volume',
+                style: TextStyle(fontSize: 16, color: VocusColors.onSurface),
+              ),
               const Icon(Icons.volume_up, color: VocusColors.outline),
             ],
           ),
@@ -382,6 +403,7 @@ class SettingsScreen extends ConsumerWidget {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
+                    color: VocusColors.onSurface,
                   ),
                 ),
                 Text(
@@ -489,6 +511,7 @@ class SettingsScreen extends ConsumerWidget {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
+                    color: VocusColors.onSurface,
                   ),
                 ),
                 if (cal.description != null)
@@ -551,6 +574,7 @@ class SettingsScreen extends ConsumerWidget {
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
+                    color: VocusColors.onSurface,
                   ),
                 ),
                 Text(

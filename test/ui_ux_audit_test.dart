@@ -11,6 +11,7 @@ import 'package:vocus/features/calendar/models/calendar_event.dart';
 import 'package:vocus/features/calendar/providers/auth_provider.dart';
 import 'package:vocus/features/calendar/providers/calendar_provider.dart';
 import 'package:vocus/features/main_screen.dart';
+import 'package:vocus/features/settings/screens/settings_screen.dart';
 import 'package:vocus/features/volume/models/automation_status.dart';
 import 'package:vocus/features/volume/models/volume_rule.dart';
 import 'package:vocus/features/volume/providers/automation_provider.dart';
@@ -141,7 +142,7 @@ void main() {
       ],
       child: MaterialApp(
         title: 'Vocus',
-        theme: lightTheme ?? ThemeData.light(useMaterial3: true),
+        theme: lightTheme ?? VocusTheme.lightTheme,
         darkTheme: darkTheme ?? VocusTheme.darkTheme,
         themeMode: themeMode,
         home: const MainScreen(),
@@ -213,13 +214,50 @@ void main() {
         tester.platformDispatcher.clearTextScaleFactorTestValue();
       });
 
-      await tester.pumpWidget(buildHarvestedApp(themeMode: ThemeMode.dark));
+      await tester.pumpWidget(buildHarvestedApp(themeMode: ThemeMode.light));
       await tester.pumpAndSettle();
 
       if (autoUpdateGoldenFiles) {
         await expectLater(
           find.byType(MaterialApp),
           matchesGoldenFile('goldens/small_large_font.png'),
+        );
+      }
+
+      expect(tester.takeException(), isNull);
+
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(textContrastGuideline));
+    });
+
+    testWidgets('interactive: step2_settings (390x844 @ 1.0x)', (tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1.0;
+      tester.platformDispatcher.textScaleFactorTestValue = 1.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+        tester.platformDispatcher.clearTextScaleFactorTestValue();
+      });
+
+      await tester.pumpWidget(buildHarvestedApp(themeMode: ThemeMode.light));
+      await tester.pumpAndSettle();
+
+      final settingsNavItem = find.descendant(
+        of: find.byType(BottomNavigationBar),
+        matching: find.text('Settings'),
+      );
+      expect(settingsNavItem, findsOneWidget);
+
+      await tester.tap(settingsNavItem);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SettingsScreen), findsOneWidget);
+
+      if (autoUpdateGoldenFiles) {
+        await expectLater(
+          find.byType(MaterialApp),
+          matchesGoldenFile('goldens/step2_settings.png'),
         );
       }
 

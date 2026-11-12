@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vocus/core/providers/common_providers.dart';
+import 'package:vocus/core/theme/vocus_theme.dart';
 import 'package:vocus/features/calendar/models/calendar_event.dart';
 import 'package:vocus/features/calendar/providers/calendar_provider.dart';
 import 'package:vocus/features/volume/models/automation_status.dart';
@@ -322,6 +323,44 @@ void main() {
       await tester.pump();
 
       expect(container.read(selectedIndexProvider), 1);
+    },
+  );
+
+  testWidgets(
+    'ScheduleScreen onboarding card title stays legible under the light theme',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            calendarEventsProvider.overrideWith((ref) => <CalendarEvent>[]),
+            volumeRulesProvider.overrideWith(() => mockRules),
+            eventOverridesProvider.overrideWith(() => mockOverrides),
+            automationProvider.overrideWith(() => MockAutomation(dummyStatus)),
+            authStateProvider.overrideWith(() => MockAuthState(null)),
+            currentUserProvider.overrideWith((ref) => null),
+            notificationPermissionProvider.overrideWith((ref) => true),
+            notificationPolicyAccessProvider.overrideWith((ref) => true),
+            ignoreBatteryOptimizationsProvider.overrideWith((ref) => true),
+          ],
+          child: MaterialApp(
+            theme: VocusTheme.lightTheme,
+            home: const ScheduleScreen(),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      final titleFinder = find.text('Connect your schedule');
+      expect(titleFinder, findsOneWidget);
+      expect(
+        tester.widget<Text>(titleFinder).style?.color,
+        VocusColors.onSurface,
+      );
     },
   );
 }

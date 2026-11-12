@@ -19,6 +19,11 @@ class VocusColors {
 }
 
 class VocusTheme {
+  /// The product is a dark cyber/neon aesthetic, so the light theme mirrors the
+  /// dark theme. This keeps text legible over the dark background and glass
+  /// cards when the system or an explicit light theme mode is used.
+  static ThemeData get lightTheme => darkTheme;
+
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,

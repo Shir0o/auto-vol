@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:vocus/core/providers/common_providers.dart';
+import 'package:vocus/core/theme/vocus_theme.dart';
 import 'package:vocus/features/calendar/models/calendar_entry.dart';
 import 'package:vocus/features/calendar/repositories/calendar_repository.dart';
 import 'package:vocus/features/settings/screens/settings_screen.dart';
@@ -200,5 +201,69 @@ void main() {
 
     // Reset override
     debugDefaultTargetPlatformOverride = null;
+  });
+
+  testWidgets('SettingsScreen card titles stay legible under the light theme', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+
+    final mockUser = MockGoogleSignInAccount();
+    when(() => mockUser.email).thenReturn('test@example.com');
+
+    final mockRepository = MockCalendarRepository();
+    when(() => mockRepository.fetchCalendars()).thenAnswer(
+      (_) async => [CalendarEntry(id: 'cal-1', title: 'Work', isPrimary: true)],
+    );
+
+    tester.view.physicalSize = const Size(800, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          currentUserProvider.overrideWith((ref) => mockUser),
+          calendarRepositoryProvider.overrideWith(
+            (ref) async => mockRepository,
+          ),
+          foregroundServiceProvider.overrideWithValue(mockForegroundService),
+          notificationPolicyAccessProvider.overrideWith((ref) => true),
+          ignoreBatteryOptimizationsProvider.overrideWith((ref) => true),
+        ],
+        child: MaterialApp(
+          theme: VocusTheme.lightTheme,
+          home: const SettingsScreen(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    const titles = [
+      'Auto-Volume',
+      'Automate Ringer',
+      'Automate Notifications',
+      'Automate Do Not Disturb',
+      'Automation Rules',
+      'Include All-Day Events',
+      'Alert Volume',
+      'Do Not Disturb Access',
+      'Battery Optimization',
+      'Work',
+      'Google Calendar',
+    ];
+
+    for (final title in titles) {
+      final titleFinder = find.text(title);
+      expect(titleFinder, findsOneWidget, reason: '$title should be rendered');
+      expect(
+        tester.widget<Text>(titleFinder).style?.color,
+        VocusColors.onSurface,
+        reason: '$title needs an explicit legible text color',
+      );
+    }
   });
 }
