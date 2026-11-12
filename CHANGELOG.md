@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/Shir0o/auto-vol/compare/v1.1.1...v1.1.2) (2026-11-12)
+
+
+### Bug Fixes
+
+* **ui:** enforce high-contrast text and theme legibility ([#28](https://github.com/Shir0o/auto-vol/issues/28)) ([b95e859](https://github.com/Shir0o/auto-vol/commit/b95e85966e9450cb553496c13b1339634b8d13ba))
+
 ## [1.1.1](https://github.com/Shir0o/auto-vol/compare/v1.1.0...v1.1.1) (2026-11-11)
 
 
