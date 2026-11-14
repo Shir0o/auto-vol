@@ -429,12 +429,14 @@ class RulesScreen extends ConsumerWidget {
               children: [
                 Icon(Icons.info_outline, color: VocusColors.primary, size: 20),
                 SizedBox(width: 8),
-                Text(
-                  'How Automation Works',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: VocusColors.primary,
+                Expanded(
+                  child: Text(
+                    'How Automation Works',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: VocusColors.primary,
+                    ),
                   ),
                 ),
               ],

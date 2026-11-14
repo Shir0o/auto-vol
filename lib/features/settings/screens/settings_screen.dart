@@ -356,6 +356,13 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Widget _buildDefaultVolumeSlider(WidgetRef ref, double volume) {
+    final percent = (volume * 100).round();
+    final volumeIcon = volume == 0
+        ? Icons.volume_off
+        : volume < 0.5
+        ? Icons.volume_down
+        : Icons.volume_up;
+
     return GlassCard(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -363,11 +370,22 @@ class SettingsScreen extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Alert Volume',
-                style: TextStyle(fontSize: 16, color: VocusColors.onSurface),
+              const Expanded(
+                child: Text(
+                  'Alert Volume',
+                  style: TextStyle(fontSize: 16, color: VocusColors.onSurface),
+                ),
               ),
-              const Icon(Icons.volume_up, color: VocusColors.outline),
+              Icon(volumeIcon, color: VocusColors.outline),
+              const SizedBox(width: 8),
+              Text(
+                '$percent%',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: VocusColors.primary,
+                ),
+              ),
             ],
           ),
           Slider(
