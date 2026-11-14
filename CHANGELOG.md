@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/Shir0o/auto-vol/compare/v1.1.2...v1.1.3) (2026-11-14)
+
+
+### Bug Fixes
+
+* **ui:** add live volume percentage readout and adaptive feedback icon ([#30](https://github.com/Shir0o/auto-vol/issues/30)) ([5b7e56b](https://github.com/Shir0o/auto-vol/commit/5b7e56b279f8cd46092e003f01cc7182fcfb5bed))
+
 ## [1.1.2](https://github.com/Shir0o/auto-vol/compare/v1.1.1...v1.1.2) (2026-11-12)
 
 
