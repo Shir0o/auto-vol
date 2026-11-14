@@ -203,6 +203,106 @@ void main() {
     debugDefaultTargetPlatformOverride = null;
   });
 
+  testWidgets(
+    'Alert Volume shows a live percentage readout and adaptive icon',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({'default_volume': 0.0});
+      final prefs = await SharedPreferences.getInstance();
+
+      final mockUser = MockGoogleSignInAccount();
+      when(() => mockUser.email).thenReturn('test@example.com');
+
+      final mockRepository = MockCalendarRepository();
+      when(() => mockRepository.fetchCalendars()).thenAnswer((_) async => []);
+
+      tester.view.physicalSize = const Size(800, 1600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() => tester.view.resetPhysicalSize());
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            currentUserProvider.overrideWith((ref) => mockUser),
+            calendarRepositoryProvider.overrideWith(
+              (ref) async => mockRepository,
+            ),
+            foregroundServiceProvider.overrideWithValue(mockForegroundService),
+            notificationPolicyAccessProvider.overrideWith((ref) => true),
+            ignoreBatteryOptimizationsProvider.overrideWith((ref) => true),
+          ],
+          child: const MaterialApp(home: SettingsScreen()),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Silent: muted icon and 0% readout.
+      expect(find.text('Alert Volume'), findsOneWidget);
+      expect(find.text('0%'), findsOneWidget);
+      expect(find.byIcon(Icons.volume_off), findsOneWidget);
+      expect(find.byIcon(Icons.volume_up), findsNothing);
+
+      final readout = tester.widget<Text>(find.text('0%'));
+      expect(readout.style?.color, VocusColors.primary);
+      expect(readout.style?.fontWeight, FontWeight.w600);
+
+      // Raise the volume through the slider: readout and icon track it live.
+      await tester.drag(find.byType(Slider), const Offset(200, 0));
+      await tester.pumpAndSettle();
+
+      final newVolume = prefs.getDouble('default_volume');
+      expect(newVolume, greaterThan(0.0));
+      expect(find.byIcon(Icons.volume_off), findsNothing);
+      expect(find.text('0%'), findsNothing);
+      expect(find.text('${(newVolume! * 100).round()}%'), findsOneWidget);
+    },
+  );
+
+  testWidgets('Alert Volume uses volume_down below half and volume_up above', (
+    tester,
+  ) async {
+    final mockUser = MockGoogleSignInAccount();
+    when(() => mockUser.email).thenReturn('test@example.com');
+
+    final mockRepository = MockCalendarRepository();
+    when(() => mockRepository.fetchCalendars()).thenAnswer((_) async => []);
+
+    Future<void> pumpWithVolume(double volume) async {
+      SharedPreferences.setMockInitialValues({'default_volume': volume});
+      final prefs = await SharedPreferences.getInstance();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            currentUserProvider.overrideWith((ref) => mockUser),
+            calendarRepositoryProvider.overrideWith(
+              (ref) async => mockRepository,
+            ),
+            foregroundServiceProvider.overrideWithValue(mockForegroundService),
+            notificationPolicyAccessProvider.overrideWith((ref) => true),
+            ignoreBatteryOptimizationsProvider.overrideWith((ref) => true),
+          ],
+          child: const MaterialApp(home: SettingsScreen()),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    tester.view.physicalSize = const Size(800, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
+    await pumpWithVolume(0.3);
+    expect(find.text('30%'), findsOneWidget);
+    expect(find.byIcon(Icons.volume_down), findsOneWidget);
+
+    await pumpWithVolume(0.8);
+    expect(find.text('80%'), findsOneWidget);
+    expect(find.byIcon(Icons.volume_up), findsOneWidget);
+  });
+
   testWidgets('SettingsScreen card titles stay legible under the light theme', (
     tester,
   ) async {
