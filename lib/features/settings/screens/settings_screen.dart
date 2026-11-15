@@ -133,6 +133,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget _buildAutomationToggle(WidgetRef ref, bool enabled) {
     return GlassCard(
       padding: const EdgeInsets.all(20),
+      onTap: () => ref.read(automationEnabledProvider.notifier).set(!enabled),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -171,6 +172,7 @@ class SettingsScreen extends ConsumerWidget {
     final enabled = ref.watch(automateRingerProvider);
     return GlassCard(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      onTap: () => ref.read(automateRingerProvider.notifier).set(!enabled),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -205,6 +207,8 @@ class SettingsScreen extends ConsumerWidget {
     final enabled = ref.watch(automateNotificationProvider);
     return GlassCard(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      onTap: () =>
+          ref.read(automateNotificationProvider.notifier).set(!enabled),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -239,6 +243,7 @@ class SettingsScreen extends ConsumerWidget {
     final enabled = ref.watch(automateDndProvider);
     return GlassCard(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      onTap: () => ref.read(automateDndProvider.notifier).set(!enabled),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

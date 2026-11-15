@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:vocus/core/theme/vocus_theme.dart';
 
 class GlassCard extends StatelessWidget {
   final Widget child;
@@ -23,27 +24,44 @@ class GlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final radius = borderRadius ?? BorderRadius.circular(24);
+    final decoration = BoxDecoration(
+      color: Colors.white.withValues(alpha: opacity),
+      borderRadius: radius,
+      border:
+          border ??
+          Border.all(color: Colors.white.withValues(alpha: 0.15), width: 0.5),
+    );
+    final contentPadding = padding ?? const EdgeInsets.all(16);
+
     return ClipRRect(
-      borderRadius: borderRadius ?? BorderRadius.circular(24),
+      borderRadius: radius,
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-        child: GestureDetector(
-          onTap: onTap,
-          child: Container(
-            padding: padding ?? const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: opacity),
-              borderRadius: borderRadius ?? BorderRadius.circular(24),
-              border:
-                  border ??
-                  Border.all(
-                    color: Colors.white.withValues(alpha: 0.15),
-                    width: 0.5,
+        child: onTap == null
+            // Non-interactive cards stay light and pure: no Material, no ink.
+            ? Container(
+                padding: contentPadding,
+                decoration: decoration,
+                child: child,
+              )
+            // Interactive cards get a tactile cyber-cyan ripple with the full
+            // card surface acting as the hit target.
+            : Material(
+                color: Colors.transparent,
+                child: Ink(
+                  decoration: decoration,
+                  child: InkWell(
+                    onTap: onTap,
+                    borderRadius: radius,
+                    // Bounds InkResponse.effectiveRadius for the ripple.
+                    radius: 24,
+                    splashColor: VocusColors.primary.withValues(alpha: 0.15),
+                    highlightColor: VocusColors.primary.withValues(alpha: 0.08),
+                    child: Container(padding: contentPadding, child: child),
                   ),
-            ),
-            child: child,
-          ),
-        ),
+                ),
+              ),
       ),
     );
   }

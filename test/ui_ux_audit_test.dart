@@ -8,6 +8,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vocus/core/providers/common_providers.dart';
 import 'package:vocus/core/theme/vocus_theme.dart';
+import 'package:vocus/core/widgets/glass_card.dart';
 import 'package:vocus/features/calendar/models/calendar_entry.dart';
 import 'package:vocus/features/calendar/models/calendar_event.dart';
 import 'package:vocus/features/calendar/providers/auth_provider.dart';
@@ -21,8 +22,11 @@ import 'package:vocus/features/volume/providers/automation_provider.dart';
 import 'package:vocus/features/volume/providers/event_overrides_provider.dart';
 import 'package:vocus/features/volume/providers/volume_rules_provider.dart';
 import 'package:vocus/features/volume/screens/rules_screen.dart';
+import 'package:vocus/features/volume/services/foreground_service.dart';
 
 class MockGoogleSignInAccount extends Mock implements GoogleSignInAccount {}
+
+class MockForegroundService extends Mock implements ForegroundServiceWrapper {}
 
 class MockAutomation extends Notifier<AutomationStatus>
     with Mock
@@ -104,6 +108,7 @@ void main() {
   late CalendarEvent upcomingEvent;
   late VolumeRule rule1;
   late AutomationStatus status;
+  late MockForegroundService mockForegroundService;
 
   const phone = Size(390, 844);
   const smallPhone = Size(320, 568);
@@ -115,6 +120,10 @@ void main() {
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     prefs = await SharedPreferences.getInstance();
+
+    mockForegroundService = MockForegroundService();
+    when(() => mockForegroundService.start()).thenAnswer((_) async => true);
+    when(() => mockForegroundService.stop()).thenAnswer((_) async => true);
 
     mockUser = MockGoogleSignInAccount();
     when(() => mockUser.email).thenReturn('user@example.com');
@@ -181,6 +190,9 @@ void main() {
         volumeRulesProvider.overrideWith(() => MockVolumeRules([rule1])),
         eventOverridesProvider.overrideWith(() => MockEventOverrides({})),
         automationProvider.overrideWith(() => MockAutomation(status)),
+        // The Auto-Volume card tap calls into the foreground service; stub it
+        // so the widget audit never hits a platform channel.
+        foregroundServiceProvider.overrideWithValue(mockForegroundService),
         authStateProvider.overrideWith(() => MockAuthState(mockUser)),
         currentUserProvider.overrideWith((ref) => mockUser),
         notificationPermissionProvider.overrideWith((ref) => true),
@@ -336,6 +348,21 @@ void main() {
       expect(find.byType(SettingsScreen), findsOneWidget);
       await maybeGolden(tester, 'step_settings');
       await audit(tester, 'settings tab');
+
+      // Card tap-to-toggle: tapping the Auto-Volume card surface (not the
+      // switch thumb) must flip the switch, matching the All-Day card.
+      final autoVolumeSwitch = find.descendant(
+        of: find.ancestor(
+          of: find.text('Auto-Volume'),
+          matching: find.byType(GlassCard),
+        ),
+        matching: find.byType(Switch),
+      );
+      expect(tester.widget<Switch>(autoVolumeSwitch).value, isFalse);
+      await tester.tap(find.text('Auto-Volume'));
+      await tester.pumpAndSettle();
+      expect(tester.widget<Switch>(autoVolumeSwitch).value, isTrue);
+      await audit(tester, 'settings tab (card tap-to-toggle)');
 
       // Scroll through Settings so lower sections are laid out and audited.
       await tester.drag(find.byType(ListView), const Offset(0, -600));
