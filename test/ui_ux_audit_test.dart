@@ -269,6 +269,23 @@ void main() {
       );
 
       expect(find.byType(ScheduleScreen), findsOneWidget);
+
+      // The status pill must hug its intrinsic width; if it expands to the
+      // full row width it is forced onto its own centered second line.
+      final statusBadge = find.ancestor(
+        of: find.text('MONITORING'),
+        matching: find.byType(InkWell),
+      );
+      expect(statusBadge, findsOneWidget);
+      final badgeWidth = tester.getSize(statusBadge).width;
+      expect(
+        badgeWidth,
+        lessThan(220),
+        reason:
+            'Status badge is $badgeWidth wide; it should hug the pill instead '
+            'of expanding to the header row width.',
+      );
+
       await maybeGolden(tester, 'phone_light');
       await audit(tester, 'phone_light');
 
