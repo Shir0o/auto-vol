@@ -114,22 +114,25 @@ class ScheduleScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              const Text(
-                'Schedule',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: VocusColors.onBackground,
+          SizedBox(
+            width: double.infinity,
+            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                const Text(
+                  'Schedule',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: VocusColors.onBackground,
+                  ),
                 ),
-              ),
-              _buildStatusBadge(ref, status),
-            ],
+                _buildStatusBadge(ref, status),
+              ],
+            ),
           ),
           Text(
             DateFormat('EEEE, MMMM d').format(DateTime.now()),
@@ -159,6 +162,8 @@ class ScheduleScreen extends ConsumerWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
           child: Center(
+            widthFactor: 1.0,
+            heightFactor: 1.0,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
