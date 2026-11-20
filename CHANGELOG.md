@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4](https://github.com/Shir0o/auto-vol/compare/v1.1.3...v1.1.4) (2026-11-20)
+
+
+### Bug Fixes
+
+* **ui:** align schedule header status badge ([#35](https://github.com/Shir0o/auto-vol/issues/35)) ([c8f097c](https://github.com/Shir0o/auto-vol/commit/c8f097c100b4117b3f84f461b2c76f526d4353c0))
+
 ## [1.1.3](https://github.com/Shir0o/auto-vol/compare/v1.1.2...v1.1.3) (2026-11-14)
 
 
