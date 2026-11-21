@@ -67,6 +67,7 @@ class RulesScreen extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       backgroundColor: VocusColors.surface,
+      showDragHandle: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),

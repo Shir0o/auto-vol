@@ -51,12 +51,29 @@ class VocusTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: VocusColors.secondary,
-          foregroundColor: Colors.white,
+          backgroundColor: VocusColors.primary,
+          foregroundColor: const Color(0xFF00363A), // VocusColors.onPrimary
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16), // rounded-lg (1rem)
           ),
         ),
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          return states.contains(WidgetState.selected)
+              ? VocusColors.primary
+              : VocusColors.outline;
+        }),
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          return states.contains(WidgetState.selected)
+              ? VocusColors.primary.withValues(alpha: 0.3)
+              : Colors.white.withValues(alpha: 0.08);
+        }),
+        trackOutlineColor: WidgetStateProperty.resolveWith((states) {
+          return states.contains(WidgetState.selected)
+              ? VocusColors.primary
+              : VocusColors.outline.withValues(alpha: 0.4);
+        }),
       ),
     );
   }
